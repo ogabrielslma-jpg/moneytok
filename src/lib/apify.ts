@@ -25,27 +25,27 @@ export async function fetchTikTokProfile(
   const cleanUsername = username.replace(/^@/, '').trim();
 
   // Se Apify não tá habilitado ou sem token, retorna null
-  // (o caller vai cair no fallback mock)
   if (!ENABLE_APIFY || !APIFY_TOKEN) {
     console.log('[apify] disabled or no token, skipping');
     return null;
   }
 
   try {
-    // Chama o actor do Apify de forma síncrona
     // run-sync-get-dataset-items espera o run terminar e retorna o output
     const url = `https://api.apify.com/v2/acts/${PROFILE_ACTOR}/run-sync-get-dataset-items?token=${APIFY_TOKEN}`;
 
+    // Body correto: campo "profiles", array com @
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        usernames: [cleanUsername],
+        profiles: [`@${cleanUsername}`],
       }),
     });
 
     if (!response.ok) {
-      console.error('[apify] HTTP error', response.status);
+      const errorText = await response.text().catch(() => '');
+      console.error('[apify] HTTP error', response.status, errorText.slice(0, 200));
       return null;
     }
 
@@ -63,7 +63,7 @@ export async function fetchTikTokProfile(
       username: profile.username || cleanUsername,
       displayName: profile.displayName || cleanUsername,
       bio: profile.bio || '',
-      avatar: profile.avatar || profile.avatarUrl || '',
+      avatar: profile.avatarUrl || profile.avatar || '',
       followerCount: profile.followerCount || 0,
       followingCount: profile.followingCount || 0,
       likesCount: profile.likesCount || 0,
