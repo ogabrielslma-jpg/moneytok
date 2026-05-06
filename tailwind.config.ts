@@ -30,6 +30,12 @@ const config: Config = {
           200: "#e8e1d3",
           300: "#d4cab5",
         },
+        tiktok: {
+          pink: "#FE2C55",
+          cyan: "#25F4EE",
+          dark: "#010101",
+          gray: "#161823",
+        },
       },
       fontFamily: {
         display: ["'Playfair Display'", "Georgia", "serif"],

@@ -3,8 +3,8 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FootPriv — Discreto. Anônimo. Lucrativo.",
-  description: "PROJETO ACADÊMICO FICTÍCIO. Marketplace simulado.",
+  title: "MoneyTok — Sua IA pra monetizar TikTok",
+  description: "Conecte seu TikTok e descubra como monetizar cada vídeo com inteligência artificial.",
 };
 
 export default function RootLayout({

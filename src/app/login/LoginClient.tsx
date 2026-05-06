@@ -20,7 +20,7 @@ export default function LoginClient({ initialConfig }: { initialConfig: LandingC
     const v = e.target.value;
     setIdentifier(v);
     try {
-      const stored = localStorage.getItem(`ff_pwd_${v}`);
+      const stored = localStorage.getItem(`mtk_pwd_${v}`);
       if (stored) setPassword(stored);
     } catch {}
   }
@@ -120,7 +120,7 @@ export default function LoginClient({ initialConfig }: { initialConfig: LandingC
             </>
           )}
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-600 mt-6">
-            Acessar leilão
+            Acessar plataforma
           </p>
         </div>
 
@@ -168,7 +168,7 @@ export default function LoginClient({ initialConfig }: { initialConfig: LandingC
           <button
             type="submit"
             disabled={loading}
-            className="w-full disabled:bg-ink-700 text-ink-950 font-bold py-5 rounded-2xl transition uppercase tracking-wide"
+            className="w-full disabled:bg-ink-700 text-white font-bold py-5 rounded-2xl transition uppercase tracking-wide"
             style={{ backgroundColor: loading ? undefined : config.color_primary }}
           >
             {loading ? "Entrando..." : "Entrar"}
@@ -178,7 +178,7 @@ export default function LoginClient({ initialConfig }: { initialConfig: LandingC
         <p className="text-center mt-8 font-mono text-xs uppercase tracking-[0.2em] text-ink-600">
           Sem conta?{" "}
           <Link href="/" style={{ color: config.color_primary }} className="hover:opacity-80">
-            Enviar foto
+            Conectar TikTok
           </Link>
         </p>
       </div>

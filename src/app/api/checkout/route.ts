@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
       },
       items: [
         {
-          title: `FootPriv — Plano ${plan.name} Anual`,
+          title: `MoneyTok — Plano ${plan.name} Anual`,
           unitPrice: amountCents,
           quantity: 1,
           tangible: false,
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
       metadata: {
         user_id: user.id,
         plan_id,
-        source: "footpriv-app",
+        source: "moneytok-app",
       },
     };
 

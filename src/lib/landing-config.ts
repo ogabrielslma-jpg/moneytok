@@ -44,6 +44,35 @@ export type FeedPost = {
   image_url: string;           // foto borrada/escondida
 };
 
+// Vídeo do TikTok (puxado via scraper)
+// Ainda não tem IA — slot reservado pra quando o dev plugar
+export type TikTokVideo = {
+  id: string;
+  thumbnail_url: string;       // imagem da capa do vídeo
+  caption: string;             // texto/legenda
+  views: number;               // visualizações
+  likes: number;               // curtidas
+  comments: number;            // comentários
+  shares: number;              // compartilhamentos
+  duration_sec: number;        // duração em segundos
+  posted_at: string;           // ISO ou "há X dias"
+  video_url: string;           // link do TikTok (opcional, p/ abrir externo)
+  ai_analyzed: boolean;        // se a IA já analisou (placeholder pro futuro)
+  ai_score: number | null;     // score 0-100 (null = não analisado ainda)
+};
+
+// Perfil TikTok do usuário (quando ele "vincula" via @username)
+export type TikTokProfile = {
+  username: string;
+  display_name: string;
+  avatar_url: string;
+  followers: number;
+  following: number;
+  total_likes: number;
+  bio: string;
+  verified: boolean;
+};
+
 // Config do dashboard (tudo que o usuário logado vê)
 export type DashboardConfig = {
   // Logo (pode ser igual ou diferente da landing)
@@ -71,12 +100,19 @@ export type DashboardConfig = {
   label_top_creators: string;     // "Top creators"
   label_recent_sales: string;     // "Vendas recentes"
 
+  // MoneyTok: mostra aba "Meu Leilão / Análise IA" no menu? (default false)
+  // A lógica de leilão fica no código, só esconde da navegação.
+  show_auction_tab: boolean;
+
   // Blur das fotos vendidas
   feed_blur_intensity: number;  // 0-30 (px do blur)
   feed_grayscale: boolean;      // se aplica filtro preto e branco
 
   // Posts do feed (gerenciado manualmente no admin)
   feed_posts: FeedPost[];
+
+  // Vídeos TikTok placeholder (pra mostrar na aba Feed enquanto o scraper não está plugado)
+  tiktok_videos: TikTokVideo[];
 
   // Compradores fictícios que dão lance no leilão (gerenciado no admin)
   bidders: Bidder[];
@@ -237,6 +273,95 @@ const DEFAULT_FEED_POSTS: FeedPost[] = [
   },
 ];
 
+// Vídeos placeholder pro feed enquanto o scraper não está plugado
+// Usa thumbnails do Picsum (substituível via admin)
+export const DEFAULT_TIKTOK_VIDEOS: TikTokVideo[] = [
+  {
+    id: "video-1",
+    thumbnail_url: "https://picsum.photos/seed/mtk1/540/960",
+    caption: "Os 3 erros que travaram meu crescimento no TikTok 🚀",
+    views: 1247000,
+    likes: 89400,
+    comments: 1820,
+    shares: 4310,
+    duration_sec: 47,
+    posted_at: "há 2 dias",
+    video_url: "",
+    ai_analyzed: false,
+    ai_score: null,
+  },
+  {
+    id: "video-2",
+    thumbnail_url: "https://picsum.photos/seed/mtk2/540/960",
+    caption: "Como transformei 1 vídeo em 4 fontes de renda 💸",
+    views: 342000,
+    likes: 24700,
+    comments: 612,
+    shares: 1102,
+    duration_sec: 62,
+    posted_at: "há 4 dias",
+    video_url: "",
+    ai_analyzed: false,
+    ai_score: null,
+  },
+  {
+    id: "video-3",
+    thumbnail_url: "https://picsum.photos/seed/mtk3/540/960",
+    caption: "O algoritmo do TikTok quer ISSO de você (testado)",
+    views: 891000,
+    likes: 67200,
+    comments: 1340,
+    shares: 2870,
+    duration_sec: 38,
+    posted_at: "há 6 dias",
+    video_url: "",
+    ai_analyzed: false,
+    ai_score: null,
+  },
+  {
+    id: "video-4",
+    thumbnail_url: "https://picsum.photos/seed/mtk4/540/960",
+    caption: "Roteiro pronto que viralizou (copia e cola) ✍️",
+    views: 156000,
+    likes: 11800,
+    comments: 287,
+    shares: 542,
+    duration_sec: 55,
+    posted_at: "há 1 semana",
+    video_url: "",
+    ai_analyzed: false,
+    ai_score: null,
+  },
+  {
+    id: "video-5",
+    thumbnail_url: "https://picsum.photos/seed/mtk5/540/960",
+    caption: "POV: você descobriu que dá pra viver disso",
+    views: 2104000,
+    likes: 198000,
+    comments: 4720,
+    shares: 12400,
+    duration_sec: 29,
+    posted_at: "há 1 semana",
+    video_url: "",
+    ai_analyzed: false,
+    ai_score: null,
+  },
+  {
+    id: "video-6",
+    thumbnail_url: "https://picsum.photos/seed/mtk6/540/960",
+    caption: "3 nichos invisíveis que pagam MUITO bem 🤫",
+    views: 487000,
+    likes: 38900,
+    comments: 891,
+    shares: 1670,
+    duration_sec: 71,
+    posted_at: "há 2 semanas",
+    video_url: "",
+    ai_analyzed: false,
+    ai_score: null,
+  },
+];
+
 export const DEFAULT_BIDDERS: Bidder[] = [
   // Arábia Saudita 🇸🇦 (SAR)
   { id: "bidder-1", name: "Khalid bin Salman Al-Farsi", emirate: "Riyadh", country: "Arábia Saudita", flag: "🇸🇦", currency: "SAR", currency_rate: 0.75, avatar_url: "" },
@@ -313,95 +438,99 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   color_bg: "#f9fafb",
   color_card_bg: "#ffffff",
 
-  label_feed: "Feed",
-  label_auction: "Meu Leilão",
+  label_feed: "Meus Vídeos",
+  label_auction: "Análise IA",
   label_wallet: "Carteira",
   label_profile: "Perfil",
-  label_my_auction: "Meu Leilão",
-  label_active_auction: "Leilão ativo",
-  label_closed_auctions: "Fechados",
-  label_buyers_online: "Compradores online",
+  label_my_auction: "Análise IA",
+  label_active_auction: "Em análise",
+  label_closed_auctions: "Analisados",
+  label_buyers_online: "Creators online",
   label_top_creators: "Top creators",
-  label_recent_sales: "Vendas recentes",
+  label_recent_sales: "Análises recentes",
+
+  show_auction_tab: false,
 
   feed_blur_intensity: 12,
   feed_grayscale: false,
 
   feed_posts: DEFAULT_FEED_POSTS,
+  tiktok_videos: DEFAULT_TIKTOK_VIDEOS,
   bidders: DEFAULT_BIDDERS,
 };
 
 export const DEFAULT_LANDING_CONFIG: LandingConfig = {
   logo_mode: "text",
-  logo_primary: "FOOT",
-  logo_secondary: "PRIV",
+  logo_primary: "MONEY",
+  logo_secondary: "TOK",
   logo_image_url: "",
 
-  tagline: "Discreto · Anônimo · Lucrativo",
-  headline: "Mais de 43.730 compradores ativos aguardando sua foto agora",
-  headline_html: "Mais de <strong>43.730 compradores ativos</strong> aguardando sua foto agora",
-  headline_size: 16,
+  tagline: "IA · Análise · Monetização",
+  headline: "A IA que transforma seus vídeos do TikTok em renda real",
+  headline_html: "A IA que transforma seus <strong>vídeos do TikTok</strong> em <span style=\"color:#25F4EE\">renda real</span>",
+  headline_size: 18,
   headline_weight: 300,
   headline_align: "center",
 
-  cta_text: "Enviar aos compradores",
+  cta_text: "Localizar meu perfil",
   cta_size: 14,
   cta_weight: 700,
 
   questions: [
     {
       id: "q1",
-      title: "Você tem alguma tatuagem nos pés?",
-      subtitle: "Compradores valorizam exclusividade visual.",
+      title: "Qual seu nicho principal no TikTok?",
+      subtitle: "Isso ajuda nossa IA a calibrar a análise.",
       options: [
-        { emoji: "❌", text: "Não tenho", color: "#22c55e" },
-        { emoji: "✨", text: "Tenho uma pequena", color: "#3b82f6" },
-        { emoji: "🎨", text: "Tenho várias", color: "#a855f7" },
-        { emoji: "🤫", text: "Tenho, mas escondidas", color: "#f59e0b" },
+        { emoji: "💼", text: "Negócios / Empreendedorismo", color: "#FE2C55" },
+        { emoji: "🎨", text: "Lifestyle / Moda / Beleza", color: "#25F4EE" },
+        { emoji: "🎬", text: "Entretenimento / Humor", color: "#a855f7" },
+        { emoji: "📚", text: "Educação / Tutoriais", color: "#f59e0b" },
+        { emoji: "🤷", text: "Ainda estou descobrindo", color: "#6b7280" },
       ],
     },
     {
       id: "q2",
-      title: "Costuma pintar as unhas dos pés?",
-      subtitle: "Cores chamativas aumentam o lance médio.",
+      title: "Quantos seguidores você tem hoje?",
+      subtitle: "Sua faixa atual define o caminho de monetização.",
       options: [
-        { emoji: "❌", text: "Nunca", color: "#22c55e" },
-        { emoji: "💅", text: "Às vezes", color: "#3b82f6" },
-        { emoji: "🌹", text: "Sempre", color: "#a855f7" },
-        { emoji: "💎", text: "Faço pedicure profissional", color: "#f59e0b" },
+        { emoji: "🌱", text: "Menos de 1.000", color: "#22c55e" },
+        { emoji: "🚀", text: "Entre 1.000 e 10.000", color: "#FE2C55" },
+        { emoji: "🔥", text: "Entre 10.000 e 100.000", color: "#25F4EE" },
+        { emoji: "💎", text: "Mais de 100.000", color: "#f59e0b" },
       ],
     },
     {
       id: "q3",
-      title: "Qual o formato dos seus dedos?",
-      subtitle: "Cada formato tem demanda em diferentes regiões.",
+      title: "Há quanto tempo você posta no TikTok?",
+      subtitle: "Tempo de plataforma muda a estratégia recomendada.",
       options: [
-        { emoji: "🔻", text: "Egípcio (decrescente)", color: "#22c55e" },
-        { emoji: "🏛", text: "Grego (segundo dedo maior)", color: "#3b82f6" },
-        { emoji: "📏", text: "Romano (3 primeiros iguais)", color: "#a855f7" },
-        { emoji: "🤷", text: "Não sei", color: "#6b7280" },
+        { emoji: "🆕", text: "Menos de 3 meses", color: "#22c55e" },
+        { emoji: "📅", text: "Entre 3 meses e 1 ano", color: "#FE2C55" },
+        { emoji: "⏳", text: "Entre 1 e 3 anos", color: "#25F4EE" },
+        { emoji: "🏆", text: "Mais de 3 anos", color: "#f59e0b" },
       ],
     },
     {
       id: "q4",
-      title: "Qual o tamanho do seu pé?",
-      subtitle: "Tamanhos pequenos são mais valorizados em Dubai.",
+      title: "Você já monetiza de alguma forma?",
+      subtitle: "Pra IA saber por onde começar a sugerir.",
       options: [
-        { emoji: "🌸", text: "33-35", color: "#22c55e" },
-        { emoji: "🌷", text: "36-37", color: "#3b82f6" },
-        { emoji: "🌻", text: "38-39", color: "#a855f7" },
-        { emoji: "🌹", text: "40+", color: "#f59e0b" },
+        { emoji: "❌", text: "Ainda não monetizo nada", color: "#22c55e" },
+        { emoji: "🎁", text: "Só recebo presentes nas lives", color: "#FE2C55" },
+        { emoji: "🤝", text: "Faço parcerias / publis", color: "#25F4EE" },
+        { emoji: "💰", text: "Vendo infoproduto próprio", color: "#f59e0b" },
       ],
     },
     {
       id: "q5",
-      title: "Cuidados com os pés?",
-      subtitle: "Quanto mais cuidados, maior a raridade.",
+      title: "Qual seu objetivo principal?",
+      subtitle: "Vamos focar a análise no que importa pra você.",
       options: [
-        { emoji: "🚿", text: "Nenhum especial", color: "#22c55e" },
-        { emoji: "💧", text: "Hidratação semanal", color: "#3b82f6" },
-        { emoji: "💅", text: "Pedicure mensal", color: "#a855f7" },
-        { emoji: "✨", text: "Spa, esfoliação, hidratação diária", color: "#f59e0b" },
+        { emoji: "📈", text: "Crescer audiência rapidamente", color: "#22c55e" },
+        { emoji: "💸", text: "Transformar conteúdo em infoproduto", color: "#FE2C55" },
+        { emoji: "🎯", text: "Fechar mais publis pagas", color: "#25F4EE" },
+        { emoji: "🛍️", text: "Vender produto físico próprio", color: "#f59e0b" },
       ],
     },
   ],
@@ -410,14 +539,14 @@ export const DEFAULT_LANDING_CONFIG: LandingConfig = {
   banner_mode: "text",
   banner_text: "",
   banner_image_url: "",
-  banner_bg_color: "#fbbf24",
-  banner_text_color: "#0a0a0a",
+  banner_bg_color: "#FE2C55",
+  banner_text_color: "#ffffff",
   banner_link_url: "",
 
-  color_primary: "#22c55e",
-  color_accent: "#a3e635",
-  color_bg_from: "#1a1a2e",
-  color_bg_via: "#0a0a0a",
+  color_primary: "#FE2C55",
+  color_accent: "#25F4EE",
+  color_bg_from: "#161823",
+  color_bg_via: "#010101",
   color_bg_to: "#000000",
 
   background_image_url: "",
@@ -426,9 +555,9 @@ export const DEFAULT_LANDING_CONFIG: LandingConfig = {
   mobile: { ...DEFAULT_VIEWPORT },
 
   faqs: [
-    { q: "Como funciona?", a: "Você envia a foto do seu pé no formulário acima e recebe propostas de compra de algum dos nossos 43.730 usuários compradores." },
-    { q: "Como eu vou receber o pagamento?", a: "Dentro da plataforma você cadastra uma conta bancária e uma chave pix. Os pagamentos caem na conta dentro de 15 minutos após a venda." },
-    { q: "Regras da plataforma. Leia com atenção!", a: "Os compradores querem exclusividade. Você vai receber uma vez por uma foto vendida." },
+    { q: "Como funciona a análise de IA?", a: "Você conecta seu @ do TikTok, nós puxamos seus vídeos públicos e nossa IA analisa cada um pra te mostrar oportunidades de monetização — desde infoproduto até parcerias e venda direta." },
+    { q: "Eu preciso liberar acesso à minha conta?", a: "Não. A MoneyTok lê apenas dados públicos do seu perfil — os mesmos que qualquer pessoa vê quando entra no seu TikTok. Não pedimos senha nem login do TikTok." },
+    { q: "Quando a análise de IA fica disponível?", a: "Estamos finalizando os últimos detalhes da nossa IA proprietária. Quem entra agora garante acesso prioritário assim que liberarmos." },
   ],
 
   dashboard: DEFAULT_DASHBOARD_CONFIG,
@@ -480,6 +609,10 @@ function migrateConfig(raw: any): LandingConfig {
     // Se feed_posts não existir, usa default
     if (!Array.isArray(merged.dashboard.feed_posts) || merged.dashboard.feed_posts.length === 0) {
       merged.dashboard.feed_posts = DEFAULT_FEED_POSTS;
+    }
+    // Se tiktok_videos não existir, usa default
+    if (!Array.isArray(merged.dashboard.tiktok_videos) || merged.dashboard.tiktok_videos.length === 0) {
+      merged.dashboard.tiktok_videos = DEFAULT_TIKTOK_VIDEOS;
     }
     // Se bidders não existir, usa default (compat configs antigas)
     if (!Array.isArray(merged.dashboard.bidders) || merged.dashboard.bidders.length === 0) {

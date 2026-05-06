@@ -4,66 +4,89 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { generateListingTitle, RARITIES, PLACEHOLDER_IMAGES } from "@/lib/fake-data";
-import { DEFAULT_LANDING_CONFIG, type LandingConfig, type ViewportConfig, sanitizeRichHtml } from "@/lib/landing-config";
+import { DEFAULT_LANDING_CONFIG, type LandingConfig, type ViewportConfig, type TikTokProfile, sanitizeRichHtml } from "@/lib/landing-config";
 import LandingBanner from "@/components/SimulationBanner";
 
-type Step =
-  | "upload"      // foto + nome + email (volta ao original)
-  | "submitted"   // "foto enviada"
-  | "q1" | "q2" | "q3" | "q4" | "q5"  // 5 perguntas
-  | "birthdate"
-  | "credentials" // senha + username
-  | "done";       // redireciona pro login
+// =====================================================================
+// MOCK SCRAPER — substituir pela chamada real à API quando o dev plugar
+// =====================================================================
+// Espera 1.5s e devolve um perfil falso baseado no @username digitado.
+// Quando a API real estiver pronta, troca o conteúdo dessa função por
+// um fetch e mantém a mesma assinatura (Promise<TikTokProfile | null>).
+async function mockTikTokLookup(username: string): Promise<TikTokProfile | null> {
+  await new Promise((r) => setTimeout(r, 1500));
 
-const FAQS = [
-  {
-    q: "Como funciona?",
-    a: "Você envia a foto do seu pé no formulário acima e recebe propostas de compra de algum dos nossos 43.730 usuários compradores. Tempo de venda estimado é de 2 até 15 minutos.",
-  },
-  {
-    q: "Como eu vou receber o pagamento?",
-    a: "Dentro da plataforma você cadastra uma conta bancária e uma chave pix. Os pagamentos caem na conta dentro de 15 minutos após a venda. Exceto aos domingos e feriados o qual esse tempo pode levar até 60 minutos.",
-  },
-  {
-    q: "Regras da plataforma. Leia com atenção!",
-    a: "Os compradores querem exclusividade, ou seja, você vai receber uma vez por uma foto vendida. Para fazer mais de uma venda, é necessário enviar outra foto do seu pé!",
-  },
-];
+  const clean = username.toLowerCase().replace(/[^a-z0-9_.]/g, "");
+  if (clean.length < 2) return null;
+
+  // Hash determinístico — mesmo @ devolve sempre o mesmo perfil "fake"
+  let hash = 0;
+  for (let i = 0; i < clean.length; i++) {
+    hash = (hash * 31 + clean.charCodeAt(i)) >>> 0;
+  }
+
+  const followers = 500 + (hash % 250000);
+  const following = 100 + ((hash >> 5) % 1500);
+  const totalLikes = followers * (8 + ((hash >> 11) % 30));
+  const verified = (hash % 17) === 0;
+
+  return {
+    username: clean,
+    display_name: clean.replace(/[._]/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+    avatar_url: `https://i.pravatar.cc/200?u=${encodeURIComponent(clean)}`,
+    followers,
+    following,
+    total_likes: totalLikes,
+    bio: "Creator no TikTok",
+    verified,
+  };
+}
+
+function fmtCount(n: number): string {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(".0", "") + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(".0", "") + "K";
+  return n.toString();
+}
+
+type Step =
+  | "tiktok"
+  | "submitted"
+  | "q1" | "q2" | "q3" | "q4" | "q5"
+  | "birthdate"
+  | "credentials"
+  | "done";
 
 export default function Home({ initialConfig }: { initialConfig: LandingConfig }) {
-  const [step, setStep] = useState<Step>("upload");
+  const [step, setStep] = useState<Step>("tiktok");
 
-  // Tela 1
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  // Tela 1 — TikTok lookup
+  const [tiktokUsername, setTiktokUsername] = useState("");
+  const [tiktokProfile, setTiktokProfile] = useState<TikTokProfile | null>(null);
+  const [tiktokSearchStatus, setTiktokSearchStatus] = useState<"idle" | "searching" | "found" | "not_found">("idle");
+  const [tiktokSearchError, setTiktokSearchError] = useState("");
+
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
 
-  // Perguntas (q1-q5)
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
-  // Birthdate
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
 
-  // Credentials
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const [editingEmail, setEditingEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Username availability
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [activeBuyers, setActiveBuyers] = useState(43730);
+  const [activeCreators, setActiveCreators] = useState(43730);
   const [config] = useState<LandingConfig>(initialConfig);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -71,21 +94,25 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
   const supabase = createClient();
 
   useEffect(() => {
-    function check() {
-      setIsMobile(window.innerWidth < 768);
-    }
+    function check() { setIsMobile(window.innerWidth < 768); }
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Verificação de disponibilidade do username (debounced 500ms)
+  // Pré-popula username MoneyTok a partir do @TikTok
+  useEffect(() => {
+    if (tiktokProfile && !username) {
+      setUsername(tiktokProfile.username);
+      setFirstName(tiktokProfile.display_name.split(" ")[0] || "");
+    }
+  }, [tiktokProfile]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (!username || username.length < 3) {
       setUsernameStatus(username.length === 0 ? "idle" : "invalid");
       return;
     }
-
     setUsernameStatus("checking");
     const handler = setTimeout(async () => {
       try {
@@ -94,63 +121,66 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
           .select("id")
           .eq("username", username)
           .maybeSingle();
-
-        if (error) {
-          console.error("[Username Check] erro:", error.message);
-          setUsernameStatus("idle");
-          return;
-        }
-
+        if (error) { setUsernameStatus("idle"); return; }
         setUsernameStatus(data ? "taken" : "available");
-      } catch (e) {
-        console.error("[Username Check] exception:", e);
+      } catch {
         setUsernameStatus("idle");
       }
     }, 500);
-
     return () => clearTimeout(handler);
   }, [username, supabase]);
 
-  // Config visual de acordo com o viewport
   const viewport: ViewportConfig = isMobile ? config.mobile : config.desktop;
 
   useEffect(() => {
     const i = setInterval(() => {
-      setActiveBuyers((c) => c + Math.floor(Math.random() * 7) - 3);
+      setActiveCreators((c) => c + Math.floor(Math.random() * 7) - 3);
     }, 8000);
     return () => clearInterval(i);
   }, []);
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
-  }
-
-  // Submit da tela 1: foto + nome + email
-  function handleSubmitInitial(e: React.FormEvent) {
+  async function handleTiktokSearch(e: React.FormEvent) {
     e.preventDefault();
-    if (!file || !firstName || !email) return;
-    setStep("submitted");
-    // Auto-avança pra primeira pergunta após 2.5s
-    setTimeout(() => setStep("q1"), 2500);
+    const clean = tiktokUsername.replace(/^@/, "").trim();
+    if (clean.length < 2) {
+      setTiktokSearchError("Digite um @username válido");
+      return;
+    }
+    setTiktokSearchError("");
+    setTiktokSearchStatus("searching");
+    setTiktokProfile(null);
+
+    try {
+      const profile = await mockTikTokLookup(clean);
+      if (!profile) {
+        setTiktokSearchStatus("not_found");
+        setTiktokSearchError("Perfil não encontrado. Verifique o @username.");
+        return;
+      }
+      setTiktokProfile(profile);
+      setTiktokSearchStatus("found");
+    } catch {
+      setTiktokSearchStatus("not_found");
+      setTiktokSearchError("Não foi possível buscar agora. Tente de novo.");
+    }
   }
 
-  // Avança pra próxima pergunta ou pra birthdate (volta ao fluxo original)
+  function handleActivateProfile() {
+    if (!tiktokProfile) return;
+    setStep("submitted");
+    setTimeout(() => setStep("q1"), 2000);
+  }
+
   function answerQuestion(questionId: string, value: string) {
     setAnswers((a) => ({ ...a, [questionId]: value }));
     const order: Step[] = ["q1", "q2", "q3", "q4", "q5", "birthdate"];
     const idx = order.indexOf(step as Step);
-    if (idx >= 0 && idx < order.length - 1) {
-      setStep(order[idx + 1]);
-    }
+    if (idx >= 0 && idx < order.length - 1) setStep(order[idx + 1]);
   }
 
   function handleBirthdate(e: React.FormEvent) {
     e.preventDefault();
     if (!day || !month || !year) return;
-    // Valida idade mínima (18+)
     const birth = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const age = (Date.now() - birth.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
     if (age < 18) {
@@ -161,29 +191,14 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     setStep("credentials");
   }
 
-  // Submit final: cria conta + faz upload + cria listing
   async function handleFinalSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("As senhas não coincidem.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("A senha precisa ter pelo menos 6 caracteres.");
-      return;
-    }
-    if (username.length < 3) {
-      setError("O username precisa ter pelo menos 3 caracteres.");
-      return;
-    }
-    if (usernameStatus === "taken") {
-      setError("Esse username já está em uso. Escolha outro.");
-      return;
-    }
-    if (usernameStatus === "checking") {
-      setError("Aguarde a verificação do username terminar.");
-      return;
-    }
+    if (password !== confirmPassword) { setError("As senhas não coincidem."); return; }
+    if (password.length < 6) { setError("A senha precisa ter pelo menos 6 caracteres."); return; }
+    if (username.length < 3) { setError("O username precisa ter pelo menos 3 caracteres."); return; }
+    if (usernameStatus === "taken") { setError("Esse username já está em uso. Escolha outro."); return; }
+    if (usernameStatus === "checking") { setError("Aguarde a verificação do username terminar."); return; }
+    if (!email || !email.includes("@")) { setError("E-mail inválido."); return; }
     const phoneDigits = phone.replace(/\D/g, "");
     if (phoneDigits.length < 10 || phoneDigits.length > 11) {
       setError("Telefone inválido. Use DDD + número (10 ou 11 dígitos).");
@@ -194,7 +209,6 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     setError("");
 
     try {
-      // Re-verifica username antes de criar (race condition)
       const { data: existing } = await supabase
         .from("profiles")
         .select("id")
@@ -207,70 +221,42 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
         return;
       }
 
-      // 1. Cria conta no Supabase
+      const tiktokHandle = tiktokProfile?.username || tiktokUsername.replace(/^@/, "").trim();
+
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         phone: phoneDigits ? `+55${phoneDigits}` : undefined,
-        options: { data: { username, first_name: firstName, phone: phoneDigits } },
+        options: {
+          data: {
+            username,
+            first_name: firstName || tiktokProfile?.display_name?.split(" ")[0] || "",
+            phone: phoneDigits,
+            tiktok_username: tiktokHandle,
+            tiktok_profile: tiktokProfile || null,
+          },
+        },
       });
 
       if (signUpError) throw signUpError;
       if (!signUpData.user) throw new Error("Erro ao criar conta");
 
-      // 2. Faz login (aguarda terminar pra sessão estar disponível)
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) console.error("[Auth] Erro no login:", signInError.message);
 
-      // 3. Upload da foto
-      let imageUrl = PLACEHOLDER_IMAGES[Math.floor(Math.random() * PLACEHOLDER_IMAGES.length)];
-      let uploadOk = false;
-      if (file) {
-        // Sanitiza nome do arquivo (evita caracteres problemáticos)
-        const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-        const fileName = `${signUpData.user.id}/${Date.now()}-${safeName}`;
-        const { error: uploadError } = await supabase.storage
-          .from("feet-photos")
-          .upload(fileName, file, {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: file.type || "image/jpeg",
-          });
-        if (uploadError) {
-          console.error("[Upload] Falhou:", uploadError.message);
-          setError(`Não foi possível enviar a foto: ${uploadError.message}. Tentando de novo...`);
-        } else {
-          const { data: urlData } = supabase.storage.from("feet-photos").getPublicUrl(fileName);
-          imageUrl = urlData.publicUrl;
-          uploadOk = true;
-          console.log("[Upload] OK:", imageUrl);
-        }
-      }
-      if (!uploadOk) {
-        console.warn("[Upload] Usando imagem placeholder");
-      }
-
-      // 4. Atualiza profile com username
       try {
-        await supabase.from("profiles").update({ username }).eq("id", signUpData.user.id);
+        await supabase
+          .from("profiles")
+          .update({
+            username,
+            tiktok_username: tiktokHandle || null,
+            tiktok_profile: tiktokProfile || null,
+            tiktok_synced_at: tiktokProfile ? new Date().toISOString() : null,
+          })
+          .eq("id", signUpData.user.id);
       } catch {}
 
-      // 5. Cria listagem
-      const rarity = RARITIES[Math.floor(Math.random() * RARITIES.length)];
-      const startPrice = 100 * rarity.multiplier + Math.floor(Math.random() * 500);
-
-      await supabase.from("listings").insert({
-        seller_id: signUpData.user.id,
-        title: generateListingTitle(),
-        description: `Tatuagem: ${answers.q1} | Esmalte: ${answers.q2} | Formato: ${answers.q3} | Tamanho: ${answers.q4} | Cuidados: ${answers.q5}`,
-        image_url: imageUrl,
-        starting_price: startPrice,
-        current_bid: startPrice,
-        rarity: rarity.label.toLowerCase(),
-      });
-
-      // Salva senha pra auto-fill no login
-      try { localStorage.setItem(`ff_pwd_${email}`, password); } catch {}
+      try { localStorage.setItem(`mtk_pwd_${email}`, password); } catch {}
 
       setStep("done");
       setTimeout(() => router.push("/login"), 2000);
@@ -280,14 +266,12 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     }
   }
 
-  // Container e Progress estão definidos como componentes externos no final do arquivo
-
-  // ============ TELA 1: UPLOAD + NOME + EMAIL ============
-  if (step === "upload") {
+  // ============ TELA 1: CONECTAR TIKTOK ============
+  if (step === "tiktok") {
     const alignText =
       viewport.logo_align === "left" ? "text-left" :
-      viewport.logo_align === "right" ? "text-right" :
-      "text-center";
+      viewport.logo_align === "right" ? "text-right" : "text-center";
+
     return (
       <>
         <Wrapper showLoginLink config={config} viewport={viewport} banner={<LandingBanner config={config} />}>
@@ -297,84 +281,161 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
           {config.logo_mode === "image" && config.logo_image_url ? (
             <div className={`mb-3 flex ${
               viewport.logo_align === "left" ? "justify-start" :
-              viewport.logo_align === "right" ? "justify-end" :
-              "justify-center"
+              viewport.logo_align === "right" ? "justify-end" : "justify-center"
             }`}>
-              <img
-                src={config.logo_image_url}
-                alt="logo"
-                style={{
-                  height: `${viewport.logo_size * 0.7}px`,
-                  maxWidth: "100%",
-                  objectFit: "contain",
-                }}
-              />
+              <img src={config.logo_image_url} alt="logo"
+                style={{ height: `${viewport.logo_size * 0.7}px`, maxWidth: "100%", objectFit: "contain" }} />
             </div>
           ) : (
             <div className={`mb-3 ${alignText}`}>
-              <div className="font-display tracking-[0.15em] leading-none mb-1" style={{ color: config.color_primary, fontSize: `${viewport.logo_size * 0.6}px` }}>{config.logo_primary}</div>
-              <div className="font-display tracking-[0.4em] text-bone-100 leading-none" style={{ fontSize: `${viewport.logo_size * 0.3}px` }}>{config.logo_secondary}</div>
+              <div className="font-display tracking-[0.15em] leading-none mb-1"
+                style={{ color: config.color_primary, fontSize: `${viewport.logo_size * 0.6}px` }}>
+                {config.logo_primary}
+              </div>
+              <div className="font-display tracking-[0.4em] text-bone-100 leading-none"
+                style={{ fontSize: `${viewport.logo_size * 0.3}px` }}>
+                {config.logo_secondary}
+              </div>
             </div>
           )}
-          <p
-            className="text-bone-100/70 mt-8 mb-8"
+
+          <p className="text-bone-100/70 mt-8 mb-8"
             style={{
               fontSize: `${config.headline_size}px`,
               fontWeight: config.headline_weight,
               textAlign: config.headline_align,
               lineHeight: 1.4,
             }}
-            dangerouslySetInnerHTML={{
-              __html: sanitizeRichHtml(config.headline_html || config.headline),
-            }}
+            dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(config.headline_html || config.headline) }}
           />
 
-          <form onSubmit={handleSubmitInitial} className="space-y-3">
-            <label className="block cursor-pointer group">
-              <div className={`bg-ink-900/80 backdrop-blur-sm border-2 border-dashed rounded-2xl px-6 py-8 text-center transition ${preview ? "border-moss-700" : "border-ink-700 hover:border-ink-600"}`}>
-                {preview ? (
-                  <div className="flex items-center gap-4">
-                    <img src={preview} alt="" className="w-14 h-14 object-cover rounded-lg" />
-                    <div className="flex-1 text-left min-w-0">
-                      <div className="text-xs text-moss-400 font-mono uppercase tracking-wider mb-1">✓ Foto carregada</div>
-                      <div className="text-xs text-bone-100/60 truncate">{file?.name}</div>
-                    </div>
-                    <span onClick={(e) => { e.preventDefault(); setFile(null); setPreview(null); }}
-                      className="text-xs text-ink-600 hover:text-bone-100 cursor-pointer">Trocar</span>
-                  </div>
-                ) : (
-                  <>
-                    <svg className="w-7 h-7 mx-auto mb-3 text-bone-100/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                    <div className="text-bone-100/90 text-base">Escolher arquivo</div>
-                  </>
-                )}
+          {/* === BUSCA TIKTOK === */}
+          {tiktokSearchStatus !== "found" && (
+            <form onSubmit={handleTiktokSearch} className="space-y-3">
+              <div className="relative">
+                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-bone-100/50 text-base font-mono">@</span>
+                <input
+                  type="text"
+                  placeholder="seu_usuario"
+                  value={tiktokUsername.replace(/^@/, "")}
+                  onChange={(e) => setTiktokUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ""))}
+                  disabled={tiktokSearchStatus === "searching"}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  className="w-full bg-ink-900/80 border border-ink-700 focus:border-bone-100/40 rounded-2xl pl-10 pr-6 py-4 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base"
+                />
               </div>
-              <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-            </label>
 
-            <input type="text" required placeholder="Seu primeiro nome" value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full bg-ink-900/80 border border-ink-700 focus:border-moss-700 rounded-2xl px-6 py-4 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
+              {tiktokSearchError && (
+                <div className="bg-red-950/40 border border-red-900 text-red-300 px-4 py-3 text-sm rounded-2xl">
+                  {tiktokSearchError}
+                </div>
+              )}
 
-            <input type="email" required placeholder="Seu e-mail" value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-ink-900/80 border border-ink-700 focus:border-moss-700 rounded-2xl px-6 py-4 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
+              <button
+                type="submit"
+                disabled={tiktokUsername.length < 2 || tiktokSearchStatus === "searching"}
+                className="w-full disabled:bg-ink-700 disabled:cursor-not-allowed disabled:text-ink-600 py-5 rounded-2xl transition tracking-wide uppercase font-bold"
+                style={{
+                  backgroundColor: tiktokUsername.length >= 2 && tiktokSearchStatus !== "searching" ? config.color_primary : undefined,
+                  fontSize: `${config.cta_size}px`,
+                  fontWeight: config.cta_weight,
+                  color: tiktokUsername.length >= 2 && tiktokSearchStatus !== "searching" ? "#ffffff" : undefined,
+                }}
+              >
+                {tiktokSearchStatus === "searching" ? (
+                  <span className="inline-flex items-center gap-3">
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                    Localizando perfil...
+                  </span>
+                ) : config.cta_text}
+              </button>
 
-            <button type="submit" disabled={!file || !firstName || !email}
-              className="w-full bg-moss-500 hover:bg-moss-400 disabled:bg-ink-700 disabled:cursor-not-allowed text-ink-950 disabled:text-ink-600 py-5 rounded-2xl transition tracking-wide uppercase"
-              style={{
-                backgroundColor: file && firstName && email ? config.color_primary : undefined,
-                fontSize: `${config.cta_size}px`,
-                fontWeight: config.cta_weight,
-              }}>
-              {config.cta_text}
-            </button>
-          </form>
+              <p className="text-center text-[11px] text-ink-600 mt-4 leading-relaxed">
+                Lemos apenas os dados públicos do seu perfil.<br/>Não pedimos sua senha do TikTok.
+              </p>
+            </form>
+          )}
+
+          {/* === CARD DO PERFIL ENCONTRADO === */}
+          {tiktokSearchStatus === "found" && tiktokProfile && (
+            <div className="space-y-4 animate-fade-in">
+              <div
+                className="rounded-2xl p-6 border-2"
+                style={{
+                  borderColor: config.color_primary,
+                  background: `linear-gradient(135deg, ${config.color_primary}15 0%, ${config.color_accent}10 100%)`,
+                }}
+              >
+                <div className="flex items-center gap-4 mb-5">
+                  <img
+                    src={tiktokProfile.avatar_url}
+                    alt={tiktokProfile.username}
+                    className="w-16 h-16 rounded-full object-cover border-2"
+                    style={{ borderColor: config.color_primary }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-bone-100 text-base truncate">
+                        @{tiktokProfile.username}
+                      </span>
+                      {tiktokProfile.verified && (
+                        <span style={{ color: config.color_accent }}>✓</span>
+                      )}
+                    </div>
+                    <div className="text-bone-100/60 text-sm truncate">{tiktokProfile.display_name}</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="bg-ink-950/40 rounded-xl py-3">
+                    <div className="font-bold text-bone-100 text-base">{fmtCount(tiktokProfile.followers)}</div>
+                    <div className="text-[10px] text-bone-100/50 uppercase tracking-wider mt-0.5">Seguidores</div>
+                  </div>
+                  <div className="bg-ink-950/40 rounded-xl py-3">
+                    <div className="font-bold text-bone-100 text-base">{fmtCount(tiktokProfile.following)}</div>
+                    <div className="text-[10px] text-bone-100/50 uppercase tracking-wider mt-0.5">Seguindo</div>
+                  </div>
+                  <div className="bg-ink-950/40 rounded-xl py-3">
+                    <div className="font-bold text-bone-100 text-base">{fmtCount(tiktokProfile.total_likes)}</div>
+                    <div className="text-[10px] text-bone-100/50 uppercase tracking-wider mt-0.5">Curtidas</div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleActivateProfile}
+                className="w-full py-5 rounded-2xl transition tracking-wide uppercase text-white font-bold"
+                style={{
+                  backgroundColor: config.color_primary,
+                  fontSize: `${config.cta_size}px`,
+                  fontWeight: config.cta_weight,
+                }}
+              >
+                Ativar perfil na MoneyTok
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setTiktokSearchStatus("idle");
+                  setTiktokProfile(null);
+                  setTiktokUsername("");
+                  setTiktokSearchError("");
+                }}
+                className="w-full text-bone-100/50 hover:text-bone-100/80 transition text-xs font-mono uppercase tracking-[0.2em] py-2"
+              >
+                ← Não é esse perfil. Buscar outro
+              </button>
+            </div>
+          )}
 
           <div className="text-center mt-12">
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-600 mb-2">Perguntas frequentes</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-600 mb-2">
+              {fmtCount(activeCreators)} creators ativos · Perguntas frequentes
+            </p>
             <svg className="w-4 h-4 mx-auto text-ink-600 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
             </svg>
@@ -384,11 +445,12 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
         <section className="relative bg-ink-950 py-24 px-6">
           <div className="max-w-md mx-auto">
             <h2 className="text-center font-display text-3xl text-bone-100 mb-10">
-              Perguntas <span className="italic-accent text-moss-500">frequentes</span>
+              Perguntas <span className="italic-accent" style={{ color: config.color_primary }}>frequentes</span>
             </h2>
             <div className="space-y-3">
               {config.faqs.map((faq, i) => (
-                <div key={i} className={`border rounded-2xl transition-all ${openFaq === i ? "border-moss-700 bg-ink-900/80" : "border-ink-800 bg-ink-900/40"}`}>
+                <div key={i} className={`border rounded-2xl transition-all ${openFaq === i ? "bg-ink-900/80" : "border-ink-800 bg-ink-900/40"}`}
+                  style={openFaq === i ? { borderColor: config.color_primary + "60" } : {}}>
                   <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full flex items-center justify-between px-5 py-4 text-left">
                     <span className={`text-base ${openFaq === i ? "text-bone-100" : "text-bone-100/80"}`}>{faq.q}</span>
                     <svg className={`w-4 h-4 text-bone-100/60 transition-transform flex-shrink-0 ml-2 ${openFaq === i ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -404,9 +466,10 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
               ))}
             </div>
             <div className="text-center mt-20">
-              <div className="font-display text-3xl tracking-[0.15em] text-moss-500 leading-none mb-1" style={{ color: config.color_primary }}>{config.logo_primary}</div>
+              <div className="font-display text-3xl tracking-[0.15em] leading-none mb-1"
+                style={{ color: config.color_primary }}>{config.logo_primary}</div>
               <div className="font-display text-base tracking-[0.4em] text-bone-100/60 leading-none">{config.logo_secondary}</div>
-              <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-ink-600 mt-6">© 2026 — Foot Priv</p>
+              <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-ink-600 mt-6">© 2026 — MoneyTok</p>
             </div>
           </div>
         </section>
@@ -414,23 +477,24 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     );
   }
 
-  // ============ TELA 2: SUBMITTED (loading) ============
+  // ============ TELA 2: SUBMITTED ============
   if (step === "submitted") {
     return (
       <Wrapper config={config} viewport={viewport}>
         <div className="text-center">
           <div className="w-20 h-20 mx-auto mb-8 relative">
-            <div className="absolute inset-0 border-4 border-moss-700/30 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-moss-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 border-4 rounded-full" style={{ borderColor: config.color_primary + "30" }}></div>
+            <div className="absolute inset-0 border-4 border-t-transparent rounded-full animate-spin"
+              style={{ borderRightColor: config.color_primary, borderBottomColor: config.color_primary, borderLeftColor: config.color_primary }}></div>
           </div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-moss-500 mb-3">
-            Sua foto está no leilão
+          <p className="font-mono text-[10px] uppercase tracking-[0.4em] mb-3" style={{ color: config.color_primary }}>
+            Sincronizando seus vídeos
           </p>
           <h2 className="font-display text-3xl text-bone-100 mb-4">
-            Enviando para os <span className="italic-accent text-moss-500">compradores...</span>
+            Conectando ao seu <span className="italic-accent" style={{ color: config.color_primary }}>TikTok...</span>
           </h2>
           <p className="text-bone-100/60 text-sm">
-            Enquanto isso, complete seu cadastro<br/>para receber os lances.
+            Em segundos seus vídeos vão aparecer<br/>na sua dashboard.
           </p>
         </div>
       </Wrapper>
@@ -444,8 +508,8 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     if (!q) return null;
     return (
       <Wrapper config={config} viewport={viewport}>
-        <Progress current={questionIndex + 1} total={7} />
-        <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-moss-500 mb-3">
+        <Progress current={questionIndex + 1} total={7} primaryColor={config.color_primary} />
+        <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: config.color_primary }}>
           Pergunta {questionIndex + 1} de {config.questions.length}
         </p>
         <h2 className="text-center font-display text-3xl text-bone-100 mb-2 leading-tight">
@@ -459,21 +523,16 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
               key={`${q.id}-opt-${i}`}
               onClick={() => answerQuestion(q.id, opt.text)}
               className="w-full bg-ink-900/80 border border-ink-700 hover:bg-ink-900 rounded-2xl px-6 py-4 text-bone-100 text-left transition group flex items-center gap-3"
-              style={{
-                borderLeftWidth: 3,
-                borderLeftColor: opt.color,
-              }}
+              style={{ borderLeftWidth: 3, borderLeftColor: opt.color }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = opt.color; }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = "";
                 e.currentTarget.style.borderLeftColor = opt.color;
               }}
             >
-              {opt.emoji && (
-                <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
-              )}
+              {opt.emoji && <span className="text-2xl flex-shrink-0">{opt.emoji}</span>}
               <span className="text-base flex-1">{opt.text}</span>
-              <span className="text-ink-600 group-hover:text-bone-100 transition" style={{ color: undefined }}>→</span>
+              <span className="text-ink-600 group-hover:text-bone-100 transition">→</span>
             </button>
           ))}
         </div>
@@ -485,36 +544,33 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
   if (step === "birthdate") {
     return (
       <Wrapper config={config} viewport={viewport}>
-        <Progress current={6} total={7} />
-        <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-moss-500 mb-3">
+        <Progress current={6} total={7} primaryColor={config.color_primary} />
+        <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: config.color_primary }}>
           Quase lá
         </p>
         <h2 className="text-center font-display text-3xl text-bone-100 mb-2 leading-tight">
-          Sua <span className="italic-accent text-moss-500">data de nascimento</span>
+          Sua <span className="italic-accent" style={{ color: config.color_primary }}>data de nascimento</span>
         </h2>
         <p className="text-center text-bone-100/60 text-sm mb-8">
-          Apenas maiores de 18 anos podem vender.
+          Apenas maiores de 18 anos podem usar a plataforma.
         </p>
 
         <form onSubmit={handleBirthdate} className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
             <input type="number" min="1" max="31" required placeholder="Dia" value={day}
               onChange={(e) => setDay(e.target.value)}
-              className="bg-ink-900/80 border border-ink-700 focus:border-moss-700 rounded-2xl px-4 py-4 text-bone-100 placeholder-ink-600 focus:outline-none text-center text-base" />
+              className="bg-ink-900/80 border border-ink-700 rounded-2xl px-4 py-4 text-bone-100 placeholder-ink-600 focus:outline-none focus:border-bone-100/40 text-center text-base" />
             <input type="number" min="1" max="12" required placeholder="Mês" value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="bg-ink-900/80 border border-ink-700 focus:border-moss-700 rounded-2xl px-4 py-4 text-bone-100 placeholder-ink-600 focus:outline-none text-center text-base" />
+              className="bg-ink-900/80 border border-ink-700 rounded-2xl px-4 py-4 text-bone-100 placeholder-ink-600 focus:outline-none focus:border-bone-100/40 text-center text-base" />
             <input type="number" min="1900" max="2010" required placeholder="Ano" value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="bg-ink-900/80 border border-ink-700 focus:border-moss-700 rounded-2xl px-4 py-4 text-bone-100 placeholder-ink-600 focus:outline-none text-center text-base" />
+              className="bg-ink-900/80 border border-ink-700 rounded-2xl px-4 py-4 text-bone-100 placeholder-ink-600 focus:outline-none focus:border-bone-100/40 text-center text-base" />
           </div>
-
-          {error && (
-            <div className="bg-red-950/40 border border-red-900 text-red-300 px-4 py-3 text-sm rounded-2xl">{error}</div>
-          )}
-
+          {error && <div className="bg-red-950/40 border border-red-900 text-red-300 px-4 py-3 text-sm rounded-2xl">{error}</div>}
           <button type="submit"
-            className="w-full bg-moss-500 hover:bg-moss-400 text-ink-950 font-bold py-5 rounded-2xl transition uppercase tracking-wide">
+            className="w-full text-white font-bold py-5 rounded-2xl transition uppercase tracking-wide"
+            style={{ backgroundColor: config.color_primary }}>
             Continuar
           </button>
         </form>
@@ -522,58 +578,41 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     );
   }
 
-  // ============ TELA: CREDENTIALS (username + senha) ============
+  // ============ TELA: CREDENTIALS ============
   if (step === "credentials") {
     return (
       <Wrapper config={config} viewport={viewport}>
-        <Progress current={7} total={7} />
-        <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-moss-500 mb-3">
+        <Progress current={7} total={7} primaryColor={config.color_primary} />
+        <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: config.color_primary }}>
           Última etapa
         </p>
         <h2 className="text-center font-display text-3xl text-bone-100 mb-2">
-          Crie sua <span className="italic-accent text-moss-500">conta</span>
+          Crie sua <span className="italic-accent" style={{ color: config.color_primary }}>conta</span>
         </h2>
         <p className="text-center text-bone-100/60 text-sm mb-8">
-          Para acessar a plataforma e ver seus lances.
+          Pra acessar sua dashboard com os vídeos do <strong>@{tiktokProfile?.username || tiktokUsername}</strong>.
         </p>
 
         <form onSubmit={handleFinalSubmit} className="space-y-3">
-          {/* Email com opção de trocar */}
-          <div>
-            <label className="block font-mono text-[10px] uppercase tracking-[0.2em] text-ink-600 mb-2 px-2">E-mail</label>
-            {editingEmail ? (
-              <input type="email" required value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => setEditingEmail(false)}
-                autoFocus
-                className="w-full bg-ink-900/80 border border-moss-700 rounded-2xl px-6 py-4 text-bone-100 focus:outline-none text-base" />
-            ) : (
-              <div className="bg-ink-900/40 border border-ink-800 rounded-2xl px-6 py-4 flex items-center justify-between">
-                <span className="text-bone-100/80 text-sm truncate">{email}</span>
-                <button type="button" onClick={() => setEditingEmail(true)}
-                  className="font-mono text-[10px] uppercase tracking-[0.2em] text-moss-500 hover:text-moss-400 transition flex-shrink-0 ml-3">
-                  Trocar
-                </button>
-              </div>
-            )}
-          </div>
+          <input type="email" required placeholder="Seu e-mail" value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full bg-ink-900/80 border border-ink-700 focus:border-bone-100/40 rounded-2xl px-6 py-4 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
 
-          {/* Username com verificação */}
           <div>
             <div className="relative">
-              <input type="text" required minLength={3} placeholder="Username (ex: pearlsoles_official)" value={username}
+              <input type="text" required minLength={3} placeholder="Username MoneyTok" value={username}
                 onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
                 className={`w-full bg-ink-900/80 border rounded-2xl px-6 py-4 pr-12 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base ${
                   usernameStatus === "taken" ? "border-red-700 focus:border-red-600" :
-                  usernameStatus === "available" ? "border-moss-500 focus:border-moss-400" :
-                  "border-ink-700 focus:border-moss-700"
+                  usernameStatus === "available" ? "border-emerald-500 focus:border-emerald-400" :
+                  "border-ink-700 focus:border-bone-100/40"
                 }`} />
               <div className="absolute right-4 top-1/2 -translate-y-1/2">
                 {usernameStatus === "checking" && (
-                  <div className="w-5 h-5 border-2 border-moss-700 border-t-moss-400 rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-2 border-bone-100/30 border-t-bone-100 rounded-full animate-spin"></div>
                 )}
                 {usernameStatus === "available" && (
-                  <svg className="w-5 h-5 text-moss-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 )}
@@ -584,37 +623,31 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
                 )}
               </div>
             </div>
-            {usernameStatus === "checking" && (
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-500 mt-1.5 px-2">Verificando disponibilidade...</p>
-            )}
             {usernameStatus === "available" && (
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-moss-400 mt-1.5 px-2">✓ Username disponível</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-emerald-400 mt-1.5 px-2">✓ Disponível</p>
             )}
             {usernameStatus === "taken" && (
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-red-400 mt-1.5 px-2">✕ Esse username já está em uso</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-red-400 mt-1.5 px-2">✕ Já está em uso</p>
             )}
             {usernameStatus === "invalid" && username.length > 0 && (
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-500 mt-1.5 px-2">Mínimo 3 caracteres</p>
             )}
           </div>
 
-          {/* Telefone */}
           <input type="tel" required placeholder="Celular com DDD (ex: 11 98765-4321)" value={phone}
             onChange={(e) => {
-              // Formata enquanto digita
               const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
               let formatted = digits;
               if (digits.length >= 2) formatted = `${digits.slice(0, 2)} ${digits.slice(2)}`;
               if (digits.length >= 7) formatted = `${digits.slice(0, 2)} ${digits.slice(2, 7)}-${digits.slice(7)}`;
               setPhone(formatted);
             }}
-            className="w-full bg-ink-900/80 border border-ink-700 focus:border-moss-700 rounded-2xl px-6 py-4 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
+            className="w-full bg-ink-900/80 border border-ink-700 focus:border-bone-100/40 rounded-2xl px-6 py-4 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
 
-          {/* Senha com olho */}
           <div className="relative">
             <input type={showPassword ? "text" : "password"} required minLength={6} placeholder="Senha (mín. 6 caracteres)" value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-ink-900/80 border border-ink-700 focus:border-moss-700 rounded-2xl px-6 py-4 pr-12 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
+              className="w-full bg-ink-900/80 border border-ink-700 focus:border-bone-100/40 rounded-2xl px-6 py-4 pr-12 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
             <button type="button" onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-ink-500 hover:text-bone-100 transition p-1">
               {showPassword ? (
@@ -630,11 +663,10 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
             </button>
           </div>
 
-          {/* Confirmar senha com olho */}
           <div className="relative">
             <input type={showConfirmPassword ? "text" : "password"} required placeholder="Confirmar senha" value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-ink-900/80 border border-ink-700 focus:border-moss-700 rounded-2xl px-6 py-4 pr-12 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
+              className="w-full bg-ink-900/80 border border-ink-700 focus:border-bone-100/40 rounded-2xl px-6 py-4 pr-12 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base" />
             <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-ink-500 hover:text-bone-100 transition p-1">
               {showConfirmPassword ? (
@@ -650,12 +682,14 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
             </button>
           </div>
 
-          {error && (
-            <div className="bg-red-950/40 border border-red-900 text-red-300 px-4 py-3 text-sm rounded-2xl">{error}</div>
-          )}
+          {error && <div className="bg-red-950/40 border border-red-900 text-red-300 px-4 py-3 text-sm rounded-2xl">{error}</div>}
 
           <button type="submit" disabled={loading || usernameStatus === "taken" || usernameStatus === "checking"}
-            className="w-full bg-moss-500 hover:bg-moss-400 disabled:bg-ink-700 disabled:cursor-not-allowed text-ink-950 font-bold py-5 rounded-2xl transition uppercase tracking-wide">
+            className="w-full disabled:bg-ink-700 disabled:cursor-not-allowed disabled:text-ink-600 font-bold py-5 rounded-2xl transition uppercase tracking-wide"
+            style={{
+              backgroundColor: !loading && usernameStatus !== "taken" && usernameStatus !== "checking" ? config.color_primary : undefined,
+              color: !loading && usernameStatus !== "taken" && usernameStatus !== "checking" ? "#ffffff" : undefined,
+            }}>
             {loading ? "Criando conta..." : "Criar conta"}
           </button>
         </form>
@@ -663,18 +697,19 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     );
   }
 
-  // ============ TELA: DONE (redirecting) ============
+  // ============ TELA: DONE ============
   if (step === "done") {
     return (
       <Wrapper config={config} viewport={viewport}>
         <div className="text-center">
-          <div className="w-20 h-20 mx-auto mb-8 bg-moss-500 rounded-full flex items-center justify-center">
-            <svg className="w-10 h-10 text-ink-950" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+          <div className="w-20 h-20 mx-auto mb-8 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: config.color_primary }}>
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
           <h2 className="font-display text-3xl text-bone-100 mb-4">
-            Conta <span className="italic-accent text-moss-500">criada!</span>
+            Conta <span className="italic-accent" style={{ color: config.color_primary }}>criada!</span>
           </h2>
           <p className="text-bone-100/60 text-sm">
             Redirecionando para o login...
@@ -687,7 +722,7 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
   return null;
 }
 
-// === Componentes externos (definidos fora pra não recriar a cada render) ===
+// === Componentes externos ===
 
 function Wrapper({
   children,
@@ -709,31 +744,21 @@ function Wrapper({
       {banner}
       <section className="relative min-h-screen flex flex-col items-center justify-center py-16 px-6 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          {/* Gradiente base */}
           <div className="absolute inset-0" style={{ background: gradientBg }} />
-
-          {/* Imagem de fundo */}
           {hasImage && (
             <>
-              <img
-                src={config.background_image_url}
-                alt=""
+              <img src={config.background_image_url} alt=""
                 className="absolute inset-0 w-full h-full"
                 style={{
                   objectFit: viewport.background_fit === "auto" ? "none" : viewport.background_fit,
                   objectPosition: `${viewport.background_position_x}% ${viewport.background_position_y}%`,
                   transform: `scale(${viewport.background_size / 100})`,
                   transformOrigin: `${viewport.background_position_x}% ${viewport.background_position_y}%`,
-                }}
-              />
-              <div
-                className="absolute inset-0 bg-black"
-                style={{ opacity: viewport.background_overlay_opacity / 100 }}
-              />
+                }} />
+              <div className="absolute inset-0 bg-black"
+                style={{ opacity: viewport.background_overlay_opacity / 100 }} />
             </>
           )}
-
-          {/* Glow primary */}
           <div className="absolute inset-0" style={{
             background: `radial-gradient(circle at 50% 40%, ${config.color_primary}10 0%, transparent 60%)`,
           }} />
@@ -765,13 +790,17 @@ function Wrapper({
   );
 }
 
-function Progress({ current, total }: { current: number; total: number }) {
+function Progress({ current, total, primaryColor }: { current: number; total: number; primaryColor: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 mb-8">
       {Array.from({ length: total }).map((_, i) => (
         <div
           key={i}
-          className={`h-1 rounded-full transition-all ${i === current - 1 ? "w-8 bg-moss-500" : i < current - 1 ? "w-4 bg-moss-700" : "w-4 bg-ink-700"}`}
+          className="h-1 rounded-full transition-all"
+          style={{
+            width: i === current - 1 ? 32 : 16,
+            backgroundColor: i === current - 1 ? primaryColor : i < current - 1 ? primaryColor + "80" : "#262626",
+          }}
         />
       ))}
     </div>
