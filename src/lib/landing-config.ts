@@ -137,14 +137,36 @@ export type LandingConfig = {
   logo_primary: string;
   logo_secondary: string;
   logo_image_url: string;
+  // Estilo logo_primary
+  logo_primary_size: number;     // 12-120 (px)
+  logo_primary_weight: number;   // 300-900
+  logo_primary_color: string;    // hex
+  logo_primary_case: "normal" | "upper" | "lower" | "capitalize";
+  logo_primary_font: string;     // nome da fonte (ex: "serif", "sans", "Inter")
+  // Estilo logo_secondary
+  logo_secondary_size: number;
+  logo_secondary_weight: number;
+  logo_secondary_color: string;
+  logo_secondary_case: "normal" | "upper" | "lower" | "capitalize";
+  logo_secondary_font: string;
 
   // Textos
   tagline: string;
+  tagline_html: string;          // HTML rich (bold/italic etc)
+  tagline_size: number;          // 8-32
+  tagline_weight: number;        // 300-900
+  tagline_align: "left" | "center" | "right";
+  tagline_color: string;         // hex
+  tagline_case: "normal" | "upper" | "lower" | "capitalize";
+  tagline_font: string;
   headline: string;       // texto plano (fallback)
   headline_html: string;  // HTML rich (com bold/italic/underline/highlight)
   headline_size: number;       // 12-72 (px)
   headline_weight: number;     // 300-900
   headline_align: "left" | "center" | "right";
+  headline_color: string;       // hex
+  headline_case: "normal" | "upper" | "lower" | "capitalize";
+  headline_font: string;
 
   cta_text: string;
   cta_size: number;        // 12-32
@@ -464,13 +486,33 @@ export const DEFAULT_LANDING_CONFIG: LandingConfig = {
   logo_primary: "MONEY",
   logo_secondary: "TOK",
   logo_image_url: "",
+  logo_primary_size: 64,
+  logo_primary_weight: 700,
+  logo_primary_color: "#FE2C55",
+  logo_primary_case: "upper",
+  logo_primary_font: "serif",
+  logo_secondary_size: 64,
+  logo_secondary_weight: 300,
+  logo_secondary_color: "#FFFFFF",
+  logo_secondary_case: "upper",
+  logo_secondary_font: "serif",
 
   tagline: "IA · Análise · Monetização",
+  tagline_html: "",
+  tagline_size: 11,
+  tagline_weight: 400,
+  tagline_align: "center",
+  tagline_color: "#FE2C55",
+  tagline_case: "upper",
+  tagline_font: "sans",
   headline: "A IA que transforma seus vídeos do TikTok em renda real",
   headline_html: "A IA que transforma seus <strong>vídeos do TikTok</strong> em <span style=\"color:#25F4EE\">renda real</span>",
   headline_size: 18,
   headline_weight: 300,
   headline_align: "center",
+  headline_color: "#E5E7EB",
+  headline_case: "normal",
+  headline_font: "sans",
 
   cta_text: "Localizar meu perfil",
   cta_size: 14,
