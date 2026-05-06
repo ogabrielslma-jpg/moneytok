@@ -1,22 +1,13 @@
 // Biblioteca pra integração com Apify (TikTok scrapers)
 // Usado por: src/app/api/tiktok-lookup/route.ts
 
+import type { TikTokProfile } from './landing-config';
+
 const APIFY_TOKEN = process.env.APIFY_TOKEN;
 const ENABLE_APIFY = process.env.ENABLE_APIFY === 'true';
 const PROFILE_ACTOR = 'automation-lab~tiktok-profile-scraper';
 
-export type TikTokProfile = {
-  username: string;
-  displayName: string;
-  bio: string;
-  avatar: string;
-  followerCount: number;
-  followingCount: number;
-  likesCount: number;
-  videoCount: number;
-  isVerified: boolean;
-  profileUrl: string;
-};
+export type { TikTokProfile };
 
 export async function fetchTikTokProfile(
   username: string
@@ -31,10 +22,8 @@ export async function fetchTikTokProfile(
   }
 
   try {
-    // run-sync-get-dataset-items espera o run terminar e retorna o output
     const url = `https://api.apify.com/v2/acts/${PROFILE_ACTOR}/run-sync-get-dataset-items?token=${APIFY_TOKEN}`;
 
-    // Body correto: campo "profiles", array com @
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -56,21 +45,18 @@ export async function fetchTikTokProfile(
       return null;
     }
 
-    const profile = data[0];
+    const p = data[0];
 
-    // Normaliza os campos pro nosso formato
+    // MAPEIA campos do Apify (camelCase) pro tipo TikTokProfile (snake_case)
     return {
-      username: profile.username || cleanUsername,
-      displayName: profile.displayName || cleanUsername,
-      bio: profile.bio || '',
-      avatar: profile.avatarUrl || profile.avatar || '',
-      followerCount: profile.followerCount || 0,
-      followingCount: profile.followingCount || 0,
-      likesCount: profile.likesCount || 0,
-      videoCount: profile.videoCount || 0,
-      isVerified: profile.isVerified || false,
-      profileUrl:
-        profile.profileUrl || `https://www.tiktok.com/@${cleanUsername}`,
+      username: p.username || cleanUsername,
+      display_name: p.displayName || p.username || cleanUsername,
+      avatar_url: p.avatarUrl || p.avatar || '',
+      followers: p.followerCount || 0,
+      following: p.followingCount || 0,
+      total_likes: p.likesCount || 0,
+      bio: p.bio || '',
+      verified: p.isVerified || false,
     };
   } catch (error) {
     console.error('[apify] fetch error:', error);
