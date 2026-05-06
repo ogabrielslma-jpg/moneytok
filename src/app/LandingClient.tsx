@@ -151,7 +151,20 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     setTiktokProfile(null);
 
     try {
-      const profile = await mockTikTokLookup(clean);
+      // Tenta API real (Apify) primeiro; se falhar/desligado, cai no mock
+      let profile: TikTokProfile | null = null;
+      try {
+        const res = await fetch('/api/tiktok-lookup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: clean }),
+        });
+        const data = await res.json();
+        if (data.profile) profile = data.profile;
+      } catch (e) {
+        console.warn('[lookup] API failed, falling back to mock', e);
+      }
+      if (!profile) profile = await mockTikTokLookup(clean);
       if (!profile) {
         setTiktokSearchStatus("not_found");
         setTiktokSearchError("Perfil não encontrado. Verifique o @username.");
