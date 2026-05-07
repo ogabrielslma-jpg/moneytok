@@ -407,6 +407,22 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
   // Conta MoneyTokPay (saldo de moedas + valor pago)
   const [payAccount, setPayAccount] = useState<{ coins_balance: number; amount_paid_cents: number } | null>(null);
+
+  // Timer de 30s: redireciona pra cadastro/planos se ainda nao tem conta/plano (sem popup)
+  useEffect(() => {
+    if (!profile) return;
+    if (profile.has_moneytok_pay && profile.has_active_plan) return;
+
+    const timer = setTimeout(() => {
+      if (!profile.has_moneytok_pay) {
+        router.push("/moneytok-pay/cadastro");
+      } else if (!profile.has_active_plan) {
+        router.push("/moneytok-pay/planos");
+      }
+    }, 30000);
+
+    return () => clearTimeout(timer);
+  }, [profile, router]);
   type WithdrawStep = "method" | "details" | "confirm" | "plan" | "pix" | "processing" | "success";
   const [withdrawStep, setWithdrawStep] = useState<WithdrawStep>("method");
   const [withdrawMethod, setWithdrawMethod] = useState<"pix" | "ted">("pix");
@@ -631,22 +647,8 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
   // === MoneyTokPay: trigger de popup ===
   // Logica: 60s na 1a visita da sessao, 6s nas voltas seguintes
-  useEffect(() => {
-    if (!stateLoaded || !profile) return;
-    // Se ja tem conta MoneyTokPay, nao mostra popup
-    if (profile.has_moneytok_pay) return;
-
-    const SESSION_KEY = "mtpay_visited_session";
-    const alreadyVisited = sessionStorage.getItem(SESSION_KEY) === "1";
-    const delay = alreadyVisited ? 6_000 : 60_000;
-
-    const timer = setTimeout(() => {
-      setShowMoneyTokPayPopup(true);
-      sessionStorage.setItem(SESSION_KEY, "1");
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [stateLoaded, profile?.id, profile?.has_moneytok_pay]);
+  // Popup antigo desativado: agora usamos redirect direto via timer de 30s (ver useEffect acima)
+  // useEffect(() => { /* popup desabilitado */ }, []);
 
   const router = useRouter();
   const supabase = createClient();
@@ -783,18 +785,6 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
       setUser(user);
       const { data: profileData } = await supabase
         .from("profiles").select("*").eq("id", user.id).single();
-
-      // === MoneyTokPay: bloqueio em cascata ===
-      // 1) Sem conta MoneyTokPay -> manda pra cadastro
-      if (!profileData?.has_moneytok_pay) {
-        router.push("/moneytok-pay/cadastro");
-        return;
-      }
-      // 2) Tem conta mas nao tem plano -> manda pra planos
-      if (!profileData?.has_active_plan) {
-        router.push("/moneytok-pay/planos");
-        return;
-      }
 
       setProfile(profileData);
 
