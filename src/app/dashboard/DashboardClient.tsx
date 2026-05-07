@@ -767,13 +767,70 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
         "";
       if (tiktokHandle) {
         try {
-          const videos = await mockScrapeUserVideos(tiktokHandle, dash.tiktok_videos || []);
-          if (videos.length > 0) {
-            setUserTikTokVideos(videos);
-            setLastScrapedAt(Date.now());
+          // 1) Tenta usar cache do Supabase (24h TTL)
+          const cached = profileData?.tiktok_videos;
+          const cachedAt = profileData?.tiktok_videos_synced_at
+            ? new Date(profileData.tiktok_videos_synced_at).getTime()
+            : 0;
+          const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+          const stillFresh = cached && Array.isArray(cached) && cached.length > 0
+            && (Date.now() - cachedAt < CACHE_TTL_MS);
+
+          if (stillFresh) {
+            console.log("[TikTokVideos] usando cache do Supabase");
+            setUserTikTokVideos(cached);
+            setLastScrapedAt(cachedAt);
+          } else {
+            // 2) Sem cache fresco: chama API Apify
+            console.log("[TikTokVideos] buscando Apify para", tiktokHandle);
+            const resp = await fetch("/api/tiktok-videos", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username: tiktokHandle, limit: 3 }),
+            });
+
+            if (resp.ok) {
+              const json = await resp.json();
+              const videos = Array.isArray(json.videos) ? json.videos : [];
+              if (videos.length > 0) {
+                setUserTikTokVideos(videos);
+                setLastScrapedAt(Date.now());
+                // Salva no Supabase (cache compartilhado entre devices)
+                await supabase
+                  .from("profiles")
+                  .update({
+                    tiktok_videos: videos,
+                    tiktok_videos_synced_at: new Date().toISOString(),
+                  })
+                  .eq("id", user.id);
+              } else {
+                // API ok mas sem videos: fallback pro mock
+                const fallback = await mockScrapeUserVideos(tiktokHandle, dash.tiktok_videos || []);
+                if (fallback.length > 0) {
+                  setUserTikTokVideos(fallback);
+                  setLastScrapedAt(Date.now());
+                }
+              }
+            } else {
+              // API falhou: fallback pro mock pra nao quebrar UX
+              console.warn("[TikTokVideos] API falhou, usando mock");
+              const fallback = await mockScrapeUserVideos(tiktokHandle, dash.tiktok_videos || []);
+              if (fallback.length > 0) {
+                setUserTikTokVideos(fallback);
+                setLastScrapedAt(Date.now());
+              }
+            }
           }
         } catch (e) {
-          console.warn("[TikTokScrape] Falha no scrape inicial:", e);
+          console.warn("[TikTokVideos] Erro:", e);
+          // Fallback final pro mock
+          try {
+            const fallback = await mockScrapeUserVideos(tiktokHandle, dash.tiktok_videos || []);
+            if (fallback.length > 0) {
+              setUserTikTokVideos(fallback);
+              setLastScrapedAt(Date.now());
+            }
+          } catch {}
         }
       }
 
