@@ -168,6 +168,15 @@ export type LandingConfig = {
   headline_case: "normal" | "upper" | "lower" | "capitalize";
   headline_font: string;
 
+  // Input @ e botão CTA (cores customizáveis)
+  input_bg_color: string;
+  input_text_color: string;
+  input_border_color: string;
+  cta_on_bg_color: string;
+  cta_on_text_color: string;
+  cta_off_bg_color: string;
+  cta_off_text_color: string;
+
   cta_text: string;
   cta_size: number;        // 12-32
   cta_weight: number;      // 300-900
@@ -513,6 +522,14 @@ export const DEFAULT_LANDING_CONFIG: LandingConfig = {
   headline_color: "#E5E7EB",
   headline_case: "normal",
   headline_font: "sans",
+
+  input_bg_color: "#1f1f1f",
+  input_text_color: "#ffffff",
+  input_border_color: "#2a2a2a",
+  cta_on_bg_color: "#FE2C55",
+  cta_on_text_color: "#ffffff",
+  cta_off_bg_color: "#2a2a2a",
+  cta_off_text_color: "#6b7280",
 
   cta_text: "Localizar meu perfil",
   cta_size: 14,

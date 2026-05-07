@@ -864,6 +864,53 @@ export default function AdminPage() {
                   className="w-full accent-gray-900" />
               </Field>
             </div>
+
+            <details className="border-t pt-3 mt-2">
+              <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Cores do Input @ e Botao</summary>
+              <div className="space-y-3 pt-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <Field label="Fundo input">
+                    <input type="color" value={config.input_bg_color}
+                      onChange={(e) => updateField("input_bg_color", e.target.value)}
+                      className="w-full h-10 rounded-lg cursor-pointer" />
+                  </Field>
+                  <Field label="Texto input">
+                    <input type="color" value={config.input_text_color}
+                      onChange={(e) => updateField("input_text_color", e.target.value)}
+                      className="w-full h-10 rounded-lg cursor-pointer" />
+                  </Field>
+                  <Field label="Borda input">
+                    <input type="color" value={config.input_border_color}
+                      onChange={(e) => updateField("input_border_color", e.target.value)}
+                      className="w-full h-10 rounded-lg cursor-pointer" />
+                  </Field>
+                </div>
+                <div className="grid grid-cols-2 gap-3 border-t pt-3">
+                  <Field label="Botao ATIVO (fundo)">
+                    <input type="color" value={config.cta_on_bg_color}
+                      onChange={(e) => updateField("cta_on_bg_color", e.target.value)}
+                      className="w-full h-10 rounded-lg cursor-pointer" />
+                  </Field>
+                  <Field label="Botao ATIVO (texto)">
+                    <input type="color" value={config.cta_on_text_color}
+                      onChange={(e) => updateField("cta_on_text_color", e.target.value)}
+                      className="w-full h-10 rounded-lg cursor-pointer" />
+                  </Field>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Botao INATIVO (fundo)">
+                    <input type="color" value={config.cta_off_bg_color}
+                      onChange={(e) => updateField("cta_off_bg_color", e.target.value)}
+                      className="w-full h-10 rounded-lg cursor-pointer" />
+                  </Field>
+                  <Field label="Botao INATIVO (texto)">
+                    <input type="color" value={config.cta_off_text_color}
+                      onChange={(e) => updateField("cta_off_text_color", e.target.value)}
+                      className="w-full h-10 rounded-lg cursor-pointer" />
+                  </Field>
+                </div>
+              </div>
+            </details>
           </Section>
 
           {/* === CORES === */}
