@@ -249,7 +249,7 @@ export default function MoneyTokPayCadastroPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Joao da Silva Santos"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm text-gray-900 bg-white placeholder-gray-400"
                 />
               </div>
 
@@ -261,7 +261,7 @@ export default function MoneyTokPayCadastroPage() {
                   value={cpf}
                   onChange={(e) => setCpf(maskCPF(e.target.value))}
                   placeholder="000.000.000-00"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm text-gray-900 bg-white placeholder-gray-400"
                 />
               </div>
 
@@ -271,7 +271,7 @@ export default function MoneyTokPayCadastroPage() {
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm text-gray-900 bg-white placeholder-gray-400"
                 />
                 {birthDate && !isAdult(birthDate) && (
                   <p className="text-xs text-red-500 mt-1">Voce precisa ter 18 anos ou mais</p>
@@ -286,7 +286,7 @@ export default function MoneyTokPayCadastroPage() {
                   value={phone}
                   onChange={(e) => setPhone(maskPhone(e.target.value))}
                   placeholder="(00) 00000-0000"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm text-gray-900 bg-white placeholder-gray-400"
                 />
               </div>
             </div>
@@ -343,7 +343,7 @@ export default function MoneyTokPayCadastroPage() {
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
                     placeholder="Ex: Nubank, Itau, Bradesco..."
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm text-gray-900 bg-white placeholder-gray-400"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -355,7 +355,7 @@ export default function MoneyTokPayCadastroPage() {
                       value={bankAgency}
                       onChange={(e) => setBankAgency(e.target.value.replace(/\D/g, ""))}
                       placeholder="0000"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm text-gray-900 bg-white placeholder-gray-400"
                     />
                   </div>
                   <div>
@@ -366,7 +366,7 @@ export default function MoneyTokPayCadastroPage() {
                       value={bankAccount}
                       onChange={(e) => setBankAccount(e.target.value.replace(/[^\d-]/g, ""))}
                       placeholder="00000-0"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm text-gray-900 bg-white placeholder-gray-400"
                     />
                   </div>
                 </div>
@@ -432,7 +432,7 @@ export default function MoneyTokPayCadastroPage() {
                             ? "+55 11 90000-0000"
                             : "00000000-0000-0000-0000-000000000000"
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-pink-500 focus:ring-2 focus:ring-pink-100 transition outline-none text-sm text-gray-900 bg-white placeholder-gray-400"
                   />
                 </div>
               </div>
