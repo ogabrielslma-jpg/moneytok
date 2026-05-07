@@ -164,8 +164,8 @@ export default function MoneyTokPayPlanosPage() {
               </svg>
             </div>
           )}
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{dash.mtpay_planos_title}</h1>
-          <p className="text-sm text-gray-600 max-w-2xl mx-auto leading-relaxed">{dash.mtpay_planos_subtitle}</p>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: dash.mtpay_planos_headline_color || "#111827" }}>{dash.mtpay_planos_title}</h1>
+          <p className="text-sm max-w-2xl mx-auto leading-relaxed" style={{ color: dash.mtpay_planos_subheadline_color || "#6b7280" }}>{dash.mtpay_planos_subtitle}</p>
         </div>
 
         {/* 3 Cards de planos */}

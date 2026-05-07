@@ -1576,6 +1576,19 @@ export default function AdminPage() {
                       className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
 
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Cor da headline">
+                      <input type="color" value={dash.mtpay_planos_headline_color}
+                        onChange={(e) => updateDashboard({ mtpay_planos_headline_color: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                    <Field label="Cor da subheadline">
+                      <input type="color" value={dash.mtpay_planos_subheadline_color}
+                        onChange={(e) => updateDashboard({ mtpay_planos_subheadline_color: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                  </div>
+
                   {/* === Plano 1 === */}
                   <div className="border border-gray-200 rounded-xl p-3 bg-gray-50">
                     <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Plano 1</div>
