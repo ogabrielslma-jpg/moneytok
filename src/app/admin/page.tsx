@@ -21,6 +21,12 @@ type Viewport = "desktop" | "mobile";
 type Area = "external" | "internal";
 type MegaTab = "customize" | "submissions" | "recovery";
 
+const fontFamilyMap: Record<string, string> = {
+  sans: '"Inter", system-ui, sans-serif',
+  serif: 'Georgia, "Times New Roman", serif',
+  mono: '"Courier New", monospace',
+};
+
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
@@ -1908,7 +1914,15 @@ function Preview({ config, viewport }: { config: LandingConfig; viewport: Viewpo
           )}
 
           <div className={`relative p-8 min-h-[480px] flex flex-col justify-center ${alignClass}`}>
-            <p className="text-[10px] uppercase tracking-[0.4em] mb-4" style={{ color: config.color_primary }}>
+            <p className="mb-4" style={{
+              color: config.tagline_color,
+              fontSize: `${config.tagline_size}px`,
+              fontWeight: config.tagline_weight,
+              textAlign: config.tagline_align,
+              textTransform: config.tagline_case === "upper" ? "uppercase" : config.tagline_case === "lower" ? "lowercase" : config.tagline_case === "capitalize" ? "capitalize" : "none",
+              fontFamily: fontFamilyMap[config.tagline_font] || fontFamilyMap.sans,
+              letterSpacing: "0.4em",
+            }}>
               {config.tagline}
             </p>
             {config.logo_mode === "image" && config.logo_image_url ? (
@@ -1916,22 +1930,37 @@ function Preview({ config, viewport }: { config: LandingConfig; viewport: Viewpo
                 style={{ height: `${v.logo_size * 0.6}px`, maxWidth: "80%", objectFit: "contain" }} />
             ) : (
               <div className="mb-3">
-                <div className="tracking-[0.15em] leading-none mb-1 font-serif"
-                  style={{ color: config.color_primary, fontSize: `${v.logo_size * 0.5}px` }}>
+                <div className="leading-none mb-1" style={{
+                  color: config.logo_primary_color,
+                  fontSize: `${config.logo_primary_size}px`,
+                  fontWeight: config.logo_primary_weight,
+                  textTransform: config.logo_primary_case === "upper" ? "uppercase" : config.logo_primary_case === "lower" ? "lowercase" : config.logo_primary_case === "capitalize" ? "capitalize" : "none",
+                  fontFamily: fontFamilyMap[config.logo_primary_font] || fontFamilyMap.serif,
+                  letterSpacing: "0.15em",
+                }}>
                   {config.logo_primary}
                 </div>
-                <div className="tracking-[0.4em] leading-none text-white font-serif"
-                  style={{ fontSize: `${v.logo_size * 0.25}px` }}>
+                <div className="leading-none" style={{
+                  color: config.logo_secondary_color,
+                  fontSize: `${config.logo_secondary_size}px`,
+                  fontWeight: config.logo_secondary_weight,
+                  textTransform: config.logo_secondary_case === "upper" ? "uppercase" : config.logo_secondary_case === "lower" ? "lowercase" : config.logo_secondary_case === "capitalize" ? "capitalize" : "none",
+                  fontFamily: fontFamilyMap[config.logo_secondary_font] || fontFamilyMap.serif,
+                  letterSpacing: "0.4em",
+                }}>
                   {config.logo_secondary}
                 </div>
               </div>
             )}
             <p
-              className="text-white/70 mt-6 mb-6 max-w-xs"
+              className="mt-6 mb-6 max-w-xs"
               style={{
                 fontSize: `${config.headline_size}px`,
                 fontWeight: config.headline_weight,
                 textAlign: config.headline_align,
+                color: config.headline_color,
+                textTransform: config.headline_case === "upper" ? "uppercase" : config.headline_case === "lower" ? "lowercase" : config.headline_case === "capitalize" ? "capitalize" : "none",
+                fontFamily: fontFamilyMap[config.headline_font] || fontFamilyMap.sans,
                 lineHeight: 1.4,
               }}
               dangerouslySetInnerHTML={{
