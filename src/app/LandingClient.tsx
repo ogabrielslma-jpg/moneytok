@@ -365,7 +365,12 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  className="w-full bg-ink-900/80 border border-ink-700 focus:border-bone-100/40 rounded-2xl pl-10 pr-6 py-4 text-bone-100 placeholder-ink-600 focus:outline-none transition text-base"
+                  className="w-full rounded-2xl pl-10 pr-6 py-4 focus:outline-none transition text-base border"
+                  style={{
+                    backgroundColor: config.input_bg_color,
+                    color: config.input_text_color,
+                    borderColor: config.input_border_color,
+                  }}
                 />
               </div>
 
@@ -378,12 +383,12 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
               <button
                 type="submit"
                 disabled={tiktokUsername.length < 2 || tiktokSearchStatus === "searching"}
-                className="w-full disabled:bg-ink-700 disabled:cursor-not-allowed disabled:text-ink-600 py-5 rounded-2xl transition tracking-wide uppercase font-bold"
+                className="w-full cursor-pointer disabled:cursor-not-allowed py-5 rounded-2xl transition tracking-wide uppercase font-bold"
                 style={{
-                  backgroundColor: tiktokUsername.length >= 2 && tiktokSearchStatus !== "searching" ? config.color_primary : undefined,
+                  backgroundColor: tiktokUsername.length >= 2 && tiktokSearchStatus !== "searching" ? config.cta_on_bg_color : config.cta_off_bg_color,
+                  color: tiktokUsername.length >= 2 && tiktokSearchStatus !== "searching" ? config.cta_on_text_color : config.cta_off_text_color,
                   fontSize: `${config.cta_size}px`,
                   fontWeight: config.cta_weight,
-                  color: tiktokUsername.length >= 2 && tiktokSearchStatus !== "searching" ? "#ffffff" : undefined,
                 }}
               >
                 {tiktokSearchStatus === "searching" ? (

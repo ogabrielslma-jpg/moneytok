@@ -2016,7 +2016,8 @@ function Preview({ config, viewport }: { config: LandingConfig; viewport: Viewpo
             />
             <button className="py-3 px-8 rounded-2xl uppercase tracking-wide"
               style={{
-                backgroundColor: config.color_primary, color: "#0a0a0a",
+                backgroundColor: config.cta_on_bg_color,
+                color: config.cta_on_text_color,
                 fontSize: `${config.cta_size}px`,
                 fontWeight: config.cta_weight,
                 alignSelf: v.logo_align === "left" ? "flex-start" :
