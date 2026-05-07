@@ -128,6 +128,7 @@ export type DashboardConfig = {
   mtpay_card_unlocked_from: string;          // gradient ativo FROM
   mtpay_card_unlocked_to: string;            // gradient ativo TO
   mtpay_card_text_color: string;             // cor do texto sobre o card
+  mtpay_logo_url: string;                    // URL da imagem do logo MoneyTokPay (vazio = usa icone default)
 
   // Popup bloqueante
   mtpay_popup_title: string;
@@ -545,6 +546,7 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   mtpay_card_unlocked_from: "#FE2C55",
   mtpay_card_unlocked_to: "#F97316",
   mtpay_card_text_color: "#ffffff",
+  mtpay_logo_url: "",
 
   mtpay_popup_title: "Crie sua conta MoneyTokPay",
   mtpay_popup_description: "Pra continuar monetizando seu perfil, voce precisa criar sua conta MoneyTokPay.",

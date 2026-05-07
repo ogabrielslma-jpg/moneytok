@@ -1244,6 +1244,22 @@ export default function AdminPage() {
           <Section title="MoneyTokPay - Carteira, Popup e Cadastro">
             <div className="space-y-5">
 
+              {/* === LOGO MONEYTOKPAY (compartilhado entre carteirinha, popup e cadastro) === */}
+              <details open className="border-t pt-3">
+                <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Logo do MoneyTokPay</summary>
+                <div className="space-y-3 pt-2">
+                  <ImageUploadField
+                    label="Imagem da logo MoneyTokPay"
+                    hint="Aparece no popup, na pagina de cadastro e na carteirinha. PNG/SVG transparente recomendado. Deixe vazio para usar o icone default."
+                    folder="moneytokpay-logo"
+                    value={dash.mtpay_logo_url}
+                    onChange={(url) => updateDashboard({ mtpay_logo_url: url })}
+                    previewBg="#374151"
+                    previewMaxHeight={64}
+                  />
+                </div>
+              </details>
+
               {/* === CARTEIRINHA === */}
               <details open className="border-t pt-3">
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Carteirinha (sidebar e topo mobile)</summary>

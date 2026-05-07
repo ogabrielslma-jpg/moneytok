@@ -206,14 +206,20 @@ export default function MoneyTokPayCadastroPage() {
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div
-            className="w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${dash.mtpay_cadastro_progress_from}, ${dash.mtpay_cadastro_progress_to})` }}
-          >
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
+          {dash.mtpay_logo_url ? (
+            <div className="w-20 h-20 mx-auto mb-3 flex items-center justify-center">
+              <img src={dash.mtpay_logo_url} alt="MoneyTokPay" className="max-h-full max-w-full object-contain" />
+            </div>
+          ) : (
+            <div
+              className="w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center shadow-lg"
+              style={{ background: `linear-gradient(135deg, ${dash.mtpay_cadastro_progress_from}, ${dash.mtpay_cadastro_progress_to})` }}
+            >
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+          )}
           <h1 className="text-2xl font-bold text-gray-900">{dash.mtpay_cadastro_title}</h1>
           <p className="text-sm text-gray-500">{dash.mtpay_cadastro_subtitle}</p>
         </div>

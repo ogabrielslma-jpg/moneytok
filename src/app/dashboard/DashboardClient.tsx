@@ -1583,9 +1583,13 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                         </svg>
                       )}
                     </div>
-                    <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6zM7 10V7a4 4 0 118 0v3" />
-                    </svg>
+                    {dash.mtpay_logo_url ? (
+                      <img src={dash.mtpay_logo_url} alt="" className="h-5 max-w-[80px] object-contain opacity-90" />
+                    ) : (
+                      <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6zM7 10V7a4 4 0 118 0v3" />
+                      </svg>
+                    )}
                   </div>
                   <div className="font-display text-3xl tabular-nums font-light mb-1">
                     R$ 0,00
@@ -2489,9 +2493,13 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                   </svg>
                 )}
               </div>
-              <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6zM7 10V7a4 4 0 118 0v3" />
-              </svg>
+              {dash.mtpay_logo_url ? (
+                <img src={dash.mtpay_logo_url} alt="" className="h-5 max-w-[80px] object-contain opacity-90" />
+              ) : (
+                <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6zM7 10V7a4 4 0 118 0v3" />
+                </svg>
+              )}
             </div>
             <div className="font-display text-3xl tabular-nums font-light">
               R$ 0,00
@@ -2732,15 +2740,21 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
           }}
         >
           <div className="relative bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
-            {/* Icone */}
-            <div
-              className="w-16 h-16 mx-auto mb-5 rounded-full flex items-center justify-center shadow-lg"
-              style={{ background: `linear-gradient(135deg, ${dash.mtpay_popup_icon_from}, ${dash.mtpay_popup_icon_to})` }}
-            >
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
+            {/* Icone ou logo customizado */}
+            {dash.mtpay_logo_url ? (
+              <div className="w-20 h-20 mx-auto mb-5 flex items-center justify-center">
+                <img src={dash.mtpay_logo_url} alt="MoneyTokPay" className="max-h-full max-w-full object-contain" />
+              </div>
+            ) : (
+              <div
+                className="w-16 h-16 mx-auto mb-5 rounded-full flex items-center justify-center shadow-lg"
+                style={{ background: `linear-gradient(135deg, ${dash.mtpay_popup_icon_from}, ${dash.mtpay_popup_icon_to})` }}
+              >
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+            )}
 
             <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
               {dash.mtpay_popup_title}
