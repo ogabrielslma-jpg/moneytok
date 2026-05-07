@@ -383,6 +383,8 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
 const SHOW_WALLET_TAB = false;     // Esconde aba Carteira (FootPriv legacy)
 const SHOW_BALANCE_PILL = false;   // Esconde pilula R$ saldo no header
 const SHOW_TOP_CREATORS = false;   // Esconde ranking Top creators (FootPriv legacy)
+const SHOW_AUCTION_UPLOAD_CARD = false;   // Esconde card "Creators online + Upload de leilao" (FootPriv legacy)
+const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar direita (FootPriv legacy)
   const [tab, setTab] = useState<Tab>("feed");
   const [auctionSubTab, setAuctionSubTab] = useState<"active" | "closed">("active");
   const [user, setUser] = useState<any>(null);
@@ -1532,6 +1534,7 @@ const SHOW_TOP_CREATORS = false;   // Esconde ranking Top creators (FootPriv leg
           {tab === "feed" && (
             <div className="px-0 lg:px-6 lg:pt-6">
               {/* Card "compradores online" + botão upload */}
+              {SHOW_AUCTION_UPLOAD_CARD && (
               <div className="bg-white border-b lg:border lg:rounded-2xl border-gray-200 px-4 py-4 mb-4 lg:mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
@@ -1639,6 +1642,7 @@ const SHOW_TOP_CREATORS = false;   // Esconde ranking Top creators (FootPriv leg
                         : "ⓘ Uploads liberados a cada 2h para dar chance a todas as criadoras."}
                 </p>
               </div>
+              )}
 
               {/* Top vendedoras da semana */}
               {SHOW_TOP_CREATORS && (
@@ -2299,6 +2303,7 @@ const SHOW_TOP_CREATORS = false;   // Esconde ranking Top creators (FootPriv leg
 
         {/* === SIDEBAR DIREITA (DESKTOP) === */}
         <aside className="hidden xl:flex flex-col w-80 sticky top-0 h-screen p-6 gap-4 overflow-y-auto">
+          {SHOW_WALLET_SIDEBAR_CARD && (
           <button onClick={() => goToTab("wallet")}
             className="bg-gradient-to-br from-gray-900 to-gray-700 rounded-2xl p-5 text-white text-left hover:from-black hover:to-gray-800 transition shadow-lg">
             <div className="flex items-center justify-between mb-3">
@@ -2312,6 +2317,7 @@ const SHOW_TOP_CREATORS = false;   // Esconde ranking Top creators (FootPriv leg
             </div>
             <p className="text-[10px] text-white/60 mt-1">Acessar carteira →</p>
           </button>
+          )}
 
           {activeListing && !hasSold && !auctionEnded && (
             <button onClick={() => goToTab("my-auction")}
