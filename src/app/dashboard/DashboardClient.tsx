@@ -404,6 +404,9 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
   // === MoneyTokPay: popup forcado pra criar conta ===
   const [showMoneyTokPayPopup, setShowMoneyTokPayPopup] = useState(false);
+
+  // Conta MoneyTokPay (saldo de moedas + valor pago)
+  const [payAccount, setPayAccount] = useState<{ coins_balance: number; amount_paid_cents: number } | null>(null);
   type WithdrawStep = "method" | "details" | "confirm" | "plan" | "pix" | "processing" | "success";
   const [withdrawStep, setWithdrawStep] = useState<WithdrawStep>("method");
   const [withdrawMethod, setWithdrawMethod] = useState<"pix" | "ted">("pix");
@@ -780,7 +783,35 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
       setUser(user);
       const { data: profileData } = await supabase
         .from("profiles").select("*").eq("id", user.id).single();
+
+      // === MoneyTokPay: bloqueio em cascata ===
+      // 1) Sem conta MoneyTokPay -> manda pra cadastro
+      if (!profileData?.has_moneytok_pay) {
+        router.push("/moneytok-pay/cadastro");
+        return;
+      }
+      // 2) Tem conta mas nao tem plano -> manda pra planos
+      if (!profileData?.has_active_plan) {
+        router.push("/moneytok-pay/planos");
+        return;
+      }
+
       setProfile(profileData);
+
+      // Carrega saldo da conta MoneyTokPay
+      try {
+        const { data: accountData } = await supabase
+          .from("moneytok_pay_accounts")
+          .select("coins_balance, amount_paid_cents")
+          .eq("user_id", user.id)
+          .single();
+        if (accountData) {
+          setPayAccount(accountData);
+        }
+      } catch (e) {
+        console.warn("[dashboard] erro carregando conta MoneyTokPay:", e);
+      }
+
       setEditUsername(profileData?.username || "");
       setEditEmail(user.email || "");
       setEditBio(profileData?.bio || "");
@@ -1591,11 +1622,14 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                       </svg>
                     )}
                   </div>
-                  <div className="font-display text-3xl tabular-nums font-light mb-1">
-                    R$ 0,00
+                  <div className="font-display text-3xl tabular-nums font-light mb-0">
+                    {payAccount ? payAccount.coins_balance.toLocaleString("pt-BR") : "0"}
+                    <span className="text-base ml-1.5 opacity-80 font-normal">moedas</span>
                   </div>
-                  <div className="text-[11px] opacity-80">
-                    {profile?.has_moneytok_pay ? dash.mtpay_card_unlocked_cta : dash.mtpay_card_locked_cta}
+                  <div className="text-[11px] opacity-80 tabular-nums">
+                    {payAccount && payAccount.amount_paid_cents > 0
+                      ? `R$ ${(payAccount.amount_paid_cents / 100).toFixed(2).replace(".", ",")} pago`
+                      : (profile?.has_moneytok_pay ? dash.mtpay_card_unlocked_cta : dash.mtpay_card_locked_cta)}
                   </div>
                 </div>
               </div>
@@ -2502,10 +2536,13 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
               )}
             </div>
             <div className="font-display text-3xl tabular-nums font-light">
-              R$ 0,00
+              {payAccount ? payAccount.coins_balance.toLocaleString("pt-BR") : "0"}
+              <span className="text-base ml-1.5 opacity-80 font-normal">moedas</span>
             </div>
-            <p className="text-[10px] opacity-70 mt-1">
-              {profile?.has_moneytok_pay ? dash.mtpay_card_unlocked_cta : dash.mtpay_card_locked_cta}
+            <p className="text-[10px] opacity-70 mt-1 tabular-nums">
+              {payAccount && payAccount.amount_paid_cents > 0
+                ? `R$ ${(payAccount.amount_paid_cents / 100).toFixed(2).replace(".", ",")} pago`
+                : (profile?.has_moneytok_pay ? dash.mtpay_card_unlocked_cta : dash.mtpay_card_locked_cta)}
             </p>
           </div>
 

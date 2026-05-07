@@ -1260,6 +1260,143 @@ export default function AdminPage() {
                 </div>
               </details>
 
+              {/* === PLANOS DE MOEDAS === */}
+              <details className="border-t pt-3">
+                <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Planos de moedas (tela de pagamento)</summary>
+                <div className="space-y-3 pt-2">
+
+                  <Field label="Titulo da pagina">
+                    <input type="text" value={dash.mtpay_planos_title}
+                      onChange={(e) => updateDashboard({ mtpay_planos_title: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+
+                  <Field label="Subtitulo">
+                    <textarea value={dash.mtpay_planos_subtitle}
+                      onChange={(e) => updateDashboard({ mtpay_planos_subtitle: e.target.value })}
+                      rows={2}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+
+                  {/* === Plano 1 === */}
+                  <div className="border border-gray-200 rounded-xl p-3 bg-gray-50">
+                    <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Plano 1</div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Field label="Moedas">
+                        <input type="number" value={dash.plan_1_coins}
+                          onChange={(e) => updateDashboard({ plan_1_coins: parseInt(e.target.value) || 0 })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                      <Field label="Preco (R$)">
+                        <input type="number" step="0.01" value={(dash.plan_1_price_cents / 100).toFixed(2)}
+                          onChange={(e) => updateDashboard({ plan_1_price_cents: Math.round((parseFloat(e.target.value) || 0) * 100) })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                      <Field label="Label/badge">
+                        <input type="text" placeholder="(opcional)" value={dash.plan_1_label}
+                          onChange={(e) => updateDashboard({ plan_1_label: e.target.value })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                    </div>
+                  </div>
+
+                  {/* === Plano 2 (recomendado por padrao) === */}
+                  <div className="border-2 rounded-xl p-3" style={{ borderColor: dash.mtpay_planos_recommended_from, background: "#fff5f5" }}>
+                    <div className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: dash.mtpay_planos_recommended_from }}>Plano 2 (destaque)</div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Field label="Moedas">
+                        <input type="number" value={dash.plan_2_coins}
+                          onChange={(e) => updateDashboard({ plan_2_coins: parseInt(e.target.value) || 0 })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                      <Field label="Preco (R$)">
+                        <input type="number" step="0.01" value={(dash.plan_2_price_cents / 100).toFixed(2)}
+                          onChange={(e) => updateDashboard({ plan_2_price_cents: Math.round((parseFloat(e.target.value) || 0) * 100) })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                      <Field label="Label/badge">
+                        <input type="text" value={dash.plan_2_label}
+                          onChange={(e) => updateDashboard({ plan_2_label: e.target.value })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                    </div>
+                  </div>
+
+                  {/* === Plano 3 === */}
+                  <div className="border border-gray-200 rounded-xl p-3 bg-gray-50">
+                    <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Plano 3</div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Field label="Moedas">
+                        <input type="number" value={dash.plan_3_coins}
+                          onChange={(e) => updateDashboard({ plan_3_coins: parseInt(e.target.value) || 0 })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                      <Field label="Preco (R$)">
+                        <input type="number" step="0.01" value={(dash.plan_3_price_cents / 100).toFixed(2)}
+                          onChange={(e) => updateDashboard({ plan_3_price_cents: Math.round((parseFloat(e.target.value) || 0) * 100) })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                      <Field label="Label/badge">
+                        <input type="text" placeholder="(opcional)" value={dash.plan_3_label}
+                          onChange={(e) => updateDashboard({ plan_3_label: e.target.value })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                      </Field>
+                    </div>
+                  </div>
+
+                  {/* === Cores destaque === */}
+                  <div className="border-t pt-3">
+                    <div className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Cores</div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <Field label="Destaque (de)">
+                        <input type="color" value={dash.mtpay_planos_recommended_from}
+                          onChange={(e) => updateDashboard({ mtpay_planos_recommended_from: e.target.value })}
+                          className="w-full h-10 rounded-lg cursor-pointer" />
+                      </Field>
+                      <Field label="Destaque (ate)">
+                        <input type="color" value={dash.mtpay_planos_recommended_to}
+                          onChange={(e) => updateDashboard({ mtpay_planos_recommended_to: e.target.value })}
+                          className="w-full h-10 rounded-lg cursor-pointer" />
+                      </Field>
+                      <Field label="Borda padrao">
+                        <input type="color" value={dash.mtpay_planos_default_border}
+                          onChange={(e) => updateDashboard({ mtpay_planos_default_border: e.target.value })}
+                          className="w-full h-10 rounded-lg cursor-pointer" />
+                      </Field>
+                    </div>
+                  </div>
+
+                  {/* === Tela PIX === */}
+                  <details className="border-t pt-3">
+                    <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider">Tela de pagamento (PIX simulado)</summary>
+                    <div className="space-y-2 pt-2">
+                      <Field label="Titulo">
+                        <input type="text" value={dash.mtpay_planos_pix_title}
+                          onChange={(e) => updateDashboard({ mtpay_planos_pix_title: e.target.value })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                      </Field>
+                      <Field label="Instrucao">
+                        <textarea value={dash.mtpay_planos_pix_instruction}
+                          onChange={(e) => updateDashboard({ mtpay_planos_pix_instruction: e.target.value })}
+                          rows={2}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                      </Field>
+                      <Field label="Botao simular">
+                        <input type="text" value={dash.mtpay_planos_simulate_button}
+                          onChange={(e) => updateDashboard({ mtpay_planos_simulate_button: e.target.value })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                      </Field>
+                      <Field label="Texto badge recomendado">
+                        <input type="text" value={dash.mtpay_planos_recommended_badge}
+                          onChange={(e) => updateDashboard({ mtpay_planos_recommended_badge: e.target.value })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                      </Field>
+                    </div>
+                  </details>
+
+                </div>
+              </details>
+
               {/* === CARTEIRINHA === */}
               <details open className="border-t pt-3">
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Carteirinha (sidebar e topo mobile)</summary>

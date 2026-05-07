@@ -159,6 +159,28 @@ export type DashboardConfig = {
   mtpay_videos_title: string;                // "Videos em destaque"
   mtpay_videos_count: number;                // 3, 5, 10
   mtpay_videos_show_ranking: boolean;        // mostra badges 1, 2, 3
+
+  // === Planos de moedas (compra obrigatoria pos-cadastro MoneyTokPay) ===
+  mtpay_planos_title: string;                // "Ative sua conta"
+  mtpay_planos_subtitle: string;             // "Escolha um plano de moedas..."
+  mtpay_planos_recommended_badge: string;    // "Mais escolhido"
+  mtpay_planos_pix_title: string;            // "Pague com PIX"
+  mtpay_planos_pix_instruction: string;      // "Escaneie o QR Code abaixo..."
+  mtpay_planos_simulate_button: string;      // "Ja paguei (simular)"
+  mtpay_planos_recommended_from: string;     // gradient destaque FROM
+  mtpay_planos_recommended_to: string;       // gradient destaque TO
+  mtpay_planos_default_border: string;       // borda dos planos sem destaque
+
+  // 3 planos (cada um: moedas, preco em centavos, label opcional, descricao)
+  plan_1_coins: number;
+  plan_1_price_cents: number;
+  plan_1_label: string;
+  plan_2_coins: number;
+  plan_2_price_cents: number;
+  plan_2_label: string;
+  plan_3_coins: number;
+  plan_3_price_cents: number;
+  plan_3_label: string;
 };
 
 // Comprador fictício
@@ -574,6 +596,26 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   mtpay_videos_title: "Vídeos em destaque",
   mtpay_videos_count: 10,
   mtpay_videos_show_ranking: true,
+
+  mtpay_planos_title: "Ative sua conta MoneyTokPay",
+  mtpay_planos_subtitle: "Escolha um plano de moedas para começar a usar a plataforma. Você pode usar moedas em features premium e análises de IA.",
+  mtpay_planos_recommended_badge: "Mais escolhido",
+  mtpay_planos_pix_title: "Pague com PIX",
+  mtpay_planos_pix_instruction: "Escaneie o QR Code ou copie o código PIX. Apos confirmar o pagamento, suas moedas são ativadas automaticamente.",
+  mtpay_planos_simulate_button: "Ja paguei (simular)",
+  mtpay_planos_recommended_from: "#FE2C55",
+  mtpay_planos_recommended_to: "#F97316",
+  mtpay_planos_default_border: "#e5e7eb",
+
+  plan_1_coins: 1400,
+  plan_1_price_cents: 8740,
+  plan_1_label: "",
+  plan_2_coins: 2000,
+  plan_2_price_cents: 9740,
+  plan_2_label: "Mais escolhido",
+  plan_3_coins: 3000,
+  plan_3_price_cents: 10940,
+  plan_3_label: "",
 };
 
 export const DEFAULT_LANDING_CONFIG: LandingConfig = {

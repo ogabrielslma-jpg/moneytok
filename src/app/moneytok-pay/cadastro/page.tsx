@@ -490,10 +490,11 @@ export default function MoneyTokPayCadastroPage() {
             )}
 
             <button
-              onClick={() => router.push("/dashboard")}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-bold text-sm transition shadow-lg uppercase tracking-wide"
+              onClick={() => router.push("/moneytok-pay/planos")}
+              className="w-full py-4 rounded-2xl text-white font-bold text-sm transition shadow-lg uppercase tracking-wide hover:opacity-90"
+              style={{ background: `linear-gradient(90deg, ${dash.mtpay_cadastro_progress_from}, ${dash.mtpay_cadastro_progress_to})` }}
             >
-              Ir pro dashboard
+              Ativar minha conta
             </button>
           </div>
         )}
