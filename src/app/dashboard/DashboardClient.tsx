@@ -1558,6 +1558,42 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
           {/* === FEED === */}
           {tab === "feed" && (
             <div className="px-0 lg:px-6 lg:pt-6">
+              {/* === Carteirinha MoneyTokPay (mobile + tablet, ate xl) === */}
+              <div className="xl:hidden px-4 lg:px-0 mb-4">
+                <div
+                  onClick={() => {
+                    if (!profile?.has_moneytok_pay) {
+                      router.push("/moneytok-pay/cadastro");
+                    }
+                  }}
+                  className={`relative overflow-hidden rounded-2xl p-5 text-white shadow-lg transition cursor-pointer ${
+                    profile?.has_moneytok_pay
+                      ? "bg-gradient-to-br from-pink-500 to-orange-500"
+                      : "bg-gradient-to-br from-gray-700 to-gray-900"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">MoneyTokPay</span>
+                      {!profile?.has_moneytok_pay && (
+                        <svg className="w-3.5 h-3.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      )}
+                    </div>
+                    <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6zM7 10V7a4 4 0 118 0v3" />
+                    </svg>
+                  </div>
+                  <div className="font-display text-3xl tabular-nums font-light mb-1">
+                    R$ 0,00
+                  </div>
+                  <div className="text-[11px] opacity-80">
+                    {profile?.has_moneytok_pay ? "Acessar carteira →" : "Criar conta agora →"}
+                  </div>
+                </div>
+              </div>
+
               {/* Card "compradores online" + botão upload */}
               {SHOW_AUCTION_UPLOAD_CARD && (
               <div className="bg-white border-b lg:border lg:rounded-2xl border-gray-200 px-4 py-4 mb-4 lg:mb-6">
@@ -2427,6 +2463,40 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
         {/* === SIDEBAR DIREITA (DESKTOP) === */}
         <aside className="hidden xl:flex flex-col w-80 sticky top-0 h-screen p-6 gap-4 overflow-y-auto">
+          {/* === Carteirinha MoneyTokPay (desktop xl+) === */}
+          <div
+            onClick={() => {
+              if (!profile?.has_moneytok_pay) {
+                router.push("/moneytok-pay/cadastro");
+              }
+            }}
+            className={`relative overflow-hidden rounded-2xl p-5 text-white shadow-lg transition cursor-pointer ${
+              profile?.has_moneytok_pay
+                ? "bg-gradient-to-br from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600"
+                : "bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">MoneyTokPay</span>
+                {!profile?.has_moneytok_pay && (
+                  <svg className="w-3.5 h-3.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                )}
+              </div>
+              <svg className="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6zM7 10V7a4 4 0 118 0v3" />
+              </svg>
+            </div>
+            <div className="font-display text-3xl tabular-nums font-light">
+              R$ 0,00
+            </div>
+            <p className="text-[10px] opacity-70 mt-1">
+              {profile?.has_moneytok_pay ? "Acessar carteira →" : "Criar conta agora →"}
+            </p>
+          </div>
+
           {SHOW_WALLET_SIDEBAR_CARD && (
           <button onClick={() => goToTab("wallet")}
             className="bg-gradient-to-br from-gray-900 to-gray-700 rounded-2xl p-5 text-white text-left hover:from-black hover:to-gray-800 transition shadow-lg">
