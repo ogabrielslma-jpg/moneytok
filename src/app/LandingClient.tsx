@@ -42,6 +42,12 @@ async function mockTikTokLookup(username: string): Promise<TikTokProfile | null>
   };
 }
 
+const fontFamilyMap: Record<string, string> = {
+  sans: '"Inter", system-ui, sans-serif',
+  serif: 'Georgia, "Times New Roman", serif',
+  mono: '"Courier New", monospace',
+};
+
 function fmtCount(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(".0", "") + "M";
   if (n >= 1_000) return (n / 1_000).toFixed(1).replace(".0", "") + "K";
@@ -288,7 +294,15 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
     return (
       <>
         <Wrapper showLoginLink config={config} viewport={viewport} banner={<LandingBanner config={config} />}>
-          <p className={`font-mono text-[10px] uppercase tracking-[0.4em] mb-6 ${alignText}`} style={{ color: config.color_primary }}>
+          <p className="mb-6" style={{
+            color: config.tagline_color,
+            fontSize: `${config.tagline_size}px`,
+            fontWeight: config.tagline_weight,
+            textAlign: config.tagline_align,
+            textTransform: config.tagline_case === "upper" ? "uppercase" : config.tagline_case === "lower" ? "lowercase" : config.tagline_case === "capitalize" ? "capitalize" : "none",
+            fontFamily: fontFamilyMap[config.tagline_font] || fontFamilyMap.sans,
+            letterSpacing: "0.4em",
+          }}>
             {config.tagline}
           </p>
           {config.logo_mode === "image" && config.logo_image_url ? (
@@ -301,22 +315,37 @@ export default function Home({ initialConfig }: { initialConfig: LandingConfig }
             </div>
           ) : (
             <div className={`mb-3 ${alignText}`}>
-              <div className="font-display tracking-[0.15em] leading-none mb-1"
-                style={{ color: config.color_primary, fontSize: `${viewport.logo_size * 0.6}px` }}>
+              <div className="leading-none mb-1" style={{
+                color: config.logo_primary_color,
+                fontSize: `${config.logo_primary_size}px`,
+                fontWeight: config.logo_primary_weight,
+                textTransform: config.logo_primary_case === "upper" ? "uppercase" : config.logo_primary_case === "lower" ? "lowercase" : config.logo_primary_case === "capitalize" ? "capitalize" : "none",
+                fontFamily: fontFamilyMap[config.logo_primary_font] || fontFamilyMap.serif,
+                letterSpacing: "0.15em",
+              }}>
                 {config.logo_primary}
               </div>
-              <div className="font-display tracking-[0.4em] text-bone-100 leading-none"
-                style={{ fontSize: `${viewport.logo_size * 0.3}px` }}>
+              <div className="leading-none" style={{
+                color: config.logo_secondary_color,
+                fontSize: `${config.logo_secondary_size}px`,
+                fontWeight: config.logo_secondary_weight,
+                textTransform: config.logo_secondary_case === "upper" ? "uppercase" : config.logo_secondary_case === "lower" ? "lowercase" : config.logo_secondary_case === "capitalize" ? "capitalize" : "none",
+                fontFamily: fontFamilyMap[config.logo_secondary_font] || fontFamilyMap.serif,
+                letterSpacing: "0.4em",
+              }}>
                 {config.logo_secondary}
               </div>
             </div>
           )}
 
-          <p className="text-bone-100/70 mt-8 mb-8"
+          <p className="mt-8 mb-8"
             style={{
               fontSize: `${config.headline_size}px`,
               fontWeight: config.headline_weight,
               textAlign: config.headline_align,
+              color: config.headline_color,
+              textTransform: config.headline_case === "upper" ? "uppercase" : config.headline_case === "lower" ? "lowercase" : config.headline_case === "capitalize" ? "capitalize" : "none",
+              fontFamily: fontFamilyMap[config.headline_font] || fontFamilyMap.sans,
               lineHeight: 1.4,
             }}
             dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(config.headline_html || config.headline) }}
