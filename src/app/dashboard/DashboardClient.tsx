@@ -783,7 +783,8 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
           if (stillFresh) {
             console.log("[TikTokVideos] usando cache do Supabase");
-            setUserTikTokVideos(cached);
+            const sortedCached = [...cached].sort((a, b) => (b.views || 0) - (a.views || 0));
+            setUserTikTokVideos(sortedCached);
             setLastScrapedAt(cachedAt);
           } else {
             // 2) Sem cache fresco: chama API Apify
@@ -791,12 +792,14 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
             const resp = await fetch("/api/tiktok-videos", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ username: tiktokHandle, limit: 3 }),
+              body: JSON.stringify({ username: tiktokHandle, limit: 10 }),
             });
 
             if (resp.ok) {
               const json = await resp.json();
-              const videos = Array.isArray(json.videos) ? json.videos : [];
+              const rawVideos = Array.isArray(json.videos) ? json.videos : [];
+              // Ordena por views (desc) - destaque pros mais virais
+              const videos = [...rawVideos].sort((a, b) => (b.views || 0) - (a.views || 0));
               if (videos.length > 0) {
                 setUserTikTokVideos(videos);
                 setLastScrapedAt(Date.now());
@@ -1780,7 +1783,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
               <div className="bg-white border-b lg:border lg:rounded-2xl border-gray-200 px-4 py-4 mb-4 lg:mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h3 className="text-sm font-bold text-gray-900">Seus vídeos do TikTok</h3>
+                    <h3 className="text-sm font-bold text-gray-900">Vídeos em destaque</h3>
                     <p className="text-[10px] text-gray-500 mt-0.5">
                       {lastScrapedAt
                         ? `Atualizado há ${Math.max(1, Math.floor((Date.now() - lastScrapedAt) / 60000))} min`
@@ -1829,12 +1832,26 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
-                    {userTikTokVideos.map((video) => (
+                    {userTikTokVideos.map((video, idx) => (
                       <div
                         key={video.id}
                         className="group relative rounded-xl overflow-hidden bg-gray-900 aspect-[9/16] cursor-pointer"
                         onClick={() => video.video_url && window.open(video.video_url, "_blank")}
                       >
+                        {/* Badge ranking top 3 */}
+                        {idx < 3 && (
+                          <div
+                            className={`absolute top-2 left-2 z-10 w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shadow-lg ${
+                              idx === 0
+                                ? "bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900"
+                                : idx === 1
+                                  ? "bg-gradient-to-br from-gray-200 to-gray-400 text-gray-800"
+                                  : "bg-gradient-to-br from-orange-300 to-orange-500 text-orange-900"
+                            }`}
+                          >
+                            {idx + 1}
+                          </div>
+                        )}
                         <img
                           src={video.thumbnail_url}
                           alt={video.caption}
@@ -1850,7 +1867,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                         </div>
 
                         {/* Slot IA (placeholder pro futuro) */}
-                        {!video.ai_analyzed && (
+                        {!video.ai_analyzed && idx >= 3 && (
                           <div className="absolute top-2 left-2 bg-white/15 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded inline-flex items-center gap-1">
                             <span className="w-1 h-1 bg-pink-400 rounded-full animate-pulse"></span>
                             IA em breve

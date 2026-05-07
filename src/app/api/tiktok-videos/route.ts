@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const username = String(body.username || '').replace(/^@/, '').trim().toLowerCase();
-    const limit = Math.min(Math.max(parseInt(body.limit) || 3, 1), 10);
+    const limit = Math.min(Math.max(parseInt(body.limit) || 10, 1), 20);
 
     if (!username || username.length < 2 || !/^[a-z0-9_.]+$/.test(username)) {
       return NextResponse.json({ error: 'Username invalido' }, { status: 400 });
