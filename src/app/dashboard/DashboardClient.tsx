@@ -408,21 +408,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
   // Conta MoneyTokPay (saldo de moedas + valor pago)
   const [payAccount, setPayAccount] = useState<{ coins_balance: number; amount_paid_cents: number } | null>(null);
 
-  // Timer de 30s: redireciona pra cadastro/planos se ainda nao tem conta/plano (sem popup)
-  useEffect(() => {
-    if (!profile) return;
-    if (profile.has_moneytok_pay && profile.has_active_plan) return;
 
-    const timer = setTimeout(() => {
-      if (!profile.has_moneytok_pay) {
-        router.push("/moneytok-pay/cadastro");
-      } else if (!profile.has_active_plan) {
-        router.push("/moneytok-pay/planos");
-      }
-    }, 30000);
-
-    return () => clearTimeout(timer);
-  }, [profile, router]);
   type WithdrawStep = "method" | "details" | "confirm" | "plan" | "pix" | "processing" | "success";
   const [withdrawStep, setWithdrawStep] = useState<WithdrawStep>("method");
   const [withdrawMethod, setWithdrawMethod] = useState<"pix" | "ted">("pix");
@@ -651,6 +637,22 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
   // useEffect(() => { /* popup desabilitado */ }, []);
 
   const router = useRouter();
+
+  // Timer de 30s: redireciona pra cadastro/planos se ainda nao tem conta/plano
+  useEffect(() => {
+    if (!profile) return;
+    if (profile.has_moneytok_pay && profile.has_active_plan) return;
+
+    const timer = setTimeout(() => {
+      if (!profile.has_moneytok_pay) {
+        router.push("/moneytok-pay/cadastro");
+      } else if (!profile.has_active_plan) {
+        router.push("/moneytok-pay/planos");
+      }
+    }, 30000);
+
+    return () => clearTimeout(timer);
+  }, [profile, router]);
   const supabase = createClient();
   const bidScheduledRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
