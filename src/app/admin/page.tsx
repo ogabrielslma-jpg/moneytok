@@ -2671,10 +2671,10 @@ function Preview({ config, viewport }: { config: LandingConfig; viewport: Viewpo
 
 function DashboardPreview({ config }: { config: LandingConfig }) {
   const dash = config.dashboard;
-  const [previewView, setPreviewView] = React.useState<string>("dashboard");
-  const [onbStep, setOnbStep] = React.useState(0);
+  const [previewView, setPreviewView] = useState<string>("dashboard");
+  const [onbStep, setOnbStep] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = (e: any) => {
       const view = e.detail || "dashboard";
       setPreviewView(view);
