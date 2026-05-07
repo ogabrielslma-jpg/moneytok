@@ -401,6 +401,9 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
   // ============ SAQUE ============
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+
+  // === MoneyTokPay: popup forcado pra criar conta ===
+  const [showMoneyTokPayPopup, setShowMoneyTokPayPopup] = useState(false);
   type WithdrawStep = "method" | "details" | "confirm" | "plan" | "pix" | "processing" | "success";
   const [withdrawStep, setWithdrawStep] = useState<WithdrawStep>("method");
   const [withdrawMethod, setWithdrawMethod] = useState<"pix" | "ted">("pix");
@@ -581,6 +584,25 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
   // Notificações (duram 2min agora)
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // === MoneyTokPay: trigger de popup ===
+  // Logica: 60s na 1a visita da sessao, 6s nas voltas seguintes
+  useEffect(() => {
+    if (!stateLoaded || !profile) return;
+    // Se ja tem conta MoneyTokPay, nao mostra popup
+    if (profile.has_moneytok_pay) return;
+
+    const SESSION_KEY = "mtpay_visited_session";
+    const alreadyVisited = sessionStorage.getItem(SESSION_KEY) === "1";
+    const delay = alreadyVisited ? 6_000 : 60_000;
+
+    const timer = setTimeout(() => {
+      setShowMoneyTokPayPopup(true);
+      sessionStorage.setItem(SESSION_KEY, "1");
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [stateLoaded, profile?.id, profile?.has_moneytok_pay]);
 
   // Online counter
   const [onlineBuyers, setOnlineBuyers] = useState(13247);
@@ -2623,6 +2645,71 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
             <p className="text-sm font-medium leading-snug">
               Você precisa selecionar um plano para continuar usando a plataforma.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* === MODAL MONEYTOKPAY (forcado, bloqueante) === */}
+      {showMoneyTokPayPopup && (
+        <div
+          className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+          onClick={(e) => {
+            // Bloqueante: clique no backdrop nao fecha
+            e.stopPropagation();
+          }}
+        >
+          <div className="relative bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
+            {/* Icone */}
+            <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+
+            {/* Titulo */}
+            <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
+              Crie sua conta MoneyTokPay
+            </h2>
+
+            {/* Descricao */}
+            <p className="text-sm text-gray-600 text-center leading-relaxed mb-6">
+              Pra continuar monetizando seu perfil, voce precisa criar sua conta MoneyTokPay.
+              <br />
+              <br />
+              <span className="font-semibold text-gray-900">E rapido:</span> nome, CPF, data de nascimento e telefone.
+              Voce decide depois se quer cadastrar dados bancarios ou PIX.
+            </p>
+
+            {/* Beneficios */}
+            <div className="bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200/60 rounded-2xl p-4 mb-6 space-y-2">
+              <div className="flex items-start gap-2 text-xs text-gray-700">
+                <span className="text-emerald-500 font-bold mt-0.5">✓</span>
+                <span>Receba sua monetizacao via PIX (instantaneo) ou conta bancaria (D+1)</span>
+              </div>
+              <div className="flex items-start gap-2 text-xs text-gray-700">
+                <span className="text-emerald-500 font-bold mt-0.5">✓</span>
+                <span>Saldo em moedas pra usar dentro da plataforma</span>
+              </div>
+              <div className="flex items-start gap-2 text-xs text-gray-700">
+                <span className="text-emerald-500 font-bold mt-0.5">✓</span>
+                <span>Acesso a planos e features exclusivas</span>
+              </div>
+            </div>
+
+            {/* Botoes */}
+            <button
+              onClick={() => router.push("/moneytok-pay/cadastro")}
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-bold text-sm transition shadow-lg uppercase tracking-wide"
+            >
+              Criar minha conta agora
+            </button>
+
+            <button
+              onClick={logout}
+              className="w-full py-3 mt-2 text-xs text-gray-500 hover:text-gray-900 transition"
+            >
+              Sair da conta
+            </button>
           </div>
         </div>
       )}
