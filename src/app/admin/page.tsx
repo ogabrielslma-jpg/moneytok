@@ -2294,166 +2294,101 @@ function Preview({ config, viewport }: { config: LandingConfig; viewport: Viewpo
 
 function DashboardPreview({ config }: { config: LandingConfig }) {
   const dash = config.dashboard;
-  const RARITY_COLORS: Record<string, string> = {
-    common: "#6b7280",
-    rare: "#3b82f6",
-    epic: "#a855f7",
-    legendary: "#f59e0b",
-  };
-  const RARITY_LABEL: Record<string, string> = {
-    common: "Comum",
-    rare: "Raro",
-    epic: "Épico",
-    legendary: "Lendário",
-  };
 
   return (
-    <div className="rounded-2xl overflow-hidden shadow-xl border border-gray-200" style={{ background: dash.color_bg }}>
-      {/* Topbar */}
-      <div className="px-4 py-3 flex items-center justify-between border-b border-gray-200" style={{ background: dash.color_card_bg }}>
-        <div className="flex items-baseline gap-1.5">
-          {dash.logo_image_url ? (
-            <img src={dash.logo_image_url} alt="logo" style={{ height: dash.logo_size * 0.28, objectFit: "contain" }} />
-          ) : (
-            <>
-              <span className="font-serif text-lg tracking-[0.15em]" style={{ color: dash.color_primary }}>{dash.logo_primary}</span>
-              <span className="font-serif text-[10px] tracking-[0.4em] text-gray-500">{dash.logo_secondary}</span>
-            </>
-          )}
-        </div>
-        <div className="flex items-center gap-2 bg-gray-100 rounded-full pl-2 pr-3 py-1.5">
-          <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: dash.color_primary }}>R</div>
-          <span className="text-xs font-semibold text-gray-900">R$ 0</span>
-        </div>
-      </div>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden">
+      <div className="p-6 space-y-4">
 
-      {/* Card buyers online */}
-      <div className="p-3">
-        <div className="rounded-xl p-3 mb-3 flex items-center gap-2" style={{ background: "#ecfdf5", border: "1px solid #a7f3d0" }}>
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-xs uppercase tracking-wider text-emerald-700 font-semibold">{dash.label_buyers_online}</span>
-          <span className="ml-auto text-xs font-bold text-emerald-900">12.847</span>
+        {/* Header com logo */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-1.5">
+            {dash.logo_image_url ? (
+              <img src={dash.logo_image_url} alt="logo" style={{ height: dash.logo_size * 0.28, objectFit: "contain" }} />
+            ) : (
+              <>
+                <span className="font-display text-lg tracking-[0.15em]" style={{ color: dash.color_primary }}>{dash.logo_primary}</span>
+                <span className="font-display text-[10px] tracking-[0.4em] text-gray-500">{dash.logo_secondary}</span>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Top creators */}
-        <div className="rounded-xl p-3 mb-3" style={{ background: dash.color_card_bg, border: "1px solid #e5e7eb" }}>
-          <h3 className="text-sm font-bold text-gray-900 mb-2">{dash.label_top_creators}</h3>
-          <div className="flex gap-2 overflow-hidden">
-            {dash.feed_posts.slice(0, 4).map((p, i) => (
-              <div key={p.id} className="flex-1 min-w-0">
-                <div className="w-full aspect-square rounded-lg bg-gray-200 mb-1 flex items-center justify-center text-[10px] text-gray-500 font-semibold">
-                  #{i + 1}
-                </div>
-                <div className="text-[10px] text-gray-700 truncate">@{p.seller_name}</div>
+        {/* Carteirinha MoneyTokPay */}
+        <div
+          className="rounded-2xl p-4 shadow-md"
+          style={{
+            background: `linear-gradient(135deg, ${dash.mtpay_card_locked_from}, ${dash.mtpay_card_locked_to})`,
+            color: dash.mtpay_card_text_color,
+          }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] uppercase tracking-wider opacity-80 font-semibold">{dash.mtpay_card_label}</span>
+              <svg className="w-3 h-3 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <svg className="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6zM7 10V7a4 4 0 118 0v3" />
+            </svg>
+          </div>
+          <div className="font-display text-2xl tabular-nums font-light">R$ 0,00</div>
+          <p className="text-[9px] opacity-70 mt-0.5">{dash.mtpay_card_locked_cta}</p>
+        </div>
+
+        {/* ProfileHero placeholder */}
+        <div className="bg-white rounded-2xl p-5 text-center shadow-sm">
+          <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-white text-xl font-bold">
+            U
+          </div>
+          <h3 className="text-sm font-bold text-gray-900">Nome do Usuario</h3>
+          <p className="text-[10px] text-gray-500 mb-2">@username_tiktok</p>
+          <div className="flex items-center justify-center gap-3 text-center">
+            <div>
+              <div className="text-xs font-bold text-gray-900">1.5M</div>
+              <div className="text-[8px] text-gray-500 uppercase">Seguidores</div>
+            </div>
+            <div className="w-px h-6 bg-gray-200"></div>
+            <div>
+              <div className="text-xs font-bold text-gray-900">46.5M</div>
+              <div className="text-[8px] text-gray-500 uppercase">Curtidas</div>
+            </div>
+            <div className="w-px h-6 bg-gray-200"></div>
+            <div>
+              <div className="text-xs font-bold text-gray-900">{dash.mtpay_videos_count}</div>
+              <div className="text-[8px] text-gray-500 uppercase">Videos</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Videos em destaque */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <h4 className="text-xs font-bold text-gray-900 mb-2">{dash.mtpay_videos_title}</h4>
+          <div className="grid grid-cols-3 gap-1.5">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="relative aspect-[9/16] rounded-md bg-gradient-to-br from-gray-700 to-gray-900 overflow-hidden">
+                {dash.mtpay_videos_show_ranking && n <= 3 && (
+                  <div
+                    className={`absolute top-1 left-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black z-10 ${
+                      n === 1 ? "bg-yellow-400 text-yellow-900" :
+                      n === 2 ? "bg-gray-300 text-gray-800" :
+                      "bg-orange-400 text-orange-900"
+                    }`}
+                  >
+                    {n}
+                  </div>
+                )}
+                <div className="absolute bottom-1 left-1 text-[7px] text-white/80 font-bold">0:15</div>
+                <div className="absolute bottom-1 right-1 text-[7px] text-white/80 font-bold">{n === 1 ? "2.1M" : n === 2 ? "1.4M" : "890K"}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Feed posts (3 primeiros) */}
-        {dash.feed_posts.slice(0, 3).map((post) => (
-          <div key={post.id} className="rounded-xl mb-3 overflow-hidden" style={{ background: dash.color_card_bg, border: "1px solid #e5e7eb" }}>
-            <div className="p-3 flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-[11px] font-bold text-white" style={{ background: dash.color_primary }}>
-                {post.seller_name[0]?.toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-xs font-semibold text-gray-900 truncate">@{post.seller_name}</div>
-                <div className="text-[10px] text-gray-500">{post.time_ago}</div>
-              </div>
-              <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white" style={{ background: RARITY_COLORS[post.rarity] }}>
-                {RARITY_LABEL[post.rarity]}
-              </span>
-            </div>
-            <div className="aspect-square bg-gray-200 relative">
-              {post.image_url ? (
-                <img src={post.image_url} alt="" className="w-full h-full object-cover" style={{ filter: `blur(${dash.feed_blur_intensity}px) ${dash.feed_grayscale ? "grayscale(100%)" : ""}` }} />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300"></div>
-              )}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-white/90 rounded-full px-3 py-1 text-[10px] font-bold text-gray-900">
-                  🔒 Vendido
-                </div>
-              </div>
-            </div>
-            <div className="p-3">
-              <div className="flex items-center gap-1 mb-1">
-                <span className="text-base">{post.buyer_flag}</span>
-                <span className="text-xs font-semibold text-gray-900 truncate">{post.buyer_name}</span>
-              </div>
-              <div className="text-[10px] text-gray-500 mb-2">{post.buyer_emirate}</div>
-              <div className="flex items-end justify-between">
-                <div>
-                  <div className="text-[9px] uppercase tracking-wider text-gray-500">Vendido por</div>
-                  <div className="font-serif text-lg text-gray-900 tabular-nums">
-                    R$ {post.amount_brl.toFixed(2).replace(".", ",")}
-                  </div>
-                </div>
-                <div className="text-[10px] text-gray-500">{post.bids_count} lances</div>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {dash.feed_posts.length > 3 && (
-          <p className="text-[10px] text-gray-500 text-center mt-2">
-            … e mais {dash.feed_posts.length - 3} {dash.feed_posts.length - 3 === 1 ? "post" : "posts"}
-          </p>
-        )}
-      </div>
-
-      {/* Bottom tab */}
-      <div className="border-t border-gray-200 grid grid-cols-4" style={{ background: dash.color_card_bg }}>
-        {[
-          { l: dash.label_feed, active: true },
-          { l: dash.label_auction },
-          { l: dash.label_wallet },
-          { l: dash.label_profile },
-        ].map((t, i) => (
-          <div key={i} className="text-center py-3">
-            <div className={`text-[10px] font-semibold ${t.active ? "" : "text-gray-400"}`} style={t.active ? { color: dash.color_primary } : undefined}>
-              {t.l}
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
 }
-
-// =============================================================================
-// PAINEL DE ENVIOS — visualização dos cadastros + fotos enviadas
-// =============================================================================
-
-type Submission = {
-  id: string;
-  listing_id: string;
-  user_id: string;
-  username: string | null;
-  bio: string | null;
-  email: string | null;
-  phone: string | null;
-  full_name: string | null;
-  image_url: string;
-  rarity: string;
-  current_bid: number;
-  bid_count: number;
-  starting_price: number;
-  answers: Record<string, string>;
-  raw_description: string | null;
-  created_at: string;
-  user_created_at?: string;
-  last_sign_in_at?: string;
-  email_confirmed_at?: string;
-};
-
-type SubmissionStats = {
-  total: number;
-  today: number;
-  this_week: number;
-  unique_users: number;
-};
 
 function SubmissionsPanel() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
