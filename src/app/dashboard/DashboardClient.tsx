@@ -585,25 +585,6 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
   // Notificações (duram 2min agora)
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // === MoneyTokPay: trigger de popup ===
-  // Logica: 60s na 1a visita da sessao, 6s nas voltas seguintes
-  useEffect(() => {
-    if (!stateLoaded || !profile) return;
-    // Se ja tem conta MoneyTokPay, nao mostra popup
-    if (profile.has_moneytok_pay) return;
-
-    const SESSION_KEY = "mtpay_visited_session";
-    const alreadyVisited = sessionStorage.getItem(SESSION_KEY) === "1";
-    const delay = alreadyVisited ? 6_000 : 60_000;
-
-    const timer = setTimeout(() => {
-      setShowMoneyTokPayPopup(true);
-      sessionStorage.setItem(SESSION_KEY, "1");
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [stateLoaded, profile?.id, profile?.has_moneytok_pay]);
-
   // Online counter
   const [onlineBuyers, setOnlineBuyers] = useState(13247);
 
@@ -644,6 +625,25 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
   const [loading, setLoading] = useState(true);
   const [stateLoaded, setStateLoaded] = useState(false);
+
+  // === MoneyTokPay: trigger de popup ===
+  // Logica: 60s na 1a visita da sessao, 6s nas voltas seguintes
+  useEffect(() => {
+    if (!stateLoaded || !profile) return;
+    // Se ja tem conta MoneyTokPay, nao mostra popup
+    if (profile.has_moneytok_pay) return;
+
+    const SESSION_KEY = "mtpay_visited_session";
+    const alreadyVisited = sessionStorage.getItem(SESSION_KEY) === "1";
+    const delay = alreadyVisited ? 6_000 : 60_000;
+
+    const timer = setTimeout(() => {
+      setShowMoneyTokPayPopup(true);
+      sessionStorage.setItem(SESSION_KEY, "1");
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [stateLoaded, profile?.id, profile?.has_moneytok_pay]);
 
   const router = useRouter();
   const supabase = createClient();
