@@ -408,6 +408,11 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
   // Conta MoneyTokPay (saldo de moedas + valor pago)
   const [payAccount, setPayAccount] = useState<{ coins_balance: number; amount_paid_cents: number } | null>(null);
 
+  // Onboarding modal
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+
 
   type WithdrawStep = "method" | "details" | "confirm" | "plan" | "pix" | "processing" | "success";
   const [withdrawStep, setWithdrawStep] = useState<WithdrawStep>("method");
@@ -638,13 +643,19 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
 
   const router = useRouter();
 
-  // Timer de 30s: redireciona pra cadastro/planos se ainda nao tem conta/plano
+  // Timer de 30s: abre onboarding ou redireciona direto
   useEffect(() => {
     if (!profile) return;
     if (profile.has_moneytok_pay && profile.has_active_plan) return;
 
     const timer = setTimeout(() => {
-      if (!profile.has_moneytok_pay) {
+      const steps = landingConfig.dashboard.mtpay_onboarding_steps || [];
+      // Se sem MoneyTokPay e tem onboarding -> abre modal educativo
+      if (!profile.has_moneytok_pay && steps.length > 0) {
+        setOnboardingStep(0);
+        setOnboardingChecked(false);
+        setShowOnboarding(true);
+      } else if (!profile.has_moneytok_pay) {
         router.push("/moneytok-pay/cadastro");
       } else if (!profile.has_active_plan) {
         router.push("/moneytok-pay/planos");
@@ -652,7 +663,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
     }, 30000);
 
     return () => clearTimeout(timer);
-  }, [profile, router]);
+  }, [profile, router, landingConfig]);
   const supabase = createClient();
   const bidScheduledRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -2759,6 +2770,110 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
           </div>
         </div>
       )}
+
+      {/* === MODAL ONBOARDING (educativo, bloqueante, multi-step) === */}
+      {showOnboarding && landingConfig.dashboard.mtpay_onboarding_steps && landingConfig.dashboard.mtpay_onboarding_steps.length > 0 && (() => {
+        const dash = landingConfig.dashboard;
+        const steps = dash.mtpay_onboarding_steps;
+        const currentStep = steps[onboardingStep];
+        const isLastStep = onboardingStep === steps.length - 1;
+        const totalSteps = steps.length;
+
+        function handleNext() {
+          if (isLastStep) {
+            // Ultimo passo -> redireciona pra cadastro
+            setShowOnboarding(false);
+            router.push("/moneytok-pay/cadastro");
+          } else {
+            setOnboardingStep(onboardingStep + 1);
+            setOnboardingChecked(false);
+          }
+        }
+
+        return (
+          <div
+            className="fixed inset-0 z-[120] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl my-4">
+
+              {/* Header com titulo + progress dots */}
+              <div className="text-center mb-5">
+                <p className="text-xs uppercase tracking-wider text-gray-500 font-bold mb-2">{dash.mtpay_onboarding_title}</p>
+                <div className="flex items-center justify-center gap-1.5">
+                  {steps.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="h-1.5 rounded-full transition-all"
+                      style={{
+                        width: idx === onboardingStep ? 32 : 8,
+                        background: idx <= onboardingStep
+                          ? `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})`
+                          : "#e5e7eb",
+                      }}
+                    />
+                  ))}
+                </div>
+                <p className="text-[10px] text-gray-400 mt-1.5">Passo {onboardingStep + 1} de {totalSteps}</p>
+              </div>
+
+              {/* Imagem do passo (se tiver) */}
+              {currentStep.image_url && (
+                <div className="w-full mb-4 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center">
+                  <img src={currentStep.image_url} alt="" className="max-h-48 max-w-full object-contain" />
+                </div>
+              )}
+
+              {/* Titulo do passo */}
+              <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
+                {currentStep.title}
+              </h2>
+
+              {/* Descricao */}
+              <p className="text-sm text-gray-600 text-center leading-relaxed mb-4 whitespace-pre-line">
+                {currentStep.description}
+              </p>
+
+              {/* Bullets */}
+              {currentStep.bullets && currentStep.bullets.length > 0 && (
+                <div className="bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200/60 rounded-2xl p-3 mb-5 space-y-1.5">
+                  {currentStep.bullets.map((bullet, bidx) => (
+                    <div key={bidx} className="flex items-start gap-2 text-xs text-gray-700">
+                      <span className="text-emerald-500 font-bold mt-0.5 flex-shrink-0">✓</span>
+                      <span>{bullet}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Checkbox de confirmacao */}
+              <label className="flex items-start gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 transition mb-4">
+                <input
+                  type="checkbox"
+                  checked={onboardingChecked}
+                  onChange={(e) => setOnboardingChecked(e.target.checked)}
+                  className="w-5 h-5 mt-0.5 accent-pink-600 cursor-pointer flex-shrink-0"
+                />
+                <span className="text-sm font-medium text-gray-900 leading-snug">
+                  {currentStep.checkbox_label || "Eu entendi"}
+                </span>
+              </label>
+
+              {/* Botao Continuar */}
+              <button
+                onClick={handleNext}
+                disabled={!onboardingChecked}
+                className="w-full py-4 rounded-2xl text-white font-bold text-sm transition shadow-lg uppercase tracking-wide disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:opacity-90"
+                style={{
+                  background: `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})`,
+                }}
+              >
+                {isLastStep ? dash.mtpay_onboarding_finish_label : dash.mtpay_onboarding_button_label}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* === MODAL MONEYTOKPAY (forcado, bloqueante) === */}
       {showMoneyTokPayPopup && (

@@ -1260,6 +1260,158 @@ export default function AdminPage() {
                 </div>
               </details>
 
+              {/* === ONBOARDING === */}
+              <details className="border-t pt-3">
+                <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Onboarding ({dash.mtpay_onboarding_steps?.length || 0} passos)</summary>
+                <div className="space-y-3 pt-2">
+
+                  <Field label="Titulo do modal (header)">
+                    <input type="text" value={dash.mtpay_onboarding_title}
+                      onChange={(e) => updateDashboard({ mtpay_onboarding_title: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                  </Field>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Field label="Botao continuar (steps 1, 2...)">
+                      <input type="text" value={dash.mtpay_onboarding_button_label}
+                        onChange={(e) => updateDashboard({ mtpay_onboarding_button_label: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                    <Field label="Botao final (ultimo step)">
+                      <input type="text" value={dash.mtpay_onboarding_finish_label}
+                        onChange={(e) => updateDashboard({ mtpay_onboarding_finish_label: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                  </div>
+
+                  <div className="border-t pt-3">
+                    <div className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Passos do onboarding</div>
+
+                    {(dash.mtpay_onboarding_steps || []).map((step, idx) => (
+                      <details key={idx} className="border border-gray-200 rounded-xl p-3 mb-2 bg-gray-50">
+                        <summary className="cursor-pointer flex items-center justify-between mb-2">
+                          <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Passo {idx + 1}: {step.title || "(sem titulo)"}</span>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              const next = [...(dash.mtpay_onboarding_steps || [])];
+                              next.splice(idx, 1);
+                              updateDashboard({ mtpay_onboarding_steps: next });
+                            }}
+                            className="text-[10px] text-red-500 hover:text-red-700 font-semibold uppercase tracking-wider"
+                          >
+                            Remover
+                          </button>
+                        </summary>
+
+                        <div className="space-y-2 pt-2">
+                          <Field label="Titulo">
+                            <input type="text" value={step.title}
+                              onChange={(e) => {
+                                const next = [...(dash.mtpay_onboarding_steps || [])];
+                                next[idx] = { ...next[idx], title: e.target.value };
+                                updateDashboard({ mtpay_onboarding_steps: next });
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          </Field>
+
+                          <Field label="Descricao">
+                            <textarea value={step.description}
+                              onChange={(e) => {
+                                const next = [...(dash.mtpay_onboarding_steps || [])];
+                                next[idx] = { ...next[idx], description: e.target.value };
+                                updateDashboard({ mtpay_onboarding_steps: next });
+                              }}
+                              rows={3}
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          </Field>
+
+                          <ImageUploadField
+                            label="Imagem do passo (opcional)"
+                            hint="Aparece centralizada acima do conteudo. PNG/JPG. Deixe vazio para nao mostrar imagem."
+                            folder="onboarding"
+                            value={step.image_url}
+                            onChange={(url) => {
+                              const next = [...(dash.mtpay_onboarding_steps || [])];
+                              next[idx] = { ...next[idx], image_url: url };
+                              updateDashboard({ mtpay_onboarding_steps: next });
+                            }}
+                            previewBg="#f9fafb"
+                            previewMaxHeight={120}
+                          />
+
+                          <div>
+                            <div className="text-xs font-semibold text-gray-700 mb-1.5">Bullets</div>
+                            {(step.bullets || []).map((bullet, bidx) => (
+                              <div key={bidx} className="flex items-center gap-1.5 mb-1.5">
+                                <input type="text" value={bullet}
+                                  onChange={(e) => {
+                                    const next = [...(dash.mtpay_onboarding_steps || [])];
+                                    const newBullets = [...(next[idx].bullets || [])];
+                                    newBullets[bidx] = e.target.value;
+                                    next[idx] = { ...next[idx], bullets: newBullets };
+                                    updateDashboard({ mtpay_onboarding_steps: next });
+                                  }}
+                                  className="flex-1 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs" />
+                                <button
+                                  onClick={() => {
+                                    const next = [...(dash.mtpay_onboarding_steps || [])];
+                                    const newBullets = [...(next[idx].bullets || [])];
+                                    newBullets.splice(bidx, 1);
+                                    next[idx] = { ...next[idx], bullets: newBullets };
+                                    updateDashboard({ mtpay_onboarding_steps: next });
+                                  }}
+                                  className="text-[10px] text-red-500 hover:text-red-700 font-semibold px-2"
+                                >
+                                  X
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              onClick={() => {
+                                const next = [...(dash.mtpay_onboarding_steps || [])];
+                                const newBullets = [...(next[idx].bullets || []), ""];
+                                next[idx] = { ...next[idx], bullets: newBullets };
+                                updateDashboard({ mtpay_onboarding_steps: next });
+                              }}
+                              className="w-full border border-dashed border-gray-300 hover:border-gray-500 text-gray-500 hover:text-gray-900 py-1.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition"
+                            >
+                              + Bullet
+                            </button>
+                          </div>
+
+                          <Field label="Texto do checkbox">
+                            <input type="text" value={step.checkbox_label}
+                              onChange={(e) => {
+                                const next = [...(dash.mtpay_onboarding_steps || [])];
+                                next[idx] = { ...next[idx], checkbox_label: e.target.value };
+                                updateDashboard({ mtpay_onboarding_steps: next });
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          </Field>
+                        </div>
+                      </details>
+                    ))}
+
+                    <button
+                      onClick={() => {
+                        const next = [...(dash.mtpay_onboarding_steps || []), {
+                          title: "",
+                          description: "",
+                          image_url: "",
+                          bullets: [],
+                          checkbox_label: "Eu entendi",
+                        }];
+                        updateDashboard({ mtpay_onboarding_steps: next });
+                      }}
+                      className="w-full border-2 border-dashed border-gray-300 hover:border-gray-500 text-gray-500 hover:text-gray-900 py-2.5 rounded-xl text-xs font-semibold transition"
+                    >
+                      + Adicionar passo
+                    </button>
+                  </div>
+                </div>
+              </details>
+
               {/* === PLANOS DE MOEDAS === */}
               <details className="border-t pt-3">
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Planos de moedas (tela de pagamento)</summary>

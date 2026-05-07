@@ -160,6 +160,30 @@ export type DashboardConfig = {
   mtpay_videos_count: number;                // 3, 5, 10
   mtpay_videos_show_ranking: boolean;        // mostra badges 1, 2, 3
 
+  // === Onboarding (modal educativo antes do cadastro MoneyTokPay) ===
+  mtpay_onboarding_title: string;
+  mtpay_onboarding_button_label: string;
+  mtpay_onboarding_finish_label: string;
+  mtpay_onboarding_steps: {
+    title: string;
+    description: string;
+    image_url: string;
+    bullets: string[];
+    checkbox_label: string;
+  }[];
+
+  // === Onboarding (modal educativo antes do cadastro MoneyTokPay) ===
+  mtpay_onboarding_title: string;
+  mtpay_onboarding_button_label: string;
+  mtpay_onboarding_finish_label: string;
+  mtpay_onboarding_steps: {
+    title: string;
+    description: string;
+    image_url: string;
+    bullets: string[];
+    checkbox_label: string;
+  }[];
+
   // === FAQ da pagina de planos ===
   mtpay_planos_faq_title: string;            // "Perguntas frequentes"
   mtpay_planos_faq_subtitle: string;          // "Tire suas duvidas sobre..."
@@ -601,6 +625,84 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   mtpay_videos_title: "Vídeos em destaque",
   mtpay_videos_count: 10,
   mtpay_videos_show_ranking: true,
+
+  mtpay_onboarding_title: "Como funciona o MoneyTokPay",
+  mtpay_onboarding_button_label: "Continuar",
+  mtpay_onboarding_finish_label: "Comecar cadastro",
+  mtpay_onboarding_steps: [
+    {
+      title: "Bem-vindo a plataforma",
+      description: "O MoneyTokPay e a sua carteira digital dentro do MoneyTok. Voce pode acompanhar seus ganhos, comprar moedas para usar em features premium e sacar valores em dinheiro.",
+      image_url: "",
+      bullets: [
+        "Carteira digital integrada ao MoneyTok",
+        "Saques via PIX (instantaneo) ou banco (D+1)",
+        "Saldo de moedas para features premium",
+      ],
+      checkbox_label: "Eu entendi",
+    },
+    {
+      title: "Como voce vai receber",
+      description: "Apos cadastrar seus dados de pagamento, todos os ganhos da plataforma sao depositados na sua conta MoneyTokPay. Voce decide quando sacar.",
+      image_url: "",
+      bullets: [
+        "PIX: ate 2 minutos",
+        "Conta bancaria: D+1 util",
+        "Sem taxa de saque ate o limite mensal",
+      ],
+      checkbox_label: "Eu entendi como receber",
+    },
+    {
+      title: "Pronto pra ativar?",
+      description: "Pra ativar sua conta, voce precisa preencher os dados e escolher um plano de moedas. E rapido e voce libera todas as features da plataforma.",
+      image_url: "",
+      bullets: [
+        "Cadastro em menos de 2 minutos",
+        "Dados protegidos com criptografia",
+        "Plano de moedas ativa as features premium",
+      ],
+      checkbox_label: "Estou pronto pra cadastrar",
+    },
+  ],
+
+  mtpay_onboarding_title: "Como funciona o MoneyTokPay",
+  mtpay_onboarding_button_label: "Continuar",
+  mtpay_onboarding_finish_label: "Comecar cadastro",
+  mtpay_onboarding_steps: [
+    {
+      title: "Bem-vindo a plataforma",
+      description: "O MoneyTokPay e a sua carteira digital dentro do MoneyTok. Voce pode acompanhar seus ganhos, comprar moedas para usar em features premium e sacar valores em dinheiro.",
+      image_url: "",
+      bullets: [
+        "Carteira digital integrada ao MoneyTok",
+        "Saques via PIX (instantaneo) ou banco (D+1)",
+        "Saldo de moedas para features premium",
+      ],
+      checkbox_label: "Eu entendi",
+    },
+    {
+      title: "Como voce vai receber",
+      description: "Apos cadastrar seus dados de pagamento, todos os ganhos da plataforma sao depositados na sua conta MoneyTokPay. Voce decide quando sacar.",
+      image_url: "",
+      bullets: [
+        "PIX: ate 2 minutos",
+        "Conta bancaria: D+1 util",
+        "Sem taxa de saque ate o limite mensal",
+      ],
+      checkbox_label: "Eu entendi como receber",
+    },
+    {
+      title: "Pronto pra ativar?",
+      description: "Pra ativar sua conta, voce precisa preencher os dados e escolher um plano de moedas. E rapido e voce libera todas as features da plataforma.",
+      image_url: "",
+      bullets: [
+        "Cadastro em menos de 2 minutos",
+        "Dados protegidos com criptografia",
+        "Plano de moedas ativa as features premium",
+      ],
+      checkbox_label: "Estou pronto pra cadastrar",
+    },
+  ],
 
   mtpay_planos_faq_title: "Perguntas frequentes",
   mtpay_planos_faq_subtitle: "Tire suas duvidas sobre o MoneyTokPay e os planos de moedas",
