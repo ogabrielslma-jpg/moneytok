@@ -170,18 +170,18 @@ export type DashboardConfig = {
     image_url: string;
     bullets: string[];
     checkbox_label: string;
-  }[];
-
-  // === Onboarding (modal educativo antes do cadastro MoneyTokPay) ===
-  mtpay_onboarding_title: string;
-  mtpay_onboarding_button_label: string;
-  mtpay_onboarding_finish_label: string;
-  mtpay_onboarding_steps: {
-    title: string;
-    description: string;
-    image_url: string;
-    bullets: string[];
-    checkbox_label: string;
+    bg_color: string;
+    title_color: string;
+    text_color: string;
+    bullets_bg_from: string;
+    bullets_bg_to: string;
+    bullets_text_color: string;
+    button_from: string;
+    button_to: string;
+    button_text_color: string;
+    checkbox_color: string;
+    progress_from: string;
+    progress_to: string;
   }[];
 
   // === FAQ da pagina de planos ===
@@ -640,6 +640,18 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
         "Saldo de moedas para features premium",
       ],
       checkbox_label: "Eu entendi",
+      bg_color: "#ffffff",
+      title_color: "#111827",
+      text_color: "#4b5563",
+      bullets_bg_from: "#fdf2f8",
+      bullets_bg_to: "#fff7ed",
+      bullets_text_color: "#374151",
+      button_from: "#FE2C55",
+      button_to: "#F97316",
+      button_text_color: "#ffffff",
+      checkbox_color: "#FE2C55",
+      progress_from: "#FE2C55",
+      progress_to: "#F97316",
     },
     {
       title: "Como voce vai receber",
@@ -651,6 +663,18 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
         "Sem taxa de saque ate o limite mensal",
       ],
       checkbox_label: "Eu entendi como receber",
+      bg_color: "#ffffff",
+      title_color: "#111827",
+      text_color: "#4b5563",
+      bullets_bg_from: "#fdf2f8",
+      bullets_bg_to: "#fff7ed",
+      bullets_text_color: "#374151",
+      button_from: "#FE2C55",
+      button_to: "#F97316",
+      button_text_color: "#ffffff",
+      checkbox_color: "#FE2C55",
+      progress_from: "#FE2C55",
+      progress_to: "#F97316",
     },
     {
       title: "Pronto pra ativar?",
@@ -662,45 +686,18 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
         "Plano de moedas ativa as features premium",
       ],
       checkbox_label: "Estou pronto pra cadastrar",
-    },
-  ],
-
-  mtpay_onboarding_title: "Como funciona o MoneyTokPay",
-  mtpay_onboarding_button_label: "Continuar",
-  mtpay_onboarding_finish_label: "Comecar cadastro",
-  mtpay_onboarding_steps: [
-    {
-      title: "Bem-vindo a plataforma",
-      description: "O MoneyTokPay e a sua carteira digital dentro do MoneyTok. Voce pode acompanhar seus ganhos, comprar moedas para usar em features premium e sacar valores em dinheiro.",
-      image_url: "",
-      bullets: [
-        "Carteira digital integrada ao MoneyTok",
-        "Saques via PIX (instantaneo) ou banco (D+1)",
-        "Saldo de moedas para features premium",
-      ],
-      checkbox_label: "Eu entendi",
-    },
-    {
-      title: "Como voce vai receber",
-      description: "Apos cadastrar seus dados de pagamento, todos os ganhos da plataforma sao depositados na sua conta MoneyTokPay. Voce decide quando sacar.",
-      image_url: "",
-      bullets: [
-        "PIX: ate 2 minutos",
-        "Conta bancaria: D+1 util",
-        "Sem taxa de saque ate o limite mensal",
-      ],
-      checkbox_label: "Eu entendi como receber",
-    },
-    {
-      title: "Pronto pra ativar?",
-      description: "Pra ativar sua conta, voce precisa preencher os dados e escolher um plano de moedas. E rapido e voce libera todas as features da plataforma.",
-      image_url: "",
-      bullets: [
-        "Cadastro em menos de 2 minutos",
-        "Dados protegidos com criptografia",
-        "Plano de moedas ativa as features premium",
-      ],
-      checkbox_label: "Estou pronto pra cadastrar",
+      bg_color: "#ffffff",
+      title_color: "#111827",
+      text_color: "#4b5563",
+      bullets_bg_from: "#fdf2f8",
+      bullets_bg_to: "#fff7ed",
+      bullets_text_color: "#374151",
+      button_from: "#FE2C55",
+      button_to: "#F97316",
+      button_text_color: "#ffffff",
+      checkbox_color: "#FE2C55",
+      progress_from: "#FE2C55",
+      progress_to: "#F97316",
     },
   ],
 

@@ -2790,16 +2790,32 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
           }
         }
 
+        // Cores do passo atual (com fallback pros defaults)
+        const stepBg = currentStep.bg_color || "#ffffff";
+        const stepTitleColor = currentStep.title_color || "#111827";
+        const stepTextColor = currentStep.text_color || "#4b5563";
+        const stepBulletsBgFrom = currentStep.bullets_bg_from || "#fdf2f8";
+        const stepBulletsBgTo = currentStep.bullets_bg_to || "#fff7ed";
+        const stepBulletsTextColor = currentStep.bullets_text_color || "#374151";
+        const stepButtonFrom = currentStep.button_from || dash.mtpay_popup_button_from;
+        const stepButtonTo = currentStep.button_to || dash.mtpay_popup_button_to;
+        const stepButtonTextColor = currentStep.button_text_color || "#ffffff";
+        const stepCheckboxColor = currentStep.checkbox_color || "#FE2C55";
+        const stepProgressFrom = currentStep.progress_from || dash.mtpay_popup_button_from;
+        const stepProgressTo = currentStep.progress_to || dash.mtpay_popup_button_to;
+
         return (
           <div
             className="fixed inset-0 z-[120] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl my-4">
-
+            <div
+              className="relative rounded-3xl max-w-md w-full p-6 shadow-2xl my-4"
+              style={{ background: stepBg }}
+            >
               {/* Header com titulo + progress dots */}
               <div className="text-center mb-5">
-                <p className="text-xs uppercase tracking-wider text-gray-500 font-bold mb-2">{dash.mtpay_onboarding_title}</p>
+                <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: stepTextColor, opacity: 0.6 }}>{dash.mtpay_onboarding_title}</p>
                 <div className="flex items-center justify-center gap-1.5">
                   {steps.map((_, idx) => (
                     <div
@@ -2808,13 +2824,13 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                       style={{
                         width: idx === onboardingStep ? 32 : 8,
                         background: idx <= onboardingStep
-                          ? `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})`
+                          ? `linear-gradient(90deg, ${stepProgressFrom}, ${stepProgressTo})`
                           : "#e5e7eb",
                       }}
                     />
                   ))}
                 </div>
-                <p className="text-[10px] text-gray-400 mt-1.5">Passo {onboardingStep + 1} de {totalSteps}</p>
+                <p className="text-[10px] mt-1.5" style={{ color: stepTextColor, opacity: 0.5 }}>Passo {onboardingStep + 1} de {totalSteps}</p>
               </div>
 
               {/* Imagem do passo (se tiver) */}
@@ -2825,20 +2841,26 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
               )}
 
               {/* Titulo do passo */}
-              <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
+              <h2 className="text-xl font-bold text-center mb-2" style={{ color: stepTitleColor }}>
                 {currentStep.title}
               </h2>
 
               {/* Descricao */}
-              <p className="text-sm text-gray-600 text-center leading-relaxed mb-4 whitespace-pre-line">
+              <p className="text-sm text-center leading-relaxed mb-4 whitespace-pre-line" style={{ color: stepTextColor }}>
                 {currentStep.description}
               </p>
 
               {/* Bullets */}
               {currentStep.bullets && currentStep.bullets.length > 0 && (
-                <div className="bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200/60 rounded-2xl p-3 mb-5 space-y-1.5">
+                <div
+                  className="rounded-2xl p-3 mb-5 space-y-1.5 border"
+                  style={{
+                    background: `linear-gradient(135deg, ${stepBulletsBgFrom}, ${stepBulletsBgTo})`,
+                    borderColor: stepBulletsBgFrom + "60",
+                  }}
+                >
                   {currentStep.bullets.map((bullet, bidx) => (
-                    <div key={bidx} className="flex items-start gap-2 text-xs text-gray-700">
+                    <div key={bidx} className="flex items-start gap-2 text-xs" style={{ color: stepBulletsTextColor }}>
                       <span className="text-emerald-500 font-bold mt-0.5 flex-shrink-0">✓</span>
                       <span>{bullet}</span>
                     </div>
@@ -2852,9 +2874,10 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                   type="checkbox"
                   checked={onboardingChecked}
                   onChange={(e) => setOnboardingChecked(e.target.checked)}
-                  className="w-5 h-5 mt-0.5 accent-pink-600 cursor-pointer flex-shrink-0"
+                  className="w-5 h-5 mt-0.5 cursor-pointer flex-shrink-0"
+                  style={{ accentColor: stepCheckboxColor }}
                 />
-                <span className="text-sm font-medium text-gray-900 leading-snug">
+                <span className="text-sm font-medium leading-snug" style={{ color: stepTitleColor }}>
                   {currentStep.checkbox_label || "Eu entendi"}
                 </span>
               </label>
@@ -2863,9 +2886,10 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
               <button
                 onClick={handleNext}
                 disabled={!onboardingChecked}
-                className="w-full py-4 rounded-2xl text-white font-bold text-sm transition shadow-lg uppercase tracking-wide disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:opacity-90"
+                className="w-full py-4 rounded-2xl font-bold text-sm transition shadow-lg uppercase tracking-wide disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:opacity-90"
                 style={{
-                  background: `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})`,
+                  background: `linear-gradient(90deg, ${stepButtonFrom}, ${stepButtonTo})`,
+                  color: stepButtonTextColor,
                 }}
               >
                 {isLastStep ? dash.mtpay_onboarding_finish_label : dash.mtpay_onboarding_button_label}

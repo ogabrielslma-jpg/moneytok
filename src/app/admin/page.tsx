@@ -1389,6 +1389,129 @@ export default function AdminPage() {
                               }}
                               className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                           </Field>
+
+                          {/* === CORES === */}
+                          <details className="border-t pt-2 mt-2">
+                            <summary className="cursor-pointer text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">Cores deste passo</summary>
+                            <div className="space-y-2 pt-1">
+                              <div className="grid grid-cols-2 gap-2">
+                                <Field label="Fundo do modal">
+                                  <input type="color" value={step.bg_color || "#ffffff"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], bg_color: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                                <Field label="Cor do titulo">
+                                  <input type="color" value={step.title_color || "#111827"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], title_color: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                              </div>
+                              <Field label="Cor do texto/descricao">
+                                <input type="color" value={step.text_color || "#4b5563"}
+                                  onChange={(e) => {
+                                    const next = [...(dash.mtpay_onboarding_steps || [])];
+                                    next[idx] = { ...next[idx], text_color: e.target.value };
+                                    updateDashboard({ mtpay_onboarding_steps: next });
+                                  }}
+                                  className="w-full h-9 rounded cursor-pointer" />
+                              </Field>
+                              <div className="grid grid-cols-3 gap-2">
+                                <Field label="Bullets fundo (de)">
+                                  <input type="color" value={step.bullets_bg_from || "#fdf2f8"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], bullets_bg_from: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                                <Field label="Bullets fundo (ate)">
+                                  <input type="color" value={step.bullets_bg_to || "#fff7ed"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], bullets_bg_to: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                                <Field label="Bullets texto">
+                                  <input type="color" value={step.bullets_text_color || "#374151"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], bullets_text_color: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2">
+                                <Field label="Botao (de)">
+                                  <input type="color" value={step.button_from || "#FE2C55"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], button_from: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                                <Field label="Botao (ate)">
+                                  <input type="color" value={step.button_to || "#F97316"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], button_to: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                                <Field label="Botao texto">
+                                  <input type="color" value={step.button_text_color || "#ffffff"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], button_text_color: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2">
+                                <Field label="Checkbox">
+                                  <input type="color" value={step.checkbox_color || "#FE2C55"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], checkbox_color: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                                <Field label="Progresso (de)">
+                                  <input type="color" value={step.progress_from || "#FE2C55"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], progress_from: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                                <Field label="Progresso (ate)">
+                                  <input type="color" value={step.progress_to || "#F97316"}
+                                    onChange={(e) => {
+                                      const next = [...(dash.mtpay_onboarding_steps || [])];
+                                      next[idx] = { ...next[idx], progress_to: e.target.value };
+                                      updateDashboard({ mtpay_onboarding_steps: next });
+                                    }}
+                                    className="w-full h-9 rounded cursor-pointer" />
+                                </Field>
+                              </div>
+                            </div>
+                          </details>
                         </div>
                       </details>
                     ))}
@@ -2800,6 +2923,20 @@ function DashboardPreview({ config }: { config: LandingConfig }) {
     const totalSteps = steps.length;
     const isLast = onbStep === totalSteps - 1;
 
+    // Cores do passo atual (com fallback)
+    const stepBg = currentStep.bg_color || "#ffffff";
+    const stepTitleColor = currentStep.title_color || "#111827";
+    const stepTextColor = currentStep.text_color || "#4b5563";
+    const stepBulletsBgFrom = currentStep.bullets_bg_from || "#fdf2f8";
+    const stepBulletsBgTo = currentStep.bullets_bg_to || "#fff7ed";
+    const stepBulletsTextColor = currentStep.bullets_text_color || "#374151";
+    const stepButtonFrom = currentStep.button_from || dash.mtpay_popup_button_from;
+    const stepButtonTo = currentStep.button_to || dash.mtpay_popup_button_to;
+    const stepButtonTextColor = currentStep.button_text_color || "#ffffff";
+    const stepCheckboxColor = currentStep.checkbox_color || "#FE2C55";
+    const stepProgressFrom = currentStep.progress_from || dash.mtpay_popup_button_from;
+    const stepProgressTo = currentStep.progress_to || dash.mtpay_popup_button_to;
+
     return (
       <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-4 min-h-[450px]">
         {/* Mini botões de step */}
@@ -2810,7 +2947,7 @@ function DashboardPreview({ config }: { config: LandingConfig }) {
               onClick={() => setOnbStep(idx)}
               className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider transition"
               style={{
-                background: idx === onbStep ? dash.mtpay_popup_button_from : "white",
+                background: idx === onbStep ? stepProgressFrom : "white",
                 color: idx === onbStep ? "white" : "#6b7280",
                 border: idx === onbStep ? "none" : "1px solid #e5e7eb",
               }}
@@ -2821,15 +2958,18 @@ function DashboardPreview({ config }: { config: LandingConfig }) {
         </div>
 
         {/* Modal preview */}
-        <div className="bg-white rounded-2xl max-w-xs mx-auto p-5 shadow-xl">
+        <div
+          className="rounded-2xl max-w-xs mx-auto p-5 shadow-xl"
+          style={{ background: stepBg }}
+        >
           <div className="text-center mb-3">
-            <p className="text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1.5">{dash.mtpay_onboarding_title}</p>
+            <p className="text-[9px] uppercase tracking-wider font-bold mb-1.5" style={{ color: stepTextColor, opacity: 0.6 }}>{dash.mtpay_onboarding_title}</p>
             <div className="flex items-center justify-center gap-1">
               {steps.map((_, idx) => (
-                <div key={idx} className="h-1 rounded-full transition-all" style={{ width: idx === onbStep ? 24 : 6, background: idx <= onbStep ? `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})` : "#e5e7eb" }} />
+                <div key={idx} className="h-1 rounded-full transition-all" style={{ width: idx === onbStep ? 24 : 6, background: idx <= onbStep ? `linear-gradient(90deg, ${stepProgressFrom}, ${stepProgressTo})` : "#e5e7eb" }} />
               ))}
             </div>
-            <p className="text-[8px] text-gray-400 mt-1">Passo {onbStep + 1} de {totalSteps}</p>
+            <p className="text-[8px] mt-1" style={{ color: stepTextColor, opacity: 0.5 }}>Passo {onbStep + 1} de {totalSteps}</p>
           </div>
 
           {currentStep.image_url && (
@@ -2838,13 +2978,19 @@ function DashboardPreview({ config }: { config: LandingConfig }) {
             </div>
           )}
 
-          <h3 className="text-base font-bold text-gray-900 text-center mb-1.5">{currentStep.title || "(sem titulo)"}</h3>
-          <p className="text-[11px] text-gray-600 text-center leading-relaxed mb-3 whitespace-pre-line">{currentStep.description || "(sem descricao)"}</p>
+          <h3 className="text-base font-bold text-center mb-1.5" style={{ color: stepTitleColor }}>{currentStep.title || "(sem titulo)"}</h3>
+          <p className="text-[11px] text-center leading-relaxed mb-3 whitespace-pre-line" style={{ color: stepTextColor }}>{currentStep.description || "(sem descricao)"}</p>
 
           {currentStep.bullets && currentStep.bullets.length > 0 && (
-            <div className="bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200/60 rounded-xl p-2.5 mb-3 space-y-1">
+            <div
+              className="rounded-xl p-2.5 mb-3 space-y-1 border"
+              style={{
+                background: `linear-gradient(135deg, ${stepBulletsBgFrom}, ${stepBulletsBgTo})`,
+                borderColor: stepBulletsBgFrom + "60",
+              }}
+            >
               {currentStep.bullets.map((b, bi) => (
-                <div key={bi} className="flex items-start gap-1.5 text-[10px] text-gray-700">
+                <div key={bi} className="flex items-start gap-1.5 text-[10px]" style={{ color: stepBulletsTextColor }}>
                   <span className="text-emerald-500 font-bold mt-0.5">✓</span>
                   <span>{b}</span>
                 </div>
@@ -2853,11 +2999,17 @@ function DashboardPreview({ config }: { config: LandingConfig }) {
           )}
 
           <label className="flex items-start gap-2 p-2 rounded-lg border border-gray-200 mb-3">
-            <input type="checkbox" checked readOnly className="w-3.5 h-3.5 mt-0.5 accent-pink-600" />
-            <span className="text-[11px] font-medium text-gray-900">{currentStep.checkbox_label || "Eu entendi"}</span>
+            <input type="checkbox" checked readOnly className="w-3.5 h-3.5 mt-0.5" style={{ accentColor: stepCheckboxColor }} />
+            <span className="text-[11px] font-medium" style={{ color: stepTitleColor }}>{currentStep.checkbox_label || "Eu entendi"}</span>
           </label>
 
-          <button className="w-full py-2.5 rounded-xl text-white font-bold text-[11px] shadow-md uppercase tracking-wide" style={{ background: `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})` }}>
+          <button
+            className="w-full py-2.5 rounded-xl font-bold text-[11px] shadow-md uppercase tracking-wide"
+            style={{
+              background: `linear-gradient(90deg, ${stepButtonFrom}, ${stepButtonTo})`,
+              color: stepButtonTextColor,
+            }}
+          >
             {isLast ? dash.mtpay_onboarding_finish_label : dash.mtpay_onboarding_button_label}
           </button>
         </div>
