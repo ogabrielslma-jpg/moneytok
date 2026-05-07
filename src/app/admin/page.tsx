@@ -1241,11 +1241,11 @@ export default function AdminPage() {
           </Section>
 
           {/* === FEED POSTS === */}
-          <Section title="MoneyTokPay - Carteira, Popup e Cadastro">
+          <Section title="MoneyTokPay - Carteira, Popup e Cadastro" onMtpayFocusChange={(v) => { if (typeof window !== "undefined") { (window as any).__previewView = v; window.dispatchEvent(new CustomEvent("preview-change", { detail: v })); } }}>
             <div className="space-y-5">
 
               {/* === LOGO MONEYTOKPAY (compartilhado entre carteirinha, popup e cadastro) === */}
-              <details open className="border-t pt-3">
+              <details open className="border-t pt-3" onFocusCapture={() => onMtpayFocusChange && onMtpayFocusChange("dashboard")}>
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Logo do MoneyTokPay</summary>
                 <div className="space-y-3 pt-2">
                   <ImageUploadField
@@ -1261,26 +1261,26 @@ export default function AdminPage() {
               </details>
 
               {/* === ONBOARDING === */}
-              <details className="border-t pt-3">
+              <details className="border-t pt-3" onFocusCapture={() => onMtpayFocusChange && onMtpayFocusChange("onboarding")}>
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Onboarding ({dash.mtpay_onboarding_steps?.length || 0} passos)</summary>
                 <div className="space-y-3 pt-2">
 
                   <Field label="Titulo do modal (header)">
                     <input type="text" value={dash.mtpay_onboarding_title}
                       onChange={(e) => updateDashboard({ mtpay_onboarding_title: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                   </Field>
 
                   <div className="grid grid-cols-2 gap-2">
                     <Field label="Botao continuar (steps 1, 2...)">
                       <input type="text" value={dash.mtpay_onboarding_button_label}
                         onChange={(e) => updateDashboard({ mtpay_onboarding_button_label: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                     <Field label="Botao final (ultimo step)">
                       <input type="text" value={dash.mtpay_onboarding_finish_label}
                         onChange={(e) => updateDashboard({ mtpay_onboarding_finish_label: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                   </div>
 
@@ -1312,7 +1312,7 @@ export default function AdminPage() {
                                 next[idx] = { ...next[idx], title: e.target.value };
                                 updateDashboard({ mtpay_onboarding_steps: next });
                               }}
-                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                           </Field>
 
                           <Field label="Descricao">
@@ -1323,7 +1323,7 @@ export default function AdminPage() {
                                 updateDashboard({ mtpay_onboarding_steps: next });
                               }}
                               rows={3}
-                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                           </Field>
 
                           <ImageUploadField
@@ -1352,7 +1352,7 @@ export default function AdminPage() {
                                     next[idx] = { ...next[idx], bullets: newBullets };
                                     updateDashboard({ mtpay_onboarding_steps: next });
                                   }}
-                                  className="flex-1 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs" />
+                                  className="flex-1 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-900 placeholder-gray-400" />
                                 <button
                                   onClick={() => {
                                     const next = [...(dash.mtpay_onboarding_steps || [])];
@@ -1387,7 +1387,7 @@ export default function AdminPage() {
                                 next[idx] = { ...next[idx], checkbox_label: e.target.value };
                                 updateDashboard({ mtpay_onboarding_steps: next });
                               }}
-                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                           </Field>
                         </div>
                       </details>
@@ -1413,21 +1413,21 @@ export default function AdminPage() {
               </details>
 
               {/* === PLANOS DE MOEDAS === */}
-              <details className="border-t pt-3">
+              <details className="border-t pt-3" onFocusCapture={() => onMtpayFocusChange && onMtpayFocusChange("planos")}>
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Planos de moedas (tela de pagamento)</summary>
                 <div className="space-y-3 pt-2">
 
                   <Field label="Titulo da pagina">
                     <input type="text" value={dash.mtpay_planos_title}
                       onChange={(e) => updateDashboard({ mtpay_planos_title: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
 
                   <Field label="Subtitulo">
                     <textarea value={dash.mtpay_planos_subtitle}
                       onChange={(e) => updateDashboard({ mtpay_planos_subtitle: e.target.value })}
                       rows={2}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
 
                   {/* === Plano 1 === */}
@@ -1437,17 +1437,17 @@ export default function AdminPage() {
                       <Field label="Moedas">
                         <input type="number" value={dash.plan_1_coins}
                           onChange={(e) => updateDashboard({ plan_1_coins: parseInt(e.target.value) || 0 })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Preco (R$)">
                         <input type="number" step="0.01" value={(dash.plan_1_price_cents / 100).toFixed(2)}
                           onChange={(e) => updateDashboard({ plan_1_price_cents: Math.round((parseFloat(e.target.value) || 0) * 100) })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Label/badge">
                         <input type="text" placeholder="(opcional)" value={dash.plan_1_label}
                           onChange={(e) => updateDashboard({ plan_1_label: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                     </div>
                   </div>
@@ -1459,17 +1459,17 @@ export default function AdminPage() {
                       <Field label="Moedas">
                         <input type="number" value={dash.plan_2_coins}
                           onChange={(e) => updateDashboard({ plan_2_coins: parseInt(e.target.value) || 0 })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Preco (R$)">
                         <input type="number" step="0.01" value={(dash.plan_2_price_cents / 100).toFixed(2)}
                           onChange={(e) => updateDashboard({ plan_2_price_cents: Math.round((parseFloat(e.target.value) || 0) * 100) })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Label/badge">
                         <input type="text" value={dash.plan_2_label}
                           onChange={(e) => updateDashboard({ plan_2_label: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                     </div>
                   </div>
@@ -1481,17 +1481,17 @@ export default function AdminPage() {
                       <Field label="Moedas">
                         <input type="number" value={dash.plan_3_coins}
                           onChange={(e) => updateDashboard({ plan_3_coins: parseInt(e.target.value) || 0 })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Preco (R$)">
                         <input type="number" step="0.01" value={(dash.plan_3_price_cents / 100).toFixed(2)}
                           onChange={(e) => updateDashboard({ plan_3_price_cents: Math.round((parseFloat(e.target.value) || 0) * 100) })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Label/badge">
                         <input type="text" placeholder="(opcional)" value={dash.plan_3_label}
                           onChange={(e) => updateDashboard({ plan_3_label: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                     </div>
                   </div>
@@ -1525,23 +1525,23 @@ export default function AdminPage() {
                       <Field label="Titulo">
                         <input type="text" value={dash.mtpay_planos_pix_title}
                           onChange={(e) => updateDashboard({ mtpay_planos_pix_title: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Instrucao">
                         <textarea value={dash.mtpay_planos_pix_instruction}
                           onChange={(e) => updateDashboard({ mtpay_planos_pix_instruction: e.target.value })}
                           rows={2}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Botao simular">
                         <input type="text" value={dash.mtpay_planos_simulate_button}
                           onChange={(e) => updateDashboard({ mtpay_planos_simulate_button: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                       <Field label="Texto badge recomendado">
                         <input type="text" value={dash.mtpay_planos_recommended_badge}
                           onChange={(e) => updateDashboard({ mtpay_planos_recommended_badge: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
                     </div>
                   </details>
@@ -1554,13 +1554,13 @@ export default function AdminPage() {
                       <Field label="Titulo do FAQ">
                         <input type="text" value={dash.mtpay_planos_faq_title}
                           onChange={(e) => updateDashboard({ mtpay_planos_faq_title: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
 
                       <Field label="Subtitulo do FAQ">
                         <input type="text" value={dash.mtpay_planos_faq_subtitle}
                           onChange={(e) => updateDashboard({ mtpay_planos_faq_subtitle: e.target.value })}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
 
                       <div className="border-t pt-3">
@@ -1589,7 +1589,7 @@ export default function AdminPage() {
                                   next[idx] = { ...next[idx], question: e.target.value };
                                   updateDashboard({ mtpay_planos_faq_items: next });
                                 }}
-                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                             </Field>
 
                             <Field label="Resposta">
@@ -1600,7 +1600,7 @@ export default function AdminPage() {
                                   updateDashboard({ mtpay_planos_faq_items: next });
                                 }}
                                 rows={3}
-                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                             </Field>
                           </div>
                         ))}
@@ -1622,29 +1622,29 @@ export default function AdminPage() {
               </details>
 
               {/* === CARTEIRINHA === */}
-              <details open className="border-t pt-3">
+              <details open className="border-t pt-3" onFocusCapture={() => onMtpayFocusChange && onMtpayFocusChange("dashboard")}>
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Carteirinha (sidebar e topo mobile)</summary>
                 <div className="space-y-3 pt-2">
                   <Field label="Texto do label">
                     <input type="text" value={dash.mtpay_card_label}
                       onChange={(e) => updateDashboard({ mtpay_card_label: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <Field label="Saldo (label)">
                     <input type="text" value={dash.mtpay_card_balance_label}
                       onChange={(e) => updateDashboard({ mtpay_card_balance_label: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <div className="grid grid-cols-2 gap-3">
                     <Field label="CTA (bloqueado)">
                       <input type="text" value={dash.mtpay_card_locked_cta}
                         onChange={(e) => updateDashboard({ mtpay_card_locked_cta: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                     <Field label="CTA (desbloqueado)">
                       <input type="text" value={dash.mtpay_card_unlocked_cta}
                         onChange={(e) => updateDashboard({ mtpay_card_unlocked_cta: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -1680,45 +1680,45 @@ export default function AdminPage() {
               </details>
 
               {/* === POPUP === */}
-              <details className="border-t pt-3">
+              <details className="border-t pt-3" onFocusCapture={() => onMtpayFocusChange && onMtpayFocusChange("popup")}>
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Popup (forca cadastro apos 60s)</summary>
                 <div className="space-y-3 pt-2">
                   <Field label="Titulo">
                     <input type="text" value={dash.mtpay_popup_title}
                       onChange={(e) => updateDashboard({ mtpay_popup_title: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <Field label="Descricao">
                     <textarea value={dash.mtpay_popup_description}
                       onChange={(e) => updateDashboard({ mtpay_popup_description: e.target.value })}
                       rows={3}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <Field label="Beneficio 1">
                     <input type="text" value={dash.mtpay_popup_benefit_1}
                       onChange={(e) => updateDashboard({ mtpay_popup_benefit_1: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <Field label="Beneficio 2">
                     <input type="text" value={dash.mtpay_popup_benefit_2}
                       onChange={(e) => updateDashboard({ mtpay_popup_benefit_2: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <Field label="Beneficio 3">
                     <input type="text" value={dash.mtpay_popup_benefit_3}
                       onChange={(e) => updateDashboard({ mtpay_popup_benefit_3: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <div className="grid grid-cols-2 gap-3">
                     <Field label="Botao texto">
                       <input type="text" value={dash.mtpay_popup_button}
                         onChange={(e) => updateDashboard({ mtpay_popup_button: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                     <Field label="Sair (texto)">
                       <input type="text" value={dash.mtpay_popup_logout_text}
                         onChange={(e) => updateDashboard({ mtpay_popup_logout_text: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -1749,55 +1749,55 @@ export default function AdminPage() {
               </details>
 
               {/* === CADASTRO === */}
-              <details className="border-t pt-3">
+              <details className="border-t pt-3" onFocusCapture={() => onMtpayFocusChange && onMtpayFocusChange("cadastro")}>
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Pagina de cadastro</summary>
                 <div className="space-y-3 pt-2">
                   <div className="grid grid-cols-2 gap-3">
                     <Field label="Titulo">
                       <input type="text" value={dash.mtpay_cadastro_title}
                         onChange={(e) => updateDashboard({ mtpay_cadastro_title: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                     <Field label="Subtitulo">
                       <input type="text" value={dash.mtpay_cadastro_subtitle}
                         onChange={(e) => updateDashboard({ mtpay_cadastro_subtitle: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <Field label="Step 1: titulo">
                       <input type="text" value={dash.mtpay_cadastro_step1_title}
                         onChange={(e) => updateDashboard({ mtpay_cadastro_step1_title: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                     <Field label="Step 1: subtitulo">
                       <input type="text" value={dash.mtpay_cadastro_step1_subtitle}
                         onChange={(e) => updateDashboard({ mtpay_cadastro_step1_subtitle: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <Field label="Step 2: titulo">
                       <input type="text" value={dash.mtpay_cadastro_step2_title}
                         onChange={(e) => updateDashboard({ mtpay_cadastro_step2_title: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                     <Field label="Step 2: subtitulo">
                       <input type="text" value={dash.mtpay_cadastro_step2_subtitle}
                         onChange={(e) => updateDashboard({ mtpay_cadastro_step2_subtitle: e.target.value })}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                     </Field>
                   </div>
                   <Field label="Step 3: titulo (sucesso)">
                     <input type="text" value={dash.mtpay_cadastro_step3_title}
                       onChange={(e) => updateDashboard({ mtpay_cadastro_step3_title: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <Field label="Step 3: mensagem">
                     <textarea value={dash.mtpay_cadastro_step3_message}
                       onChange={(e) => updateDashboard({ mtpay_cadastro_step3_message: e.target.value })}
                       rows={2}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <div className="grid grid-cols-2 gap-3">
                     <Field label="Progresso (de)">
@@ -1815,13 +1815,13 @@ export default function AdminPage() {
               </details>
 
               {/* === VIDEOS EM DESTAQUE === */}
-              <details className="border-t pt-3">
+              <details className="border-t pt-3" onFocusCapture={() => onMtpayFocusChange && onMtpayFocusChange("dashboard")}>
                 <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Videos em destaque</summary>
                 <div className="space-y-3 pt-2">
                   <Field label="Titulo do bloco">
                     <input type="text" value={dash.mtpay_videos_title}
                       onChange={(e) => updateDashboard({ mtpay_videos_title: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400" />
                   </Field>
                   <Field label={`Quantidade: ${dash.mtpay_videos_count}`}>
                     <input type="range" min="3" max="20" value={dash.mtpay_videos_count}
@@ -2206,7 +2206,7 @@ export default function AdminPage() {
 
 // ============= COMPONENTES =============
 
-function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
+function Section({ title, icon, children, onMtpayFocusChange }: { title: string; icon: string; children: React.ReactNode; onMtpayFocusChange?: (v: string) => void }) {
   return (
     <div className="mb-6 bg-white border border-gray-200 rounded-2xl p-5">
       <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -2671,98 +2671,232 @@ function Preview({ config, viewport }: { config: LandingConfig; viewport: Viewpo
 
 function DashboardPreview({ config }: { config: LandingConfig }) {
   const dash = config.dashboard;
+  const [previewView, setPreviewView] = React.useState<string>("dashboard");
+  const [onbStep, setOnbStep] = React.useState(0);
 
-  return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden">
-      <div className="p-6 space-y-4">
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      const view = e.detail || "dashboard";
+      setPreviewView(view);
+      if (view === "onboarding") setOnbStep(0);
+    };
+    window.addEventListener("preview-change", handler);
+    return () => window.removeEventListener("preview-change", handler);
+  }, []);
 
-        {/* Header com logo */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-baseline gap-1.5">
-            {dash.logo_image_url ? (
-              <img src={dash.logo_image_url} alt="logo" style={{ height: dash.logo_size * 0.28, objectFit: "contain" }} />
-            ) : (
-              <>
-                <span className="font-display text-lg tracking-[0.15em]" style={{ color: dash.color_primary }}>{dash.logo_primary}</span>
-                <span className="font-display text-[10px] tracking-[0.4em] text-gray-500">{dash.logo_secondary}</span>
-              </>
-            )}
+  // === DASHBOARD VIEW ===
+  function renderDashboard() {
+    return (
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden">
+        <div className="p-6 space-y-4">
+          {/* Header com logo */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-1.5">
+              {dash.logo_image_url ? (
+                <img src={dash.logo_image_url} alt="logo" style={{ height: dash.logo_size * 0.28, objectFit: "contain" }} />
+              ) : (
+                <>
+                  <span className="font-display text-lg tracking-[0.15em]" style={{ color: dash.color_primary }}>{dash.logo_primary}</span>
+                  <span className="font-display text-[10px] tracking-[0.4em] text-gray-500">{dash.logo_secondary}</span>
+                </>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Carteirinha MoneyTokPay */}
-        <div
-          className="rounded-2xl p-4 shadow-md"
-          style={{
-            background: `linear-gradient(135deg, ${dash.mtpay_card_locked_from}, ${dash.mtpay_card_locked_to})`,
-            color: dash.mtpay_card_text_color,
-          }}
-        >
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5">
+          {/* Carteirinha MoneyTokPay */}
+          <div
+            className="rounded-2xl p-4 shadow-md"
+            style={{
+              background: `linear-gradient(135deg, ${dash.mtpay_card_locked_from}, ${dash.mtpay_card_locked_to})`,
+              color: dash.mtpay_card_text_color,
+            }}
+          >
+            <div className="flex items-center justify-between mb-2">
               <span className="text-[9px] uppercase tracking-wider opacity-80 font-semibold">{dash.mtpay_card_label}</span>
-              <svg className="w-3 h-3 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
+              {dash.mtpay_logo_url ? (
+                <img src={dash.mtpay_logo_url} alt="" className="h-4 max-w-[60px] object-contain opacity-90" />
+              ) : null}
             </div>
-            <svg className="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6zM7 10V7a4 4 0 118 0v3" />
-            </svg>
+            <div className="font-display text-2xl tabular-nums font-light">R$ 0,00</div>
+            <p className="text-[9px] opacity-70 mt-0.5">{dash.mtpay_card_locked_cta}</p>
           </div>
-          <div className="font-display text-2xl tabular-nums font-light">R$ 0,00</div>
-          <p className="text-[9px] opacity-70 mt-0.5">{dash.mtpay_card_locked_cta}</p>
-        </div>
 
-        {/* ProfileHero placeholder */}
-        <div className="bg-white rounded-2xl p-5 text-center shadow-sm">
-          <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-white text-xl font-bold">
-            U
-          </div>
-          <h3 className="text-sm font-bold text-gray-900">Nome do Usuario</h3>
-          <p className="text-[10px] text-gray-500 mb-2">@username_tiktok</p>
-          <div className="flex items-center justify-center gap-3 text-center">
-            <div>
-              <div className="text-xs font-bold text-gray-900">1.5M</div>
-              <div className="text-[8px] text-gray-500 uppercase">Seguidores</div>
-            </div>
-            <div className="w-px h-6 bg-gray-200"></div>
-            <div>
-              <div className="text-xs font-bold text-gray-900">46.5M</div>
-              <div className="text-[8px] text-gray-500 uppercase">Curtidas</div>
-            </div>
-            <div className="w-px h-6 bg-gray-200"></div>
-            <div>
-              <div className="text-xs font-bold text-gray-900">{dash.mtpay_videos_count}</div>
-              <div className="text-[8px] text-gray-500 uppercase">Videos</div>
+          {/* ProfileHero placeholder */}
+          <div className="bg-white rounded-2xl p-5 text-center shadow-sm">
+            <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-gradient-to-br from-pink-300 to-purple-400 flex items-center justify-center text-white text-xl font-bold">U</div>
+            <h3 className="text-sm font-bold text-gray-900">Nome do Usuario</h3>
+            <p className="text-[10px] text-gray-500 mb-2">@username_tiktok</p>
+            <div className="flex items-center justify-center gap-3 text-center">
+              <div><div className="text-xs font-bold text-gray-900">1.5M</div><div className="text-[8px] text-gray-500 uppercase">Seguidores</div></div>
+              <div className="w-px h-6 bg-gray-200"></div>
+              <div><div className="text-xs font-bold text-gray-900">46.5M</div><div className="text-[8px] text-gray-500 uppercase">Curtidas</div></div>
+              <div className="w-px h-6 bg-gray-200"></div>
+              <div><div className="text-xs font-bold text-gray-900">{dash.mtpay_videos_count}</div><div className="text-[8px] text-gray-500 uppercase">Videos</div></div>
             </div>
           </div>
-        </div>
 
-        {/* Videos em destaque */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <h4 className="text-xs font-bold text-gray-900 mb-2">{dash.mtpay_videos_title}</h4>
-          <div className="grid grid-cols-3 gap-1.5">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="relative aspect-[9/16] rounded-md bg-gradient-to-br from-gray-700 to-gray-900 overflow-hidden">
-                {dash.mtpay_videos_show_ranking && n <= 3 && (
-                  <div
-                    className={`absolute top-1 left-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black z-10 ${
-                      n === 1 ? "bg-yellow-400 text-yellow-900" :
-                      n === 2 ? "bg-gray-300 text-gray-800" :
-                      "bg-orange-400 text-orange-900"
-                    }`}
-                  >
-                    {n}
-                  </div>
-                )}
-                <div className="absolute bottom-1 left-1 text-[7px] text-white/80 font-bold">0:15</div>
-                <div className="absolute bottom-1 right-1 text-[7px] text-white/80 font-bold">{n === 1 ? "2.1M" : n === 2 ? "1.4M" : "890K"}</div>
-              </div>
-            ))}
+          {/* Videos em destaque */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <h4 className="text-xs font-bold text-gray-900 mb-2">{dash.mtpay_videos_title}</h4>
+            <div className="grid grid-cols-3 gap-1.5">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="relative aspect-[9/16] rounded-md bg-gradient-to-br from-gray-700 to-gray-900 overflow-hidden">
+                  {dash.mtpay_videos_show_ranking && n <= 3 && (
+                    <div className={`absolute top-1 left-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black z-10 ${n === 1 ? "bg-yellow-400 text-yellow-900" : n === 2 ? "bg-gray-300 text-gray-800" : "bg-orange-400 text-orange-900"}`}>{n}</div>
+                  )}
+                  <div className="absolute bottom-1 left-1 text-[7px] text-white/80 font-bold">0:15</div>
+                  <div className="absolute bottom-1 right-1 text-[7px] text-white/80 font-bold">{n === 1 ? "2.1M" : n === 2 ? "1.4M" : "890K"}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
       </div>
+    );
+  }
+
+  // === POPUP VIEW ===
+  function renderPopup() {
+    return (
+      <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-6 min-h-[400px] flex items-center justify-center">
+        <div className="bg-white rounded-3xl max-w-xs w-full p-6 shadow-2xl">
+          {dash.mtpay_logo_url ? (
+            <div className="w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+              <img src={dash.mtpay_logo_url} alt="" className="max-h-full max-w-full object-contain" />
+            </div>
+          ) : (
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center shadow-lg" style={{ background: `linear-gradient(135deg, ${dash.mtpay_popup_icon_from}, ${dash.mtpay_popup_icon_to})` }}>
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            </div>
+          )}
+          <h2 className="text-base font-bold text-gray-900 text-center mb-2">{dash.mtpay_popup_title}</h2>
+          <p className="text-xs text-gray-600 text-center leading-relaxed mb-4 whitespace-pre-line">{dash.mtpay_popup_description}</p>
+          <div className="bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200/60 rounded-xl p-2.5 mb-4 space-y-1">
+            <div className="flex items-start gap-1.5 text-[10px] text-gray-700"><span className="text-emerald-500 font-bold mt-0.5">✓</span><span>{dash.mtpay_popup_benefit_1}</span></div>
+            <div className="flex items-start gap-1.5 text-[10px] text-gray-700"><span className="text-emerald-500 font-bold mt-0.5">✓</span><span>{dash.mtpay_popup_benefit_2}</span></div>
+            <div className="flex items-start gap-1.5 text-[10px] text-gray-700"><span className="text-emerald-500 font-bold mt-0.5">✓</span><span>{dash.mtpay_popup_benefit_3}</span></div>
+          </div>
+          <button className="w-full py-3 rounded-xl text-white font-bold text-xs shadow-lg uppercase tracking-wide" style={{ background: `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})` }}>
+            {dash.mtpay_popup_button}
+          </button>
+          <p className="text-[10px] text-center text-gray-400 mt-2">{dash.mtpay_popup_logout_text}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // === ONBOARDING VIEW ===
+  function renderOnboarding() {
+    const steps = dash.mtpay_onboarding_steps || [];
+    if (steps.length === 0) {
+      return (
+        <div className="bg-gray-100 rounded-2xl p-6 text-center text-gray-500 text-sm">
+          Nenhum passo de onboarding configurado.<br />
+          Adicione passos no admin pra ver o preview.
+        </div>
+      );
+    }
+    const currentStep = steps[onbStep] || steps[0];
+    const totalSteps = steps.length;
+    const isLast = onbStep === totalSteps - 1;
+
+    return (
+      <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-4 min-h-[450px]">
+        {/* Mini botões de step */}
+        <div className="flex items-center justify-center gap-1.5 mb-3">
+          {steps.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setOnbStep(idx)}
+              className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider transition"
+              style={{
+                background: idx === onbStep ? dash.mtpay_popup_button_from : "white",
+                color: idx === onbStep ? "white" : "#6b7280",
+                border: idx === onbStep ? "none" : "1px solid #e5e7eb",
+              }}
+            >
+              Passo {idx + 1}
+            </button>
+          ))}
+        </div>
+
+        {/* Modal preview */}
+        <div className="bg-white rounded-2xl max-w-xs mx-auto p-5 shadow-xl">
+          <div className="text-center mb-3">
+            <p className="text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1.5">{dash.mtpay_onboarding_title}</p>
+            <div className="flex items-center justify-center gap-1">
+              {steps.map((_, idx) => (
+                <div key={idx} className="h-1 rounded-full transition-all" style={{ width: idx === onbStep ? 24 : 6, background: idx <= onbStep ? `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})` : "#e5e7eb" }} />
+              ))}
+            </div>
+            <p className="text-[8px] text-gray-400 mt-1">Passo {onbStep + 1} de {totalSteps}</p>
+          </div>
+
+          {currentStep.image_url && (
+            <div className="w-full mb-3 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
+              <img src={currentStep.image_url} alt="" className="max-h-32 max-w-full object-contain" />
+            </div>
+          )}
+
+          <h3 className="text-base font-bold text-gray-900 text-center mb-1.5">{currentStep.title || "(sem titulo)"}</h3>
+          <p className="text-[11px] text-gray-600 text-center leading-relaxed mb-3 whitespace-pre-line">{currentStep.description || "(sem descricao)"}</p>
+
+          {currentStep.bullets && currentStep.bullets.length > 0 && (
+            <div className="bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200/60 rounded-xl p-2.5 mb-3 space-y-1">
+              {currentStep.bullets.map((b, bi) => (
+                <div key={bi} className="flex items-start gap-1.5 text-[10px] text-gray-700">
+                  <span className="text-emerald-500 font-bold mt-0.5">✓</span>
+                  <span>{b}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <label className="flex items-start gap-2 p-2 rounded-lg border border-gray-200 mb-3">
+            <input type="checkbox" checked readOnly className="w-3.5 h-3.5 mt-0.5 accent-pink-600" />
+            <span className="text-[11px] font-medium text-gray-900">{currentStep.checkbox_label || "Eu entendi"}</span>
+          </label>
+
+          <button className="w-full py-2.5 rounded-xl text-white font-bold text-[11px] shadow-md uppercase tracking-wide" style={{ background: `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})` }}>
+            {isLast ? dash.mtpay_onboarding_finish_label : dash.mtpay_onboarding_button_label}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // === RENDER ===
+  return (
+    <div>
+      {/* Tab indicator */}
+      <div className="mb-3 px-1">
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          {[
+            { id: "dashboard", label: "Dashboard" },
+            { id: "popup", label: "Popup" },
+            { id: "onboarding", label: "Onboarding" },
+            { id: "cadastro", label: "Cadastro" },
+            { id: "planos", label: "Planos" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => { setPreviewView(tab.id); if (tab.id === "onboarding") setOnbStep(0); }}
+              className="flex-1 py-1 px-2 rounded text-[9px] font-bold uppercase tracking-wider transition"
+              style={{
+                background: previewView === tab.id ? "white" : "transparent",
+                color: previewView === tab.id ? "#111827" : "#9ca3af",
+                boxShadow: previewView === tab.id ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {previewView === "popup" && renderPopup()}
+      {previewView === "onboarding" && renderOnboarding()}
+      {previewView !== "popup" && previewView !== "onboarding" && renderDashboard()}
     </div>
   );
 }
