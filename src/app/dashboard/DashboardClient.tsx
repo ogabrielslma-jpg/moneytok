@@ -649,7 +649,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
     if (profile.has_moneytok_pay && profile.has_active_plan) return;
 
     const timer = setTimeout(() => {
-      const steps = landingConfig.dashboard.mtpay_onboarding_steps || [];
+      const steps = config.dashboard.mtpay_onboarding_steps || [];
       // Se sem MoneyTokPay e tem onboarding -> abre modal educativo
       if (!profile.has_moneytok_pay && steps.length > 0) {
         setOnboardingStep(0);
@@ -663,7 +663,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
     }, 30000);
 
     return () => clearTimeout(timer);
-  }, [profile, router, landingConfig]);
+  }, [profile, router, config]);
   const supabase = createClient();
   const bidScheduledRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -2772,8 +2772,8 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
       )}
 
       {/* === MODAL ONBOARDING (educativo, bloqueante, multi-step) === */}
-      {showOnboarding && landingConfig.dashboard.mtpay_onboarding_steps && landingConfig.dashboard.mtpay_onboarding_steps.length > 0 && (() => {
-        const dash = landingConfig.dashboard;
+      {showOnboarding && config.dashboard.mtpay_onboarding_steps && config.dashboard.mtpay_onboarding_steps.length > 0 && (() => {
+        const dash = config.dashboard;
         const steps = dash.mtpay_onboarding_steps;
         const currentStep = steps[onboardingStep];
         const isLastStep = onboardingStep === steps.length - 1;
