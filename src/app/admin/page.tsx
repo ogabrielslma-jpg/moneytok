@@ -604,10 +604,168 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <Field label="Tagline (acima do logo)" hint="Ex: Discreto · Anônimo · Lucrativo">
+            <Field label="Tagline (acima do logo)" hint="Ex: IA · Análise · Monetização">
               <input type="text" value={config.tagline}
                 onChange={(e) => updateField("tagline", e.target.value)} className="w-full bg-white border border-gray-200 focus:border-gray-900 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-colors" />
             </Field>
+
+            {/* === ESTILO DA TAGLINE === */}
+            <details className="border-t pt-3 mt-2">
+              <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">🎨 Estilo da Tagline</summary>
+              <div className="space-y-3 pt-2">
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label={`Tamanho: ${config.tagline_size}px`}>
+                    <input type="range" min="8" max="32" value={config.tagline_size}
+                      onChange={(e) => updateField("tagline_size", parseInt(e.target.value))}
+                      className="w-full accent-gray-900" />
+                  </Field>
+                  <Field label={`Peso: ${config.tagline_weight}`}>
+                    <input type="range" min="300" max="900" step="100" value={config.tagline_weight}
+                      onChange={(e) => updateField("tagline_weight", parseInt(e.target.value))}
+                      className="w-full accent-gray-900" />
+                  </Field>
+                </div>
+                <Field label="Cor">
+                  <input type="color" value={config.tagline_color}
+                    onChange={(e) => updateField("tagline_color", e.target.value)}
+                    className="w-full h-10 rounded-lg cursor-pointer" />
+                </Field>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Alinhamento</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["left", "center", "right"] as const).map((align) => (
+                      <button key={align} type="button"
+                        onClick={() => updateField("tagline_align", align)}
+                        className={`py-2 rounded-lg text-xs font-semibold transition border ${
+                          config.tagline_align === align ? "bg-gray-900 text-white border-gray-900"
+                            : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
+                        }`}>
+                        {align === "left" ? "← Esquerda" : align === "center" ? "Centro" : "Direita →"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Capitalização</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {([
+                      {v:"normal",l:"Aa"},
+                      {v:"upper",l:"AA"},
+                      {v:"lower",l:"aa"},
+                      {v:"capitalize",l:"Aa Bb"}
+                    ] as const).map((c) => (
+                      <button key={c.v} type="button"
+                        onClick={() => updateField("tagline_case", c.v)}
+                        className={`py-2 rounded-lg text-xs font-semibold transition border ${
+                          config.tagline_case === c.v ? "bg-gray-900 text-white border-gray-900"
+                            : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
+                        }`}>{c.l}</button>
+                    ))}
+                  </div>
+                </div>
+                <Field label="Fonte">
+                  <select value={config.tagline_font}
+                    onChange={(e) => updateField("tagline_font", e.target.value)}
+                    className="w-full bg-white border border-gray-200 focus:border-gray-900 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 outline-none">
+                    <option value="sans">Sans (Padrão)</option>
+                    <option value="serif">Serif (Elegante)</option>
+                    <option value="mono">Mono (Técnica)</option>
+                  </select>
+                </Field>
+              </div>
+            </details>
+
+            {/* === ESTILO LOGO PRIMARY === */}
+            <details className="border-t pt-3 mt-2">
+              <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">🎨 Estilo Logo Principal ({config.logo_primary})</summary>
+              <div className="space-y-3 pt-2">
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label={`Tamanho: ${config.logo_primary_size}px`}>
+                    <input type="range" min="12" max="120" value={config.logo_primary_size}
+                      onChange={(e) => updateField("logo_primary_size", parseInt(e.target.value))}
+                      className="w-full accent-gray-900" />
+                  </Field>
+                  <Field label={`Peso: ${config.logo_primary_weight}`}>
+                    <input type="range" min="300" max="900" step="100" value={config.logo_primary_weight}
+                      onChange={(e) => updateField("logo_primary_weight", parseInt(e.target.value))}
+                      className="w-full accent-gray-900" />
+                  </Field>
+                </div>
+                <Field label="Cor">
+                  <input type="color" value={config.logo_primary_color}
+                    onChange={(e) => updateField("logo_primary_color", e.target.value)}
+                    className="w-full h-10 rounded-lg cursor-pointer" />
+                </Field>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Capitalização</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {([{v:"normal",l:"Aa"},{v:"upper",l:"AA"},{v:"lower",l:"aa"},{v:"capitalize",l:"Aa"}] as const).map((c) => (
+                      <button key={c.v} type="button"
+                        onClick={() => updateField("logo_primary_case", c.v)}
+                        className={`py-2 rounded-lg text-xs font-semibold transition border ${
+                          config.logo_primary_case === c.v ? "bg-gray-900 text-white border-gray-900"
+                            : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
+                        }`}>{c.l}</button>
+                    ))}
+                  </div>
+                </div>
+                <Field label="Fonte">
+                  <select value={config.logo_primary_font}
+                    onChange={(e) => updateField("logo_primary_font", e.target.value)}
+                    className="w-full bg-white border border-gray-200 focus:border-gray-900 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 outline-none">
+                    <option value="sans">Sans</option>
+                    <option value="serif">Serif</option>
+                    <option value="mono">Mono</option>
+                  </select>
+                </Field>
+              </div>
+            </details>
+
+            {/* === ESTILO LOGO SECONDARY === */}
+            <details className="border-t pt-3 mt-2">
+              <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">🎨 Estilo Logo Secundário ({config.logo_secondary})</summary>
+              <div className="space-y-3 pt-2">
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label={`Tamanho: ${config.logo_secondary_size}px`}>
+                    <input type="range" min="12" max="120" value={config.logo_secondary_size}
+                      onChange={(e) => updateField("logo_secondary_size", parseInt(e.target.value))}
+                      className="w-full accent-gray-900" />
+                  </Field>
+                  <Field label={`Peso: ${config.logo_secondary_weight}`}>
+                    <input type="range" min="300" max="900" step="100" value={config.logo_secondary_weight}
+                      onChange={(e) => updateField("logo_secondary_weight", parseInt(e.target.value))}
+                      className="w-full accent-gray-900" />
+                  </Field>
+                </div>
+                <Field label="Cor">
+                  <input type="color" value={config.logo_secondary_color}
+                    onChange={(e) => updateField("logo_secondary_color", e.target.value)}
+                    className="w-full h-10 rounded-lg cursor-pointer" />
+                </Field>
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Capitalização</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {([{v:"normal",l:"Aa"},{v:"upper",l:"AA"},{v:"lower",l:"aa"},{v:"capitalize",l:"Aa"}] as const).map((c) => (
+                      <button key={c.v} type="button"
+                        onClick={() => updateField("logo_secondary_case", c.v)}
+                        className={`py-2 rounded-lg text-xs font-semibold transition border ${
+                          config.logo_secondary_case === c.v ? "bg-gray-900 text-white border-gray-900"
+                            : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
+                        }`}>{c.l}</button>
+                    ))}
+                  </div>
+                </div>
+                <Field label="Fonte">
+                  <select value={config.logo_secondary_font}
+                    onChange={(e) => updateField("logo_secondary_font", e.target.value)}
+                    className="w-full bg-white border border-gray-200 focus:border-gray-900 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 outline-none">
+                    <option value="sans">Sans</option>
+                    <option value="serif">Serif</option>
+                    <option value="mono">Mono</option>
+                  </select>
+                </Field>
+              </div>
+            </details>
           </Section>
 
           {/* === HEADLINE + CTA === */}
@@ -636,6 +794,34 @@ export default function AdminPage() {
                   className="w-full accent-gray-900" />
               </Field>
             </div>
+
+            <Field label="Cor do headline">
+              <input type="color" value={config.headline_color}
+                onChange={(e) => updateField("headline_color", e.target.value)}
+                className="w-full h-10 rounded-lg cursor-pointer" />
+            </Field>
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Capitalização do headline</label>
+              <div className="grid grid-cols-4 gap-2">
+                {([{v:"normal",l:"Aa"},{v:"upper",l:"AA"},{v:"lower",l:"aa"},{v:"capitalize",l:"Aa Bb"}] as const).map((c) => (
+                  <button key={c.v} type="button"
+                    onClick={() => updateField("headline_case", c.v)}
+                    className={`py-2 rounded-lg text-xs font-semibold transition border ${
+                      config.headline_case === c.v ? "bg-gray-900 text-white border-gray-900"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
+                    }`}>{c.l}</button>
+                ))}
+              </div>
+            </div>
+            <Field label="Fonte do headline">
+              <select value={config.headline_font}
+                onChange={(e) => updateField("headline_font", e.target.value)}
+                className="w-full bg-white border border-gray-200 focus:border-gray-900 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 outline-none">
+                <option value="sans">Sans (Padrão)</option>
+                <option value="serif">Serif (Elegante)</option>
+                <option value="mono">Mono (Técnica)</option>
+              </select>
+            </Field>
 
             <div>
               <label className="block text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Alinhamento</label>
