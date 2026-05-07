@@ -1566,15 +1566,17 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                       router.push("/moneytok-pay/cadastro");
                     }
                   }}
-                  className={`relative overflow-hidden rounded-2xl p-5 text-white shadow-lg transition cursor-pointer ${
-                    profile?.has_moneytok_pay
-                      ? "bg-gradient-to-br from-pink-500 to-orange-500"
-                      : "bg-gradient-to-br from-gray-700 to-gray-900"
-                  }`}
+                  className="relative overflow-hidden rounded-2xl p-5 shadow-lg transition cursor-pointer"
+                  style={{
+                    background: profile?.has_moneytok_pay
+                      ? `linear-gradient(135deg, ${dash.mtpay_card_unlocked_from}, ${dash.mtpay_card_unlocked_to})`
+                      : `linear-gradient(135deg, ${dash.mtpay_card_locked_from}, ${dash.mtpay_card_locked_to})`,
+                    color: dash.mtpay_card_text_color,
+                  }}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">MoneyTokPay</span>
+                      <span className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">{dash.mtpay_card_label}</span>
                       {!profile?.has_moneytok_pay && (
                         <svg className="w-3.5 h-3.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -1589,7 +1591,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                     R$ 0,00
                   </div>
                   <div className="text-[11px] opacity-80">
-                    {profile?.has_moneytok_pay ? "Acessar carteira →" : "Criar conta agora →"}
+                    {profile?.has_moneytok_pay ? dash.mtpay_card_unlocked_cta : dash.mtpay_card_locked_cta}
                   </div>
                 </div>
               </div>
@@ -2470,15 +2472,17 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
                 router.push("/moneytok-pay/cadastro");
               }
             }}
-            className={`relative overflow-hidden rounded-2xl p-5 text-white shadow-lg transition cursor-pointer ${
-              profile?.has_moneytok_pay
-                ? "bg-gradient-to-br from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600"
-                : "bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black"
-            }`}
+            className="relative overflow-hidden rounded-2xl p-5 shadow-lg transition cursor-pointer hover:opacity-90"
+            style={{
+              background: profile?.has_moneytok_pay
+                ? `linear-gradient(135deg, ${dash.mtpay_card_unlocked_from}, ${dash.mtpay_card_unlocked_to})`
+                : `linear-gradient(135deg, ${dash.mtpay_card_locked_from}, ${dash.mtpay_card_locked_to})`,
+              color: dash.mtpay_card_text_color,
+            }}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">MoneyTokPay</span>
+                <span className="text-[10px] uppercase tracking-wider opacity-80 font-semibold">{dash.mtpay_card_label}</span>
                 {!profile?.has_moneytok_pay && (
                   <svg className="w-3.5 h-3.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -2493,7 +2497,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
               R$ 0,00
             </div>
             <p className="text-[10px] opacity-70 mt-1">
-              {profile?.has_moneytok_pay ? "Acessar carteira →" : "Criar conta agora →"}
+              {profile?.has_moneytok_pay ? dash.mtpay_card_unlocked_cta : dash.mtpay_card_locked_cta}
             </p>
           </div>
 
@@ -2724,61 +2728,58 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
         <div
           className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
           onClick={(e) => {
-            // Bloqueante: clique no backdrop nao fecha
             e.stopPropagation();
           }}
         >
           <div className="relative bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
             {/* Icone */}
-            <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg">
+            <div
+              className="w-16 h-16 mx-auto mb-5 rounded-full flex items-center justify-center shadow-lg"
+              style={{ background: `linear-gradient(135deg, ${dash.mtpay_popup_icon_from}, ${dash.mtpay_popup_icon_to})` }}
+            >
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
 
-            {/* Titulo */}
             <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
-              Crie sua conta MoneyTokPay
+              {dash.mtpay_popup_title}
             </h2>
 
-            {/* Descricao */}
-            <p className="text-sm text-gray-600 text-center leading-relaxed mb-6">
-              Pra continuar monetizando seu perfil, voce precisa criar sua conta MoneyTokPay.
-              <br />
-              <br />
-              <span className="font-semibold text-gray-900">E rapido:</span> nome, CPF, data de nascimento e telefone.
-              Voce decide depois se quer cadastrar dados bancarios ou PIX.
+            <p className="text-sm text-gray-600 text-center leading-relaxed mb-6 whitespace-pre-line">
+              {dash.mtpay_popup_description}
             </p>
 
             {/* Beneficios */}
             <div className="bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200/60 rounded-2xl p-4 mb-6 space-y-2">
               <div className="flex items-start gap-2 text-xs text-gray-700">
                 <span className="text-emerald-500 font-bold mt-0.5">✓</span>
-                <span>Receba sua monetizacao via PIX (instantaneo) ou conta bancaria (D+1)</span>
+                <span>{dash.mtpay_popup_benefit_1}</span>
               </div>
               <div className="flex items-start gap-2 text-xs text-gray-700">
                 <span className="text-emerald-500 font-bold mt-0.5">✓</span>
-                <span>Saldo em moedas pra usar dentro da plataforma</span>
+                <span>{dash.mtpay_popup_benefit_2}</span>
               </div>
               <div className="flex items-start gap-2 text-xs text-gray-700">
                 <span className="text-emerald-500 font-bold mt-0.5">✓</span>
-                <span>Acesso a planos e features exclusivas</span>
+                <span>{dash.mtpay_popup_benefit_3}</span>
               </div>
             </div>
 
             {/* Botoes */}
             <button
               onClick={() => router.push("/moneytok-pay/cadastro")}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-bold text-sm transition shadow-lg uppercase tracking-wide"
+              className="w-full py-4 rounded-2xl text-white font-bold text-sm transition shadow-lg uppercase tracking-wide hover:opacity-90"
+              style={{ background: `linear-gradient(90deg, ${dash.mtpay_popup_button_from}, ${dash.mtpay_popup_button_to})` }}
             >
-              Criar minha conta agora
+              {dash.mtpay_popup_button}
             </button>
 
             <button
               onClick={logout}
               className="w-full py-3 mt-2 text-xs text-gray-500 hover:text-gray-900 transition"
             >
-              Sair da conta
+              {dash.mtpay_popup_logout_text}
             </button>
           </div>
         </div>

@@ -1,5 +1,10 @@
 "use client";
 
+// === MoneyTok: feature flags pra esconder configs FootPriv legacy no admin ===
+const SHOW_FEED_POSTS_SECTION = false;
+const SHOW_BIDDERS_SECTION = false;
+
+
 import { useEffect, useRef, useState } from "react";
 import {
   fetchLandingConfig,
@@ -428,7 +433,7 @@ export default function AdminPage() {
             <p className="text-[10px] text-gray-500 text-center mt-1.5 leading-tight">
               {area === "external"
                 ? "Página inicial e fluxo de cadastro (visível antes do login)"
-                : "Dashboard, feed e leilão (visível só após login)"}
+                : "Dashboard pós-login (visível só após login)"}
             </p>
           </div>
 
@@ -1123,7 +1128,7 @@ export default function AdminPage() {
             <>
 
           <p className="text-[11px] text-gray-500 mb-6 text-center bg-blue-50 rounded-lg py-2 px-3 border border-blue-100">
-            ℹ Editando o <strong>dashboard</strong> — o que a usuária vê após fazer login (feed, leilão, perfil, etc).
+            ℹ Editando o <strong>dashboard</strong> — o que a usuária vê após fazer login (perfil, vídeos em destaque, carteira MoneyTokPay).
           </p>
 
           {/* === LOGO DO DASHBOARD === */}
@@ -1236,6 +1241,233 @@ export default function AdminPage() {
           </Section>
 
           {/* === FEED POSTS === */}
+          <Section title="MoneyTokPay - Carteira, Popup e Cadastro">
+            <div className="space-y-5">
+
+              {/* === CARTEIRINHA === */}
+              <details open className="border-t pt-3">
+                <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Carteirinha (sidebar e topo mobile)</summary>
+                <div className="space-y-3 pt-2">
+                  <Field label="Texto do label">
+                    <input type="text" value={dash.mtpay_card_label}
+                      onChange={(e) => updateDashboard({ mtpay_card_label: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <Field label="Saldo (label)">
+                    <input type="text" value={dash.mtpay_card_balance_label}
+                      onChange={(e) => updateDashboard({ mtpay_card_balance_label: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="CTA (bloqueado)">
+                      <input type="text" value={dash.mtpay_card_locked_cta}
+                        onChange={(e) => updateDashboard({ mtpay_card_locked_cta: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                    <Field label="CTA (desbloqueado)">
+                      <input type="text" value={dash.mtpay_card_unlocked_cta}
+                        onChange={(e) => updateDashboard({ mtpay_card_unlocked_cta: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Bloqueado (de)">
+                      <input type="color" value={dash.mtpay_card_locked_from}
+                        onChange={(e) => updateDashboard({ mtpay_card_locked_from: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                    <Field label="Bloqueado (ate)">
+                      <input type="color" value={dash.mtpay_card_locked_to}
+                        onChange={(e) => updateDashboard({ mtpay_card_locked_to: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Desbloqueado (de)">
+                      <input type="color" value={dash.mtpay_card_unlocked_from}
+                        onChange={(e) => updateDashboard({ mtpay_card_unlocked_from: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                    <Field label="Desbloqueado (ate)">
+                      <input type="color" value={dash.mtpay_card_unlocked_to}
+                        onChange={(e) => updateDashboard({ mtpay_card_unlocked_to: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                  </div>
+                  <Field label="Cor do texto">
+                    <input type="color" value={dash.mtpay_card_text_color}
+                      onChange={(e) => updateDashboard({ mtpay_card_text_color: e.target.value })}
+                      className="w-full h-10 rounded-lg cursor-pointer" />
+                  </Field>
+                </div>
+              </details>
+
+              {/* === POPUP === */}
+              <details className="border-t pt-3">
+                <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Popup (forca cadastro apos 60s)</summary>
+                <div className="space-y-3 pt-2">
+                  <Field label="Titulo">
+                    <input type="text" value={dash.mtpay_popup_title}
+                      onChange={(e) => updateDashboard({ mtpay_popup_title: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <Field label="Descricao">
+                    <textarea value={dash.mtpay_popup_description}
+                      onChange={(e) => updateDashboard({ mtpay_popup_description: e.target.value })}
+                      rows={3}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <Field label="Beneficio 1">
+                    <input type="text" value={dash.mtpay_popup_benefit_1}
+                      onChange={(e) => updateDashboard({ mtpay_popup_benefit_1: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <Field label="Beneficio 2">
+                    <input type="text" value={dash.mtpay_popup_benefit_2}
+                      onChange={(e) => updateDashboard({ mtpay_popup_benefit_2: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <Field label="Beneficio 3">
+                    <input type="text" value={dash.mtpay_popup_benefit_3}
+                      onChange={(e) => updateDashboard({ mtpay_popup_benefit_3: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Botao texto">
+                      <input type="text" value={dash.mtpay_popup_button}
+                        onChange={(e) => updateDashboard({ mtpay_popup_button: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                    <Field label="Sair (texto)">
+                      <input type="text" value={dash.mtpay_popup_logout_text}
+                        onChange={(e) => updateDashboard({ mtpay_popup_logout_text: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Icone (de)">
+                      <input type="color" value={dash.mtpay_popup_icon_from}
+                        onChange={(e) => updateDashboard({ mtpay_popup_icon_from: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                    <Field label="Icone (ate)">
+                      <input type="color" value={dash.mtpay_popup_icon_to}
+                        onChange={(e) => updateDashboard({ mtpay_popup_icon_to: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Botao (de)">
+                      <input type="color" value={dash.mtpay_popup_button_from}
+                        onChange={(e) => updateDashboard({ mtpay_popup_button_from: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                    <Field label="Botao (ate)">
+                      <input type="color" value={dash.mtpay_popup_button_to}
+                        onChange={(e) => updateDashboard({ mtpay_popup_button_to: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                  </div>
+                </div>
+              </details>
+
+              {/* === CADASTRO === */}
+              <details className="border-t pt-3">
+                <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Pagina de cadastro</summary>
+                <div className="space-y-3 pt-2">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Titulo">
+                      <input type="text" value={dash.mtpay_cadastro_title}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_title: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                    <Field label="Subtitulo">
+                      <input type="text" value={dash.mtpay_cadastro_subtitle}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_subtitle: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Step 1: titulo">
+                      <input type="text" value={dash.mtpay_cadastro_step1_title}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_step1_title: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                    <Field label="Step 1: subtitulo">
+                      <input type="text" value={dash.mtpay_cadastro_step1_subtitle}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_step1_subtitle: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Step 2: titulo">
+                      <input type="text" value={dash.mtpay_cadastro_step2_title}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_step2_title: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                    <Field label="Step 2: subtitulo">
+                      <input type="text" value={dash.mtpay_cadastro_step2_subtitle}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_step2_subtitle: e.target.value })}
+                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                    </Field>
+                  </div>
+                  <Field label="Step 3: titulo (sucesso)">
+                    <input type="text" value={dash.mtpay_cadastro_step3_title}
+                      onChange={(e) => updateDashboard({ mtpay_cadastro_step3_title: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <Field label="Step 3: mensagem">
+                    <textarea value={dash.mtpay_cadastro_step3_message}
+                      onChange={(e) => updateDashboard({ mtpay_cadastro_step3_message: e.target.value })}
+                      rows={2}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Progresso (de)">
+                      <input type="color" value={dash.mtpay_cadastro_progress_from}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_progress_from: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                    <Field label="Progresso (ate)">
+                      <input type="color" value={dash.mtpay_cadastro_progress_to}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_progress_to: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                  </div>
+                </div>
+              </details>
+
+              {/* === VIDEOS EM DESTAQUE === */}
+              <details className="border-t pt-3">
+                <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Videos em destaque</summary>
+                <div className="space-y-3 pt-2">
+                  <Field label="Titulo do bloco">
+                    <input type="text" value={dash.mtpay_videos_title}
+                      onChange={(e) => updateDashboard({ mtpay_videos_title: e.target.value })}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm" />
+                  </Field>
+                  <Field label={`Quantidade: ${dash.mtpay_videos_count}`}>
+                    <input type="range" min="3" max="20" value={dash.mtpay_videos_count}
+                      onChange={(e) => updateDashboard({ mtpay_videos_count: parseInt(e.target.value) })}
+                      className="w-full accent-gray-900" />
+                  </Field>
+                  <label className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">Mostrar ranking (1, 2, 3)</div>
+                      <div className="text-xs text-gray-500 mt-0.5">Badges ouro/prata/bronze nos top 3</div>
+                    </div>
+                    <input type="checkbox"
+                      checked={dash.mtpay_videos_show_ranking}
+                      onChange={(e) => updateDashboard({ mtpay_videos_show_ranking: e.target.checked })}
+                      className="w-5 h-5 accent-gray-900 cursor-pointer" />
+                  </label>
+                </div>
+              </details>
+
+            </div>
+          </Section>
+
+          {SHOW_FEED_POSTS_SECTION && (
           <Section title={`Posts do feed (${dash.feed_posts.length})`} icon="📸">
             <p className="text-[11px] text-gray-500 mb-2">
               Vendas fictícias que aparecem no feed do dashboard. Adicione, remova e reordene livremente.
@@ -1377,8 +1609,10 @@ export default function AdminPage() {
               + Adicionar post no feed
             </button>
           </Section>
+          )}
 
           {/* === COMPRADORES (BIDDERS) === */}
+          {SHOW_BIDDERS_SECTION && (
           <Section title={`Compradores fictícios (${dash.bidders?.length || 0})`} icon="🤵">
             <p className="text-[11px] text-gray-500 mb-2">
               Pessoas que dão lance no leilão da usuária. Edite nome, foto, país e bandeira. A taxa de câmbio converte BRL → moeda local mostrada no lance.
@@ -1562,6 +1796,7 @@ export default function AdminPage() {
               + Adicionar comprador
             </button>
           </Section>
+          )}
 
             </>
           )}

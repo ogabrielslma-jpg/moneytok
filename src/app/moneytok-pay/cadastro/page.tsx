@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-client";
+import { DEFAULT_LANDING_CONFIG, type LandingConfig } from "@/lib/landing-config";
 
 type Step = 1 | 2 | 3;
 type PayoutMethod = "bank" | "pix" | null;
@@ -58,6 +59,8 @@ export default function MoneyTokPayCadastroPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [authChecked, setAuthChecked] = useState(false);
+  const [landingConfig, setLandingConfig] = useState<LandingConfig>(DEFAULT_LANDING_CONFIG);
+  const dash = landingConfig.dashboard;
 
   // Step 1: dados pessoais
   const [fullName, setFullName] = useState("");
@@ -89,10 +92,25 @@ export default function MoneyTokPayCadastroPage() {
         .single();
 
       if (profileData?.has_moneytok_pay) {
-        // Ja tem conta, redireciona pra dashboard
         router.push("/dashboard");
         return;
       }
+
+      // Carrega landing config (pra textos e cores customizaveis)
+      try {
+        const { data: configData } = await supabase
+          .from("landing_config")
+          .select("config")
+          .eq("id", 1)
+          .single();
+        if (configData?.config) {
+          setLandingConfig({ ...DEFAULT_LANDING_CONFIG, ...configData.config,
+            dashboard: { ...DEFAULT_LANDING_CONFIG.dashboard, ...(configData.config.dashboard || {}) } });
+        }
+      } catch (e) {
+        console.warn("[cadastro] Erro ao carregar config:", e);
+      }
+
       setAuthChecked(true);
     }
     check();
@@ -188,13 +206,16 @@ export default function MoneyTokPayCadastroPage() {
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg">
+          <div
+            className="w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center shadow-lg"
+            style={{ background: `linear-gradient(135deg, ${dash.mtpay_cadastro_progress_from}, ${dash.mtpay_cadastro_progress_to})` }}
+          >
             <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">MoneyTokPay</h1>
-          <p className="text-sm text-gray-500">Sua carteira dentro do MoneyTok</p>
+          <h1 className="text-2xl font-bold text-gray-900">{dash.mtpay_cadastro_title}</h1>
+          <p className="text-sm text-gray-500">{dash.mtpay_cadastro_subtitle}</p>
         </div>
 
         {/* Progress bar */}
@@ -202,9 +223,12 @@ export default function MoneyTokPayCadastroPage() {
           {[1, 2, 3].map((s) => (
             <div
               key={s}
-              className={`flex-1 h-1.5 rounded-full transition ${
-                step >= s ? "bg-gradient-to-r from-pink-500 to-orange-500" : "bg-gray-200"
-              }`}
+              className="flex-1 h-1.5 rounded-full transition"
+              style={{
+                background: step >= s
+                  ? `linear-gradient(90deg, ${dash.mtpay_cadastro_progress_from}, ${dash.mtpay_cadastro_progress_to})`
+                  : "#e5e7eb",
+              }}
             />
           ))}
         </div>
@@ -215,8 +239,8 @@ export default function MoneyTokPayCadastroPage() {
         {/* === STEP 1: DADOS PESSOAIS === */}
         {step === 1 && (
           <div className="bg-white rounded-3xl p-6 shadow-xl">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Seus dados</h2>
-            <p className="text-xs text-gray-500 mb-5">Pra identificar voce na plataforma</p>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">{dash.mtpay_cadastro_step1_title}</h2>
+            <p className="text-xs text-gray-500 mb-5">{dash.mtpay_cadastro_step1_subtitle}</p>
 
             <div className="space-y-4">
               <div>
@@ -281,8 +305,8 @@ export default function MoneyTokPayCadastroPage() {
         {/* === STEP 2: PAYOUT METHOD === */}
         {step === 2 && (
           <div className="bg-white rounded-3xl p-6 shadow-xl">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Como voce quer receber?</h2>
-            <p className="text-xs text-gray-500 mb-5">Voce pode pular e adicionar depois nas configuracoes</p>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">{dash.mtpay_cadastro_step2_title}</h2>
+            <p className="text-xs text-gray-500 mb-5">{dash.mtpay_cadastro_step2_subtitle}</p>
 
             {/* Toggle banco / pix */}
             <div className="grid grid-cols-2 gap-2 mb-5">
@@ -455,9 +479,9 @@ export default function MoneyTokPayCadastroPage() {
               </svg>
             </div>
 
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Conta criada!</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{dash.mtpay_cadastro_step3_title}</h2>
             <p className="text-sm text-gray-600 mb-6">
-              Sua conta MoneyTokPay esta pronta. Agora voce pode continuar usando o MoneyTok normalmente.
+              {dash.mtpay_cadastro_step3_message}
             </p>
 
             {!payoutMethod && (

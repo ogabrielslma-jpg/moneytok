@@ -116,6 +116,48 @@ export type DashboardConfig = {
 
   // Compradores fictícios que dão lance no leilão (gerenciado no admin)
   bidders: Bidder[];
+
+  // === MoneyTokPay: configs do popup, carteirinha e cadastro ===
+  // Carteirinha (sidebar/topo)
+  mtpay_card_label: string;                  // "MoneyTokPay"
+  mtpay_card_balance_label: string;          // "Carteira" ou "Saldo"
+  mtpay_card_locked_cta: string;             // "Criar conta agora →"
+  mtpay_card_unlocked_cta: string;           // "Acessar carteira →"
+  mtpay_card_locked_from: string;            // gradient cinza FROM
+  mtpay_card_locked_to: string;              // gradient cinza TO
+  mtpay_card_unlocked_from: string;          // gradient ativo FROM
+  mtpay_card_unlocked_to: string;            // gradient ativo TO
+  mtpay_card_text_color: string;             // cor do texto sobre o card
+
+  // Popup bloqueante
+  mtpay_popup_title: string;
+  mtpay_popup_description: string;
+  mtpay_popup_benefit_1: string;
+  mtpay_popup_benefit_2: string;
+  mtpay_popup_benefit_3: string;
+  mtpay_popup_button: string;
+  mtpay_popup_logout_text: string;
+  mtpay_popup_icon_from: string;
+  mtpay_popup_icon_to: string;
+  mtpay_popup_button_from: string;
+  mtpay_popup_button_to: string;
+
+  // Cadastro page
+  mtpay_cadastro_title: string;              // "MoneyTokPay"
+  mtpay_cadastro_subtitle: string;           // "Sua carteira dentro do MoneyTok"
+  mtpay_cadastro_step1_title: string;        // "Seus dados"
+  mtpay_cadastro_step1_subtitle: string;     // "Pra identificar voce na plataforma"
+  mtpay_cadastro_step2_title: string;        // "Como voce quer receber?"
+  mtpay_cadastro_step2_subtitle: string;     // "Voce pode pular e adicionar depois"
+  mtpay_cadastro_step3_title: string;        // "Conta criada!"
+  mtpay_cadastro_step3_message: string;
+  mtpay_cadastro_progress_from: string;      // gradient progress FROM
+  mtpay_cadastro_progress_to: string;        // gradient progress TO
+
+  // Videos em destaque
+  mtpay_videos_title: string;                // "Videos em destaque"
+  mtpay_videos_count: number;                // 3, 5, 10
+  mtpay_videos_show_ranking: boolean;        // mostra badges 1, 2, 3
 };
 
 // Comprador fictício
@@ -492,6 +534,44 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   feed_posts: DEFAULT_FEED_POSTS,
   tiktok_videos: DEFAULT_TIKTOK_VIDEOS,
   bidders: DEFAULT_BIDDERS,
+
+  // === MoneyTokPay defaults ===
+  mtpay_card_label: "MoneyTokPay",
+  mtpay_card_balance_label: "Carteira",
+  mtpay_card_locked_cta: "Criar conta agora →",
+  mtpay_card_unlocked_cta: "Acessar carteira →",
+  mtpay_card_locked_from: "#374151",
+  mtpay_card_locked_to: "#111827",
+  mtpay_card_unlocked_from: "#FE2C55",
+  mtpay_card_unlocked_to: "#F97316",
+  mtpay_card_text_color: "#ffffff",
+
+  mtpay_popup_title: "Crie sua conta MoneyTokPay",
+  mtpay_popup_description: "Pra continuar monetizando seu perfil, voce precisa criar sua conta MoneyTokPay.",
+  mtpay_popup_benefit_1: "Receba sua monetizacao via PIX (instantaneo) ou conta bancaria (D+1)",
+  mtpay_popup_benefit_2: "Saldo em moedas pra usar dentro da plataforma",
+  mtpay_popup_benefit_3: "Acesso a planos e features exclusivas",
+  mtpay_popup_button: "Criar minha conta agora",
+  mtpay_popup_logout_text: "Sair da conta",
+  mtpay_popup_icon_from: "#FE2C55",
+  mtpay_popup_icon_to: "#F97316",
+  mtpay_popup_button_from: "#FE2C55",
+  mtpay_popup_button_to: "#F97316",
+
+  mtpay_cadastro_title: "MoneyTokPay",
+  mtpay_cadastro_subtitle: "Sua carteira dentro do MoneyTok",
+  mtpay_cadastro_step1_title: "Seus dados",
+  mtpay_cadastro_step1_subtitle: "Pra identificar voce na plataforma",
+  mtpay_cadastro_step2_title: "Como voce quer receber?",
+  mtpay_cadastro_step2_subtitle: "Voce pode pular e adicionar depois nas configuracoes",
+  mtpay_cadastro_step3_title: "Conta criada!",
+  mtpay_cadastro_step3_message: "Sua conta MoneyTokPay esta pronta. Agora voce pode continuar usando o MoneyTok normalmente.",
+  mtpay_cadastro_progress_from: "#FE2C55",
+  mtpay_cadastro_progress_to: "#F97316",
+
+  mtpay_videos_title: "Vídeos em destaque",
+  mtpay_videos_count: 10,
+  mtpay_videos_show_ranking: true,
 };
 
 export const DEFAULT_LANDING_CONFIG: LandingConfig = {
