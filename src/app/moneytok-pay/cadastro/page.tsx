@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-client";
-import { DEFAULT_LANDING_CONFIG, type LandingConfig } from "@/lib/landing-config";
+import { DEFAULT_LANDING_CONFIG, fetchLandingConfig, type LandingConfig } from "@/lib/landing-config";
 
 type Step = 1 | 2 | 3;
 type PayoutMethod = "bank" | "pix" | null;
@@ -98,15 +98,8 @@ export default function MoneyTokPayCadastroPage() {
 
       // Carrega landing config (pra textos e cores customizaveis)
       try {
-        const { data: configData } = await supabase
-          .from("landing_config")
-          .select("config")
-          .eq("id", 1)
-          .single();
-        if (configData?.config) {
-          setLandingConfig({ ...DEFAULT_LANDING_CONFIG, ...configData.config,
-            dashboard: { ...DEFAULT_LANDING_CONFIG.dashboard, ...(configData.config.dashboard || {}) } });
-        }
+        const cfg = await fetchLandingConfig();
+        setLandingConfig(cfg);
       } catch (e) {
         console.warn("[cadastro] Erro ao carregar config:", e);
       }
