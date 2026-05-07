@@ -546,6 +546,31 @@ export default function AdminPage() {
           </Section>
 
           {/* === LOGO === */}
+          <Section title="Cabecalho da pagina">
+            <div className="space-y-3">
+              <label className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition cursor-pointer">
+                <div>
+                  <div className="text-sm font-medium text-gray-900">Mostrar logo no topo esquerdo</div>
+                  <div className="text-xs text-gray-500 mt-0.5">Logo pequeno repetido no canto superior esquerdo</div>
+                </div>
+                <input type="checkbox"
+                  checked={config.show_header_logo}
+                  onChange={(e) => updateField("show_header_logo", e.target.checked)}
+                  className="w-5 h-5 accent-gray-900 cursor-pointer" />
+              </label>
+              <label className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition cursor-pointer">
+                <div>
+                  <div className="text-sm font-medium text-gray-900">Mostrar botao Entrar no topo direito</div>
+                  <div className="text-xs text-gray-500 mt-0.5">Link de acesso para usuarios ja cadastrados</div>
+                </div>
+                <input type="checkbox"
+                  checked={config.show_header_login}
+                  onChange={(e) => updateField("show_header_login", e.target.checked)}
+                  className="w-5 h-5 accent-gray-900 cursor-pointer" />
+              </label>
+            </div>
+          </Section>
+
           <Section title="Logo & Identidade" icon="✨">
             <div>
               <label className="block text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Tipo de logo</label>

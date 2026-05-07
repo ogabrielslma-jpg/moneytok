@@ -177,6 +177,10 @@ export type LandingConfig = {
   cta_off_bg_color: string;
   cta_off_text_color: string;
 
+  // Header (logo top-left + Entrar top-right)
+  show_header_logo: boolean;
+  show_header_login: boolean;
+
   cta_text: string;
   cta_size: number;        // 12-32
   cta_weight: number;      // 300-900
@@ -530,6 +534,9 @@ export const DEFAULT_LANDING_CONFIG: LandingConfig = {
   cta_on_text_color: "#ffffff",
   cta_off_bg_color: "#2a2a2a",
   cta_off_text_color: "#6b7280",
+
+  show_header_logo: true,
+  show_header_login: true,
 
   cta_text: "Localizar meu perfil",
   cta_size: 14,

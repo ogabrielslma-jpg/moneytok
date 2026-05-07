@@ -812,17 +812,19 @@ function Wrapper({
         </div>
 
         <div className="absolute top-8 left-0 right-0 px-6 flex items-center justify-between max-w-md mx-auto z-20">
-          <Link href="/" className="flex items-baseline gap-1.5">
-            {config.logo_mode === "image" && config.logo_image_url ? (
-              <img src={config.logo_image_url} alt="logo" style={{ height: 24, objectFit: "contain" }} />
-            ) : (
-              <>
-                <span className="font-display text-lg tracking-[0.15em]" style={{ color: config.color_primary }}>{config.logo_primary}</span>
-                <span className="font-display text-xs tracking-[0.4em] text-bone-100">{config.logo_secondary}</span>
-              </>
-            )}
-          </Link>
-          {showLoginLink && (
+          {config.show_header_logo !== false && (
+            <Link href="/" className="flex items-baseline gap-1.5">
+              {config.logo_mode === "image" && config.logo_image_url ? (
+                <img src={config.logo_image_url} alt="logo" style={{ height: 24, objectFit: "contain" }} />
+              ) : (
+                <>
+                  <span className="font-display text-lg tracking-[0.15em]" style={{ color: config.color_primary }}>{config.logo_primary}</span>
+                  <span className="font-display text-xs tracking-[0.4em] text-bone-100">{config.logo_secondary}</span>
+                </>
+              )}
+            </Link>
+          )}
+          {showLoginLink && config.show_header_login !== false && (
             <Link href="/login" className="font-mono text-[10px] uppercase tracking-[0.25em] text-bone-100/60 hover:text-bone-100 transition">
               Entrar
             </Link>
