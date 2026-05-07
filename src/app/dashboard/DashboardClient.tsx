@@ -1438,8 +1438,8 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
     : RARITIES[0];
 
   const userInitial = (profile?.username || user?.email || "?").charAt(0).toUpperCase();
-  // Por padrão mostra inicial. Só usa imagem se user fez upload custom
-  const userAvatarUrl = customAvatar;
+  // Prioridade: 1) upload custom do user, 2) avatar do TikTok, 3) inicial fallback
+  const userAvatarUrl = customAvatar || profile?.tiktok_profile?.avatar_url || null;
 
   const canUpload = !lastUploadAt || cooldownRemaining <= 0;
 
