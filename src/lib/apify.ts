@@ -12,20 +12,22 @@ export type { TikTokProfile };
 
 // Tipo de video do TikTok (campos extraidos do clockworks scraper)
 export type TikTokVideo = {
-  video_id: string;
+  id: string;
   caption: string;
-  cover_url: string;
+  thumbnail_url: string;
   video_url: string;
   views: number;
   likes: number;
   comments: number;
   shares: number;
-  duration: number;          // em segundos
+  duration_sec: number;       // em segundos
   posted_at: string;          // ISO date
   music_name: string;
   music_author: string;
   hashtags: string[];
   is_pinned: boolean;
+  ai_analyzed?: boolean;       // placeholder pro futuro (analise IA)
+  ai_score?: number | null;
 };
 
 export async function fetchTikTokProfile(
@@ -126,20 +128,22 @@ export async function fetchTikTokVideos(
 
     // Mapeia campos do clockworks (camelCase) -> TikTokVideo (snake_case)
     return data.slice(0, limit).map((v: any) => ({
-      video_id: String(v.id || ''),
+      id: String(v.id || ''),
       caption: v.text || '',
-      cover_url: v.videoMeta?.coverUrl || v.videoMeta?.originalCoverUrl || '',
+      thumbnail_url: v.videoMeta?.coverUrl || v.videoMeta?.originalCoverUrl || v.covers?.[0] || '',
       video_url: v.webVideoUrl || '',
       views: v.playCount || 0,
       likes: v.diggCount || 0,
       comments: v.commentCount || 0,
       shares: v.shareCount || 0,
-      duration: v.videoMeta?.duration || 0,
+      duration_sec: v.videoMeta?.duration || 0,
       posted_at: v.createTimeISO || '',
       music_name: v.musicMeta?.musicName || '',
       music_author: v.musicMeta?.musicAuthor || '',
       hashtags: Array.isArray(v.hashtags) ? v.hashtags.map((h: any) => h.name || h).filter(Boolean) : [],
       is_pinned: !!v.isPinned,
+      ai_analyzed: false,
+      ai_score: null,
     }));
   } catch (error) {
     console.error('[apify] fetchTikTokVideos error:', error);
