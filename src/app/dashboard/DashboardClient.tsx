@@ -380,6 +380,9 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
   // liga a IA real. Conteúdo da aba ainda existe em código (intacto)
   // pra reativar trocando o show_auction_tab no admin/config.
   const SHOW_AUCTION_TAB = dash.show_auction_tab === true;
+const SHOW_WALLET_TAB = false;     // Esconde aba Carteira (FootPriv legacy)
+const SHOW_BALANCE_PILL = false;   // Esconde pilula R$ saldo no header
+const SHOW_TOP_CREATORS = false;   // Esconde ranking Top creators (FootPriv legacy)
   const [tab, setTab] = useState<Tab>("feed");
   const [auctionSubTab, setAuctionSubTab] = useState<"active" | "closed">("active");
   const [user, setUser] = useState<any>(null);
@@ -1479,7 +1482,9 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
               <NavItem active={tab === "my-auction"} onClick={() => goToTab("my-auction")} icon="hammer" label={dash.label_auction}
                 badge={!auctionEnded && bidHistory.length > 0 ? String(bidHistory.length) : undefined} />
             )}
-            <NavItem active={tab === "wallet"} onClick={() => goToTab("wallet")} icon="wallet" label={dash.label_wallet} />
+            {SHOW_WALLET_TAB && (
+              <NavItem active={tab === "wallet"} onClick={() => goToTab("wallet")} icon="wallet" label={dash.label_wallet} />
+            )}
             <NavItem active={tab === "profile"} onClick={() => goToTab("profile")} icon="user" label={dash.label_profile} />
           </nav>
 
@@ -1506,6 +1511,7 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
                 </>
               )}
             </button>
+            {SHOW_BALANCE_PILL && (
             <button
               onClick={() => goToTab("wallet")}
               className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 transition rounded-full pl-2 pr-3 py-1.5"
@@ -1519,6 +1525,7 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
                 R$ {fmtBRL(walletBalance)}
               </span>
             </button>
+            )}
           </header>
 
           {/* === FEED === */}
@@ -1634,6 +1641,7 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
               </div>
 
               {/* Top vendedoras da semana */}
+              {SHOW_TOP_CREATORS && (
               <div className="bg-white border-b lg:border lg:rounded-2xl border-gray-200 px-4 py-5 mb-4 lg:mb-6">
                 <div className="flex items-center justify-between mb-4 px-1">
                   <div>
@@ -1677,6 +1685,7 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
                   ))}
                 </div>
               </div>
+              )}
 
               {/* === MoneyTok: Grid de vídeos TikTok do usuário === */}
               <div className="bg-white border-b lg:border lg:rounded-2xl border-gray-200 px-4 py-4 mb-4 lg:mb-6">
@@ -2356,7 +2365,9 @@ export default function DashboardPage({ initialConfig }: { initialConfig: Landin
         {SHOW_AUCTION_TAB && (
           <BottomTab active={tab === "my-auction"} onClick={() => goToTab("my-auction")} icon="hammer" label={dash.label_auction} />
         )}
-        <BottomTab active={tab === "wallet"} onClick={() => goToTab("wallet")} icon="wallet" label={dash.label_wallet} />
+        {SHOW_WALLET_TAB && (
+          <BottomTab active={tab === "wallet"} onClick={() => goToTab("wallet")} icon="wallet" label={dash.label_wallet} />
+        )}
         <BottomTab active={tab === "profile"} onClick={() => goToTab("profile")} icon="user" label={dash.label_profile} />
       </nav>
 
