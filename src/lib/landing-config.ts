@@ -160,6 +160,11 @@ export type DashboardConfig = {
   mtpay_videos_count: number;                // 3, 5, 10
   mtpay_videos_show_ranking: boolean;        // mostra badges 1, 2, 3
 
+  // === FAQ da pagina de planos ===
+  mtpay_planos_faq_title: string;            // "Perguntas frequentes"
+  mtpay_planos_faq_subtitle: string;          // "Tire suas duvidas sobre..."
+  mtpay_planos_faq_items: { question: string; answer: string }[];
+
   // === Planos de moedas (compra obrigatoria pos-cadastro MoneyTokPay) ===
   mtpay_planos_title: string;                // "Ative sua conta"
   mtpay_planos_subtitle: string;             // "Escolha um plano de moedas..."
@@ -596,6 +601,15 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   mtpay_videos_title: "Vídeos em destaque",
   mtpay_videos_count: 10,
   mtpay_videos_show_ranking: true,
+
+  mtpay_planos_faq_title: "Perguntas frequentes",
+  mtpay_planos_faq_subtitle: "Tire suas duvidas sobre o MoneyTokPay e os planos de moedas",
+  mtpay_planos_faq_items: [
+    { question: "O que sao as moedas MoneyTokPay?", answer: "As moedas sao a moeda interna da plataforma. Voce usa para acessar features premium, analise de IA dos seus videos e outras funcionalidades exclusivas." },
+    { question: "Posso sacar as moedas em dinheiro?", answer: "As moedas tem uso interno na plataforma. Para receber valores em dinheiro, cadastre seus dados bancarios ou PIX no cadastro do MoneyTokPay." },
+    { question: "Como funciona o pagamento via PIX?", answer: "Apos escolher o plano, voce recebe um QR Code PIX. Apos confirmar o pagamento no seu banco, suas moedas sao ativadas instantaneamente." },
+    { question: "Posso comprar mais moedas depois?", answer: "Sim! Voce pode comprar mais moedas a qualquer momento dentro da plataforma." },
+  ],
 
   mtpay_planos_title: "Ative sua conta MoneyTokPay",
   mtpay_planos_subtitle: "Escolha um plano de moedas para começar a usar a plataforma. Você pode usar moedas em features premium e análises de IA.",

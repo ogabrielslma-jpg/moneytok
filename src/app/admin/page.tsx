@@ -1394,6 +1394,78 @@ export default function AdminPage() {
                     </div>
                   </details>
 
+                  {/* === FAQ === */}
+                  <details className="border-t pt-3">
+                    <summary className="cursor-pointer text-xs font-semibold text-gray-700 uppercase tracking-wider">FAQ ({dash.mtpay_planos_faq_items?.length || 0} perguntas)</summary>
+                    <div className="space-y-3 pt-2">
+
+                      <Field label="Titulo do FAQ">
+                        <input type="text" value={dash.mtpay_planos_faq_title}
+                          onChange={(e) => updateDashboard({ mtpay_planos_faq_title: e.target.value })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                      </Field>
+
+                      <Field label="Subtitulo do FAQ">
+                        <input type="text" value={dash.mtpay_planos_faq_subtitle}
+                          onChange={(e) => updateDashboard({ mtpay_planos_faq_subtitle: e.target.value })}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                      </Field>
+
+                      <div className="border-t pt-3">
+                        <div className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Perguntas e respostas</div>
+
+                        {(dash.mtpay_planos_faq_items || []).map((item, idx) => (
+                          <div key={idx} className="border border-gray-200 rounded-xl p-3 mb-2 bg-gray-50">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">#{idx + 1}</span>
+                              <button
+                                onClick={() => {
+                                  const next = [...(dash.mtpay_planos_faq_items || [])];
+                                  next.splice(idx, 1);
+                                  updateDashboard({ mtpay_planos_faq_items: next });
+                                }}
+                                className="text-[10px] text-red-500 hover:text-red-700 font-semibold uppercase tracking-wider"
+                              >
+                                Remover
+                              </button>
+                            </div>
+
+                            <Field label="Pergunta">
+                              <input type="text" value={item.question}
+                                onChange={(e) => {
+                                  const next = [...(dash.mtpay_planos_faq_items || [])];
+                                  next[idx] = { ...next[idx], question: e.target.value };
+                                  updateDashboard({ mtpay_planos_faq_items: next });
+                                }}
+                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                            </Field>
+
+                            <Field label="Resposta">
+                              <textarea value={item.answer}
+                                onChange={(e) => {
+                                  const next = [...(dash.mtpay_planos_faq_items || [])];
+                                  next[idx] = { ...next[idx], answer: e.target.value };
+                                  updateDashboard({ mtpay_planos_faq_items: next });
+                                }}
+                                rows={3}
+                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs" />
+                            </Field>
+                          </div>
+                        ))}
+
+                        <button
+                          onClick={() => {
+                            const next = [...(dash.mtpay_planos_faq_items || []), { question: "", answer: "" }];
+                            updateDashboard({ mtpay_planos_faq_items: next });
+                          }}
+                          className="w-full border-2 border-dashed border-gray-300 hover:border-gray-500 text-gray-500 hover:text-gray-900 py-2.5 rounded-xl text-xs font-semibold transition"
+                        >
+                          + Adicionar pergunta
+                        </button>
+                      </div>
+                    </div>
+                  </details>
+
                 </div>
               </details>
 

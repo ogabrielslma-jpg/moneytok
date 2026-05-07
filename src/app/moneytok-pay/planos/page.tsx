@@ -32,6 +32,7 @@ export default function MoneyTokPayPlanosPage() {
   const [selectedPlan, setSelectedPlan] = useState<PlanIdx>(2);
   const [showPixModal, setShowPixModal] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
+  const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(null);
   const [error, setError] = useState("");
 
   const dash = landingConfig.dashboard;
@@ -278,6 +279,53 @@ export default function MoneyTokPayPlanosPage() {
         </div>
 
       </div>
+
+        {/* FAQ accordion */}
+        {dash.mtpay_planos_faq_items && dash.mtpay_planos_faq_items.length > 0 && (
+          <div className="max-w-2xl mx-auto mt-12">
+            <div className="text-center mb-6">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">{dash.mtpay_planos_faq_title}</h2>
+              <p className="text-sm text-gray-600">{dash.mtpay_planos_faq_subtitle}</p>
+            </div>
+            <div className="space-y-2">
+              {dash.mtpay_planos_faq_items.map((item, idx) => {
+                const isOpen = openFaqIdx === idx;
+                return (
+                  <div
+                    key={idx}
+                    className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all"
+                    style={{
+                      borderColor: isOpen ? dash.mtpay_planos_recommended_from : undefined,
+                      boxShadow: isOpen ? `0 4px 12px ${dash.mtpay_planos_recommended_from}22` : undefined,
+                    }}
+                  >
+                    <button
+                      onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
+                      className="w-full px-5 py-4 flex items-center justify-between gap-3 text-left hover:bg-gray-50 transition"
+                    >
+                      <span className="text-sm font-semibold text-gray-900 flex-1">{item.question}</span>
+                      <svg
+                        className="w-5 h-5 text-gray-400 transition-transform flex-shrink-0"
+                        style={{ transform: isOpen ? "rotate(180deg)" : "none" }}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isOpen && (
+                      <div className="px-5 pb-4 -mt-1">
+                        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{item.answer}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
       {/* === MODAL PIX === */}
       {showPixModal && (
