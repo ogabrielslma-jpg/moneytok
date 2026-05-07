@@ -1503,7 +1503,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
   const canUpload = !lastUploadAt || cooldownRemaining <= 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div style={{ minHeight: "100vh", background: dash.mtpay_dashboard_bg }} className=" text-gray-900">
       {/* === Notificações flutuantes (2min) === */}
       <div className="fixed top-20 right-4 z-50 space-y-2 max-w-xs w-full pointer-events-none">
         {notifications.map((n) => (
@@ -2907,7 +2907,7 @@ const SHOW_WALLET_SIDEBAR_CARD = false;   // Esconde card Carteira da sidebar di
             e.stopPropagation();
           }}
         >
-          <div className="relative bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
+          <div className="relative rounded-3xl max-w-md w-full p-8 shadow-2xl animate-in fade-in zoom-in duration-300" style={{ background: dash.mtpay_popup_bg }}>
             {/* Icone ou logo customizado */}
             {dash.mtpay_logo_url ? (
               <div className="w-20 h-20 mx-auto mb-5 flex items-center justify-center">

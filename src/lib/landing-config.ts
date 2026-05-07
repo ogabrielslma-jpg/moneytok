@@ -130,6 +130,12 @@ export type DashboardConfig = {
   mtpay_card_text_color: string;             // cor do texto sobre o card
   mtpay_logo_url: string;                    // URL da imagem do logo MoneyTokPay (vazio = usa icone default)
 
+  // === Cores de fundo por tela ===
+  mtpay_dashboard_bg: string;                // fundo da dashboard logada
+  mtpay_popup_bg: string;                    // fundo do modal popup MoneyTokPay
+  mtpay_cadastro_bg: string;                 // fundo da pagina /moneytok-pay/cadastro
+  mtpay_planos_bg: string;                   // fundo da pagina /moneytok-pay/planos
+
   // Popup bloqueante
   mtpay_popup_title: string;
   mtpay_popup_description: string;
@@ -598,6 +604,11 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   mtpay_card_unlocked_to: "#F97316",
   mtpay_card_text_color: "#ffffff",
   mtpay_logo_url: "",
+
+  mtpay_dashboard_bg: "#f9fafb",
+  mtpay_popup_bg: "#ffffff",
+  mtpay_cadastro_bg: "#fdf2f8",
+  mtpay_planos_bg: "#fdf2f8",
 
   mtpay_popup_title: "Crie sua conta MoneyTokPay",
   mtpay_popup_description: "Pra continuar monetizando seu perfil, voce precisa criar sua conta MoneyTokPay.",

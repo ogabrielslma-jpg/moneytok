@@ -1187,13 +1187,36 @@ export default function AdminPage() {
             </Field>
           </Section>
 
-          {/* === CORES DO DASHBOARD === */}
-          <Section title="Cores do Dashboard" icon="🎨">
-            <div className="grid grid-cols-2 gap-3">
-              <ColorField label="Primária" value={dash.color_primary} onChange={(val) => updateDashField("color_primary", val)} />
-              <ColorField label="Acento" value={dash.color_accent} onChange={(val) => updateDashField("color_accent", val)} />
-              <ColorField label="Fundo geral" value={dash.color_bg} onChange={(val) => updateDashField("color_bg", val)} />
-              <ColorField label="Fundo dos cards" value={dash.color_card_bg} onChange={(val) => updateDashField("color_card_bg", val)} />
+          {/* === CORES POR TELA (fundos) === */}
+          <Section title="Cores das telas (fundos)" icon="🎨">
+            <div className="space-y-3">
+              <p className="text-[11px] text-gray-500">Fundo de cada tela do produto. Click no campo e o preview ao lado troca automaticamente.</p>
+
+              <div onFocusCapture={() => { if (typeof window !== "undefined") { window.dispatchEvent(new CustomEvent("preview-change", { detail: "dashboard" })); } }}>
+                <ColorField label="Dashboard (tela logada)" value={dash.mtpay_dashboard_bg} onChange={(val) => updateDashField("mtpay_dashboard_bg", val)} />
+              </div>
+
+              <div onFocusCapture={() => { if (typeof window !== "undefined") { window.dispatchEvent(new CustomEvent("preview-change", { detail: "popup" })); } }}>
+                <ColorField label="Popup MoneyTokPay" value={dash.mtpay_popup_bg} onChange={(val) => updateDashField("mtpay_popup_bg", val)} />
+              </div>
+
+              <div onFocusCapture={() => { if (typeof window !== "undefined") { window.dispatchEvent(new CustomEvent("preview-change", { detail: "cadastro" })); } }}>
+                <ColorField label="Página de cadastro" value={dash.mtpay_cadastro_bg} onChange={(val) => updateDashField("mtpay_cadastro_bg", val)} />
+              </div>
+
+              <div onFocusCapture={() => { if (typeof window !== "undefined") { window.dispatchEvent(new CustomEvent("preview-change", { detail: "planos" })); } }}>
+                <ColorField label="Página de planos" value={dash.mtpay_planos_bg} onChange={(val) => updateDashField("mtpay_planos_bg", val)} />
+              </div>
+
+              <details className="border-t pt-3 mt-2">
+                <summary className="cursor-pointer text-[10px] font-bold text-gray-700 uppercase tracking-wider">Cores internas (legado)</summary>
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <ColorField label="Cor primaria" value={dash.color_primary} onChange={(val) => updateDashField("color_primary", val)} />
+                  <ColorField label="Acento" value={dash.color_accent} onChange={(val) => updateDashField("color_accent", val)} />
+                  <ColorField label="Fundo geral (antigo)" value={dash.color_bg} onChange={(val) => updateDashField("color_bg", val)} />
+                  <ColorField label="Fundo dos cards" value={dash.color_card_bg} onChange={(val) => updateDashField("color_card_bg", val)} />
+                </div>
+              </details>
             </div>
           </Section>
 
@@ -2810,7 +2833,7 @@ function DashboardPreview({ config }: { config: LandingConfig }) {
   // === DASHBOARD VIEW ===
   function renderDashboard() {
     return (
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden">
+      <div className="rounded-2xl overflow-hidden" style={{ background: dash.mtpay_dashboard_bg }}>
         <div className="p-6 space-y-4">
           {/* Header com logo */}
           <div className="flex items-center justify-between">
@@ -2881,8 +2904,8 @@ function DashboardPreview({ config }: { config: LandingConfig }) {
   // === POPUP VIEW ===
   function renderPopup() {
     return (
-      <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-6 min-h-[400px] flex items-center justify-center">
-        <div className="bg-white rounded-3xl max-w-xs w-full p-6 shadow-2xl">
+      <div className="rounded-2xl p-6 min-h-[400px] flex items-center justify-center" style={{ background: "#1f2937" }}>
+        <div className="rounded-3xl max-w-xs w-full p-6 shadow-2xl" style={{ background: dash.mtpay_popup_bg }}>
           {dash.mtpay_logo_url ? (
             <div className="w-16 h-16 mx-auto mb-3 flex items-center justify-center">
               <img src={dash.mtpay_logo_url} alt="" className="max-h-full max-w-full object-contain" />
@@ -3048,7 +3071,53 @@ function DashboardPreview({ config }: { config: LandingConfig }) {
 
       {previewView === "popup" && renderPopup()}
       {previewView === "onboarding" && renderOnboarding()}
-      {previewView !== "popup" && previewView !== "onboarding" && renderDashboard()}
+      {previewView === "cadastro" && (
+        <div className="rounded-2xl p-6 min-h-[400px]" style={{ background: dash.mtpay_cadastro_bg }}>
+          <div className="text-center mb-4">
+            {dash.mtpay_logo_url ? (
+              <img src={dash.mtpay_logo_url} alt="" className="h-12 mx-auto mb-2 object-contain" />
+            ) : (
+              <div className="w-12 h-12 mx-auto mb-2 rounded-full" style={{ background: `linear-gradient(135deg, ${dash.mtpay_cadastro_progress_from}, ${dash.mtpay_cadastro_progress_to})` }} />
+            )}
+            <h1 className="text-lg font-bold text-gray-900">{dash.mtpay_cadastro_title}</h1>
+            <p className="text-xs text-gray-500">{dash.mtpay_cadastro_subtitle}</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-md">
+            <h2 className="text-sm font-bold text-gray-900 mb-1">{dash.mtpay_cadastro_step1_title}</h2>
+            <p className="text-[10px] text-gray-500 mb-3">{dash.mtpay_cadastro_step1_subtitle}</p>
+            <div className="space-y-2">
+              <div className="bg-gray-100 rounded-lg h-9"></div>
+              <div className="bg-gray-100 rounded-lg h-9"></div>
+              <div className="bg-gray-100 rounded-lg h-9"></div>
+            </div>
+            <button className="w-full mt-3 py-2 rounded-xl text-white text-xs font-bold uppercase" style={{ background: `linear-gradient(90deg, ${dash.mtpay_cadastro_progress_from}, ${dash.mtpay_cadastro_progress_to})` }}>Ativar minha conta</button>
+          </div>
+        </div>
+      )}
+      {previewView === "planos" && (
+        <div className="rounded-2xl p-4 min-h-[400px]" style={{ background: dash.mtpay_planos_bg }}>
+          <div className="text-center mb-3">
+            <h1 className="text-base font-bold text-gray-900">{dash.mtpay_planos_title}</h1>
+            <p className="text-[10px] text-gray-500">{dash.mtpay_planos_subtitle}</p>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5 mb-3">
+            {[
+              { coins: dash.plan_1_coins, price: dash.plan_1_price_cents, recommended: false },
+              { coins: dash.plan_2_coins, price: dash.plan_2_price_cents, recommended: true },
+              { coins: dash.plan_3_coins, price: dash.plan_3_price_cents, recommended: false },
+            ].map((p, idx) => (
+              <div key={idx} className="bg-white rounded-xl p-2 text-center" style={{ border: p.recommended ? `2px solid ${dash.mtpay_planos_recommended_from}` : `2px solid ${dash.mtpay_planos_default_border}` }}>
+                {p.recommended && <div className="text-[7px] uppercase font-bold mb-1 text-white px-1.5 py-0.5 rounded-full" style={{ background: `linear-gradient(90deg, ${dash.mtpay_planos_recommended_from}, ${dash.mtpay_planos_recommended_to})` }}>{dash.mtpay_planos_recommended_badge}</div>}
+                <div className="text-base font-black text-gray-900">{p.coins}</div>
+                <div className="text-[7px] text-gray-500 uppercase">moedas</div>
+                <div className="text-xs font-bold text-gray-900 mt-1">R$ {(p.price/100).toFixed(2).replace(".", ",")}</div>
+              </div>
+            ))}
+          </div>
+          <button className="w-full py-2 rounded-xl text-white text-xs font-bold uppercase" style={{ background: `linear-gradient(90deg, ${dash.mtpay_planos_recommended_from}, ${dash.mtpay_planos_recommended_to})` }}>Pagar com PIX</button>
+        </div>
+      )}
+      {previewView !== "popup" && previewView !== "onboarding" && previewView !== "cadastro" && previewView !== "planos" && renderDashboard()}
     </div>
   );
 }

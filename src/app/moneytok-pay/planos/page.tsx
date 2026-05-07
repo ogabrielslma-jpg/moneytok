@@ -138,14 +138,14 @@ export default function MoneyTokPayPlanosPage() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50 flex items-center justify-center">
+      <div style={{ minHeight: "100vh", background: dash.mtpay_planos_bg }} className=" flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-pink-300 border-t-pink-600 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-orange-50 py-8 px-4">
+    <div style={{ minHeight: "100vh", background: dash.mtpay_planos_bg }} className=" py-8 px-4">
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
