@@ -197,6 +197,8 @@ export type DashboardConfig = {
   // === FAQ da pagina de planos ===
   mtpay_planos_faq_title: string;            // "Perguntas frequentes"
   mtpay_planos_faq_subtitle: string;          // "Tire suas duvidas sobre..."
+  mtpay_planos_faq_headline_color: string;   // cor do titulo do FAQ
+  mtpay_planos_faq_subheadline_color: string; // cor do subtitulo do FAQ
   mtpay_planos_faq_items: { question: string; answer: string }[];
 
   // === Planos de moedas (compra obrigatoria pos-cadastro MoneyTokPay) ===
@@ -722,6 +724,8 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
 
   mtpay_planos_faq_title: "Perguntas frequentes",
   mtpay_planos_faq_subtitle: "Tire suas duvidas sobre o MoneyTokPay e os planos de moedas",
+  mtpay_planos_faq_headline_color: "#111827",
+  mtpay_planos_faq_subheadline_color: "#6b7280",
   mtpay_planos_faq_items: [
     { question: "O que sao as moedas MoneyTokPay?", answer: "As moedas sao a moeda interna da plataforma. Voce usa para acessar features premium, analise de IA dos seus videos e outras funcionalidades exclusivas." },
     { question: "Posso sacar as moedas em dinheiro?", answer: "As moedas tem uso interno na plataforma. Para receber valores em dinheiro, cadastre seus dados bancarios ou PIX no cadastro do MoneyTokPay." },

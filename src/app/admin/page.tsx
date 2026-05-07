@@ -1722,6 +1722,19 @@ export default function AdminPage() {
                           className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 placeholder-gray-400" />
                       </Field>
 
+                      <div className="grid grid-cols-2 gap-2">
+                        <Field label="Cor da headline">
+                          <input type="color" value={dash.mtpay_planos_faq_headline_color}
+                            onChange={(e) => updateDashboard({ mtpay_planos_faq_headline_color: e.target.value })}
+                            className="w-full h-9 rounded-lg cursor-pointer" />
+                        </Field>
+                        <Field label="Cor da subheadline">
+                          <input type="color" value={dash.mtpay_planos_faq_subheadline_color}
+                            onChange={(e) => updateDashboard({ mtpay_planos_faq_subheadline_color: e.target.value })}
+                            className="w-full h-9 rounded-lg cursor-pointer" />
+                        </Field>
+                      </div>
+
                       <div className="border-t pt-3">
                         <div className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Perguntas e respostas</div>
 

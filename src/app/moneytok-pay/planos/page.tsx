@@ -284,8 +284,8 @@ export default function MoneyTokPayPlanosPage() {
         {dash.mtpay_planos_faq_items && dash.mtpay_planos_faq_items.length > 0 && (
           <div className="max-w-2xl mx-auto mt-12">
             <div className="text-center mb-6">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">{dash.mtpay_planos_faq_title}</h2>
-              <p className="text-sm text-gray-600">{dash.mtpay_planos_faq_subtitle}</p>
+              <h2 className="text-xl md:text-2xl font-bold mb-1" style={{ color: dash.mtpay_planos_faq_headline_color || "#111827" }}>{dash.mtpay_planos_faq_title}</h2>
+              <p className="text-sm" style={{ color: dash.mtpay_planos_faq_subheadline_color || "#6b7280" }}>{dash.mtpay_planos_faq_subtitle}</p>
             </div>
             <div className="space-y-2">
               {dash.mtpay_planos_faq_items.map((item, idx) => {
