@@ -213,8 +213,8 @@ export default function MoneyTokPayCadastroPage() {
               </svg>
             </div>
           )}
-          <h1 className="text-2xl font-bold text-gray-900">{dash.mtpay_cadastro_title}</h1>
-          <p className="text-sm text-gray-500">{dash.mtpay_cadastro_subtitle}</p>
+          <h1 className="text-2xl font-bold" style={{ color: dash.mtpay_cadastro_headline_color || "#111827" }}>{dash.mtpay_cadastro_title}</h1>
+          <p className="text-sm" style={{ color: dash.mtpay_cadastro_subheadline_color || "#6b7280" }}>{dash.mtpay_cadastro_subtitle}</p>
         </div>
 
         {/* Progress bar */}

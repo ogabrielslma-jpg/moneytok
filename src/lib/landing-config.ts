@@ -161,6 +161,10 @@ export type DashboardConfig = {
   mtpay_cadastro_progress_from: string;      // gradient progress FROM
   mtpay_cadastro_progress_to: string;        // gradient progress TO
 
+  // Cores dos textos da pagina de cadastro
+  mtpay_cadastro_headline_color: string;     // cor do titulo principal
+  mtpay_cadastro_subheadline_color: string;  // cor do subtitulo
+
   // Videos em destaque
   mtpay_videos_title: string;                // "Videos em destaque"
   mtpay_videos_count: number;                // 3, 5, 10
@@ -632,6 +636,8 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   mtpay_cadastro_step3_message: "Sua conta MoneyTokPay esta pronta. Agora voce pode continuar usando o MoneyTok normalmente.",
   mtpay_cadastro_progress_from: "#FE2C55",
   mtpay_cadastro_progress_to: "#F97316",
+  mtpay_cadastro_headline_color: "#111827",
+  mtpay_cadastro_subheadline_color: "#6b7280",
 
   mtpay_videos_title: "Vídeos em destaque",
   mtpay_videos_count: 10,

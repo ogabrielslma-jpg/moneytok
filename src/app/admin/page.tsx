@@ -1957,6 +1957,19 @@ export default function AdminPage() {
                         className="w-full h-10 rounded-lg cursor-pointer" />
                     </Field>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Cor da headline">
+                      <input type="color" value={dash.mtpay_cadastro_headline_color}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_headline_color: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                    <Field label="Cor da subheadline">
+                      <input type="color" value={dash.mtpay_cadastro_subheadline_color}
+                        onChange={(e) => updateDashboard({ mtpay_cadastro_subheadline_color: e.target.value })}
+                        className="w-full h-10 rounded-lg cursor-pointer" />
+                    </Field>
+                  </div>
                 </div>
               </details>
 
