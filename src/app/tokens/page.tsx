@@ -38,11 +38,18 @@ export default function TokensPublicPage() {
     );
   }
 
+  // Bonus por plano (hardcoded: 10% / 15% / 22%)
+  const BONUS_PCTS: Record<PlanIdx, number> = { 1: 10, 2: 15, 3: 22 };
+
   const plans = [
     { idx: 1 as PlanIdx, coins: dash.plan_1_coins, price_cents: dash.plan_1_price_cents, label: dash.plan_1_label, recommended: false },
     { idx: 2 as PlanIdx, coins: dash.plan_2_coins, price_cents: dash.plan_2_price_cents, label: dash.plan_2_label, recommended: true },
     { idx: 3 as PlanIdx, coins: dash.plan_3_coins, price_cents: dash.plan_3_price_cents, label: dash.plan_3_label, recommended: false },
-  ];
+  ].map((p) => {
+    const bonusPct = BONUS_PCTS[p.idx];
+    const bonusCoins = Math.round(p.coins * (bonusPct / 100));
+    return { ...p, bonusPct, bonusCoins, totalCoins: p.coins + bonusCoins };
+  });
 
   function goToCheckout() {
     router.push(`/tokens/comprar?plano=${selectedPlan}`);
@@ -119,7 +126,8 @@ export default function TokensPublicPage() {
                   </div>
                 )}
 
-                <div className="text-center mb-3">
+                {/* Total em destaque (base + bonus) */}
+                <div className="text-center mb-2">
                   <div
                     className="text-4xl font-black"
                     style={{
@@ -131,9 +139,24 @@ export default function TokensPublicPage() {
                       backgroundClip: isSelected ? "text" : "initial",
                     }}
                   >
-                    {formatCoins(plan.coins)}
+                    {formatCoins(plan.totalCoins)}
                   </div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">moedas</div>
+                  <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">moedas no total</div>
+                </div>
+
+                {/* Breakdown: base + bonus */}
+                <div className="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200/60 rounded-lg p-2 mb-3">
+                  <div className="flex items-center justify-between text-[10px] mb-1">
+                    <span className="text-gray-600">Base:</span>
+                    <span className="font-bold text-gray-900">{formatCoins(plan.coins)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-emerald-700 font-bold flex items-center gap-1">
+                      <span className="inline-block w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                      Bônus +{plan.bonusPct}%:
+                    </span>
+                    <span className="font-bold text-emerald-700">+{formatCoins(plan.bonusCoins)}</span>
+                  </div>
                 </div>
 
                 <div className="text-center border-t border-gray-100 pt-3 mb-2">
@@ -141,7 +164,7 @@ export default function TokensPublicPage() {
                     R$ {formatBRL(plan.price_cents)}
                   </div>
                   <div className="text-[11px] text-gray-500 mt-0.5">
-                    R$ {pricePerCoin.toFixed(3).replace(".", ",")} por moeda
+                    R$ {((plan.price_cents/100) / plan.totalCoins).toFixed(3).replace(".", ",")} por moeda
                   </div>
                 </div>
 
@@ -163,7 +186,10 @@ export default function TokensPublicPage() {
           <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
             <div>
               <div className="text-xs text-gray-500 uppercase tracking-wider">Seu plano</div>
-              <div className="text-base font-bold text-gray-900">{formatCoins(plans.find(p => p.idx === selectedPlan)!.coins)} moedas</div>
+              <div className="text-base font-bold text-gray-900">{formatCoins(plans.find(p => p.idx === selectedPlan)!.totalCoins)} moedas</div>
+              <div className="text-[10px] text-emerald-600 font-bold">
+                +{formatCoins(plans.find(p => p.idx === selectedPlan)!.bonusCoins)} bônus incluído
+              </div>
             </div>
             <div className="text-right">
               <div className="text-xs text-gray-500 uppercase tracking-wider">Total</div>
