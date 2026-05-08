@@ -207,6 +207,13 @@ export default function MoneyTokPayPlanosPage() {
                   </div>
                 )}
 
+                {/* Imagem da moeda (se tiver) */}
+                {dash.mtpay_planos_coin_image_url && (
+                  <div className="flex items-center justify-center mb-2">
+                    <img src={dash.mtpay_planos_coin_image_url} alt="" className="h-16 w-auto object-contain" />
+                  </div>
+                )}
+
                 {/* Moedas */}
                 <div className="text-center mb-3">
                   <div

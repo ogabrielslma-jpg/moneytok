@@ -1589,6 +1589,16 @@ export default function AdminPage() {
                     </Field>
                   </div>
 
+                  <ImageUploadField
+                    label="Imagem da moeda (aparece em cada card)"
+                    hint="PNG transparente recomendado. Aparece acima do número de moedas em cada plano."
+                    folder="planos-moeda"
+                    value={dash.mtpay_planos_coin_image_url}
+                    onChange={(url) => updateDashboard({ mtpay_planos_coin_image_url: url })}
+                    previewBg="#ffffff"
+                    previewMaxHeight={80}
+                  />
+
                   {/* === Plano 1 === */}
                   <div className="border border-gray-200 rounded-xl p-3 bg-gray-50">
                     <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Plano 1</div>

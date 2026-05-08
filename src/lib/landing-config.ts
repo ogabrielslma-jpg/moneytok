@@ -206,6 +206,7 @@ export type DashboardConfig = {
   mtpay_planos_subtitle: string;             // "Escolha um plano de moedas..."
   mtpay_planos_headline_color: string;       // cor do titulo
   mtpay_planos_subheadline_color: string;    // cor do subtitulo
+  mtpay_planos_coin_image_url: string;        // imagem da moeda (aparece em cada card de plano)
   mtpay_planos_recommended_badge: string;    // "Mais escolhido"
   mtpay_planos_pix_title: string;            // "Pague com PIX"
   mtpay_planos_pix_instruction: string;      // "Escaneie o QR Code abaixo..."
@@ -737,6 +738,7 @@ const DEFAULT_DASHBOARD_CONFIG: DashboardConfig = {
   mtpay_planos_subtitle: "Escolha um plano de moedas para começar a usar a plataforma. Você pode usar moedas em features premium e análises de IA.",
   mtpay_planos_headline_color: "#111827",
   mtpay_planos_subheadline_color: "#6b7280",
+  mtpay_planos_coin_image_url: "",
   mtpay_planos_recommended_badge: "Mais escolhido",
   mtpay_planos_pix_title: "Pague com PIX",
   mtpay_planos_pix_instruction: "Escaneie o QR Code ou copie o código PIX. Apos confirmar o pagamento, suas moedas são ativadas automaticamente.",
