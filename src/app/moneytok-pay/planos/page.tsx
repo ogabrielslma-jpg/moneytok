@@ -33,6 +33,11 @@ export default function MoneyTokPayPlanosPage() {
   const [showPixModal, setShowPixModal] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(null);
+
+  // ImperiumPay PIX real
+  const [pixData, setPixData] = useState<{ qrCodeBase64: string; pixKey: string; saleId: number } | null>(null);
+  const [creatingPix, setCreatingPix] = useState(false);
+  const [pollingStatus, setPollingStatus] = useState<"idle" | "polling" | "paid">("idle");
   const [error, setError] = useState("");
 
   const dash = landingConfig.dashboard;
@@ -84,56 +89,73 @@ export default function MoneyTokPayPlanosPage() {
 
   const currentPlan = plans.find((p) => p.idx === selectedPlan)!;
 
-  async function handleSimulate() {
+  async function handleCreatePix() {
     setError("");
-    setPurchasing(true);
+    setCreatingPix(true);
+    setPixData(null);
+    setShowPixModal(true);
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setError("Sessao expirada");
-        setPurchasing(false);
-        return;
-      }
-
-      // Pega account_id do user
-      const { data: account } = await supabase
-        .from("moneytok_pay_accounts")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      if (!account) {
-        setError("Conta MoneyTokPay nao encontrada");
-        setPurchasing(false);
-        return;
-      }
-
-      // Cria compra com status 'simulated' - trigger ativa moedas + plano
-      const { error: insertError } = await supabase
-        .from("moneytok_pay_purchases")
-        .insert({
-          user_id: user.id,
-          account_id: account.id,
+      const resp = await fetch("/api/imperium/create-pix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           coins: currentPlan.coins,
           amount_cents: currentPlan.price_cents,
-          status: "simulated",
-          payment_method: "pix",
-        });
+        }),
+      });
 
-      if (insertError) {
-        console.error("[planos] insert error:", insertError);
-        setError("Erro ao processar pagamento");
-        setPurchasing(false);
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        console.error("[planos] erro create-pix:", data);
+        setError(data.error || "Erro ao criar PIX");
+        setCreatingPix(false);
         return;
       }
 
-      // Sucesso -> redireciona pra dashboard
-      router.push("/dashboard");
-    } catch (e) {
-      console.error("[planos] simulate error:", e);
-      setError("Erro inesperado");
-      setPurchasing(false);
+      setPixData({
+        qrCodeBase64: data.qrCodeBase64,
+        pixKey: data.pixKey,
+        saleId: data.saleId,
+      });
+      setCreatingPix(false);
+      setPollingStatus("polling");
+    } catch (e: any) {
+      console.error("[planos] create-pix exception:", e);
+      setError(e.message || "Erro inesperado");
+      setCreatingPix(false);
     }
+  }
+
+  // Polling de status (verifica a cada 3s se purchase virou "paid")
+  useEffect(() => {
+    if (pollingStatus !== "polling" || !pixData) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const { data: purchase } = await supabase
+          .from("moneytok_pay_purchases")
+          .select("status")
+          .eq("imperium_sale_id", String(pixData.saleId))
+          .single();
+
+        if (purchase?.status === "paid") {
+          setPollingStatus("paid");
+          clearInterval(interval);
+          setTimeout(() => router.push("/dashboard"), 1500);
+        }
+      } catch (e) {
+        console.warn("[planos] polling error:", e);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [pollingStatus, pixData, router, supabase]);
+
+  function copyPixKey() {
+    if (!pixData?.pixKey) return;
+    navigator.clipboard.writeText(pixData.pixKey).catch(() => {});
   }
 
   if (!authChecked) {
@@ -273,11 +295,12 @@ export default function MoneyTokPayPlanosPage() {
           </div>
 
           <button
-            onClick={() => setShowPixModal(true)}
-            className="w-full py-4 rounded-2xl text-white font-bold text-sm transition shadow-lg uppercase tracking-wide hover:opacity-90"
+            onClick={handleCreatePix}
+            disabled={creatingPix}
+            className="w-full py-4 rounded-2xl text-white font-bold text-sm transition shadow-lg uppercase tracking-wide hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: `linear-gradient(90deg, ${dash.mtpay_planos_recommended_from}, ${dash.mtpay_planos_recommended_to})` }}
           >
-            Pagar com PIX
+            {creatingPix ? "Gerando PIX..." : "Pagar com PIX"}
           </button>
 
           <p className="text-[10px] text-center text-gray-500 mt-3">
@@ -350,43 +373,56 @@ export default function MoneyTokPayPlanosPage() {
             <h2 className="text-xl font-bold text-gray-900 text-center mb-2">{dash.mtpay_planos_pix_title}</h2>
             <p className="text-xs text-gray-600 text-center mb-5 leading-relaxed">{dash.mtpay_planos_pix_instruction}</p>
 
-            {/* QR Code falso */}
-            <div className="bg-gray-50 rounded-2xl p-6 mb-4 flex flex-col items-center">
-              <div className="w-48 h-48 bg-white border-2 border-gray-200 rounded-xl p-3 flex items-center justify-center mb-3">
-                {/* SVG fake QR Code (matriz 21x21) */}
-                <svg viewBox="0 0 21 21" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                  {Array.from({ length: 21 }).map((_, y) =>
-                    Array.from({ length: 21 }).map((_, x) => {
-                      const seed = (x * 7 + y * 13 + currentPlan.coins) % 3;
-                      const corner = (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13);
-                      const cornerInner = (x >= 1 && x <= 5 && y >= 1 && y <= 5) ||
-                                          (x >= 15 && x <= 19 && y >= 1 && y <= 5) ||
-                                          (x >= 1 && x <= 5 && y >= 15 && y <= 19);
-                      const cornerCenter = (x >= 2 && x <= 4 && y >= 2 && y <= 4) ||
-                                           (x >= 16 && x <= 18 && y >= 2 && y <= 4) ||
-                                           (x >= 2 && x <= 4 && y >= 16 && y <= 18);
-                      let fill = "white";
-                      if (corner && !cornerInner) fill = "black";
-                      else if (corner && cornerInner && !cornerCenter) fill = "white";
-                      else if (corner && cornerCenter) fill = "black";
-                      else if (seed === 0) fill = "black";
-                      return <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill={fill} />;
-                    })
-                  )}
-                </svg>
+            {/* Loading */}
+            {creatingPix && !pixData && (
+              <div className="bg-gray-50 rounded-2xl p-12 mb-4 flex flex-col items-center">
+                <div className="w-12 h-12 border-2 border-pink-300 border-t-pink-600 rounded-full animate-spin mb-3" />
+                <p className="text-xs text-gray-600">Gerando QR Code PIX...</p>
               </div>
-              <div className="text-[10px] text-gray-500 uppercase tracking-wider">Escaneie ou copie o c\u00f3digo</div>
-            </div>
+            )}
 
-            {/* Codigo PIX falso */}
-            <div className="bg-gray-100 rounded-xl p-3 mb-4 flex items-center gap-2">
-              <code className="flex-1 text-[10px] text-gray-700 font-mono truncate">
-                00020126360014BR.GOV.BCB.PIX0114{currentPlan.coins}5204000053039865802BR
-              </code>
-              <button className="text-xs text-pink-600 font-semibold whitespace-nowrap hover:text-pink-700">
-                Copiar
-              </button>
-            </div>
+            {/* QR Code real */}
+            {pixData && (
+              <>
+                <div className="bg-gray-50 rounded-2xl p-6 mb-4 flex flex-col items-center">
+                  <div className="w-56 h-56 bg-white border-2 border-gray-200 rounded-xl p-3 flex items-center justify-center mb-3">
+                    <img src={pixData.qrCodeBase64} alt="QR Code PIX" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="text-[10px] text-gray-500 uppercase tracking-wider">Escaneie no app do banco</div>
+                </div>
+
+                {/* PIX Copia e Cola */}
+                <div className="bg-gray-100 rounded-xl p-3 mb-4 flex items-center gap-2">
+                  <code className="flex-1 text-[10px] text-gray-700 font-mono truncate">
+                    {pixData.pixKey}
+                  </code>
+                  <button
+                    onClick={copyPixKey}
+                    className="text-xs text-pink-600 font-semibold whitespace-nowrap hover:text-pink-700"
+                  >
+                    Copiar
+                  </button>
+                </div>
+
+                {/* Status do polling */}
+                {pollingStatus === "polling" && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-3 flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                    <p className="text-xs text-blue-700">Aguardando confirmacao do pagamento...</p>
+                  </div>
+                )}
+                {pollingStatus === "paid" && (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-3 flex items-center gap-2">
+                    <div className="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p className="text-xs text-emerald-700 font-bold">Pagamento confirmado! Redirecionando...</p>
+                  </div>
+                )}
+              </>
+            )}
 
             {/* Resumo do plano */}
             <div className="bg-gradient-to-br from-pink-50 to-orange-50 rounded-xl p-3 mb-4 text-xs text-gray-700">
@@ -406,18 +442,8 @@ export default function MoneyTokPayPlanosPage() {
               </div>
             )}
 
-            {/* Botao simular pagamento */}
-            <button
-              onClick={handleSimulate}
-              disabled={purchasing}
-              className="w-full py-4 rounded-2xl text-white font-bold text-sm transition shadow-lg uppercase tracking-wide hover:opacity-90 disabled:opacity-50"
-              style={{ background: `linear-gradient(90deg, ${dash.mtpay_planos_recommended_from}, ${dash.mtpay_planos_recommended_to})` }}
-            >
-              {purchasing ? "Processando..." : dash.mtpay_planos_simulate_button}
-            </button>
-
             <p className="text-[10px] text-center text-gray-500 mt-3">
-              Modo de simula\u00e7\u00e3o ativo. Em produ\u00e7\u00e3o, o pagamento real via PIX confirma automaticamente.
+              Pagamento processado via PIX. Confirmacao automatica em ate 1 minuto.
             </p>
           </div>
         </div>
