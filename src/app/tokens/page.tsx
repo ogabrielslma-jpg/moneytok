@@ -19,12 +19,24 @@ export default function TokensPublicPage() {
   const [landingConfig, setLandingConfig] = useState<LandingConfig>(DEFAULT_LANDING_CONFIG);
   const [selectedPlan, setSelectedPlan] = useState<PlanIdx>(2);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(null);
+  const [configLoaded, setConfigLoaded] = useState(false);
 
   const dash = landingConfig.dashboard;
 
   useEffect(() => {
-    fetchLandingConfig().then(setLandingConfig).catch(() => {});
+    fetchLandingConfig()
+      .then((cfg) => { setLandingConfig(cfg); setConfigLoaded(true); })
+      .catch(() => { setConfigLoaded(true); });
   }, []);
+
+  // Loading screen com fundo neutro enquanto config nao carregou
+  if (!configLoaded) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#fdf2f8" }} className="flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-pink-300 border-t-pink-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const plans = [
     { idx: 1 as PlanIdx, coins: dash.plan_1_coins, price_cents: dash.plan_1_price_cents, label: dash.plan_1_label, recommended: false },
@@ -75,7 +87,7 @@ export default function TokensPublicPage() {
               <div
                 key={plan.idx}
                 onClick={() => setSelectedPlan(plan.idx)}
-                className="relative cursor-pointer transition-all rounded-2xl p-6 bg-white"
+                className={`relative cursor-pointer transition-all rounded-2xl bg-white ${isRecommended ? "pt-9 pb-6 px-6" : "p-6"}`}
                 style={{
                   border: isSelected
                     ? `2px solid ${dash.mtpay_planos_recommended_from}`
@@ -88,7 +100,7 @@ export default function TokensPublicPage() {
               >
                 {isRecommended && (
                   <div
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white shadow-md"
+                    className="absolute top-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white shadow-md whitespace-nowrap"
                     style={{ background: `linear-gradient(90deg, ${dash.mtpay_planos_recommended_from}, ${dash.mtpay_planos_recommended_to})` }}
                   >
                     {dash.mtpay_planos_recommended_badge}
